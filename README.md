@@ -1,2 +1,2 @@
 # MAANUSHI_EARTH
-e-commerce website.
+My first e-commerce website using Golang implemented with Clean Architecture. 
