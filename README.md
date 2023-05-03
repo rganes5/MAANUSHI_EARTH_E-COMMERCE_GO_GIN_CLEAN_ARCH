@@ -1,3 +1,4 @@
-# MAANUSHI_EARTH_E-COMMERCE
-My first e-commerce website with Clean Architecture using Golang with Gin framework
+# MAANUSHI_EARTH e-commerce website with Clean Architecture using Golang with Gin framework
+First project
+
  
