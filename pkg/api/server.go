@@ -1,13 +1,15 @@
 package http
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
 	_ "github.com/rganes5/go-gin-clean-arch/cmd/api/docs"
 	handler "github.com/rganes5/go-gin-clean-arch/pkg/api/handler"
-	middleware "github.com/rganes5/go-gin-clean-arch/pkg/api/middleware"
+	"github.com/rganes5/go-gin-clean-arch/pkg/api/routes"
 )
 
 type ServerHTTP struct {
@@ -23,16 +25,16 @@ func NewServerHTTP(userHandler *handler.UserHandler) *ServerHTTP {
 	// Swagger docs
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	// Request JWT
-	engine.POST("/login", middleware.LoginHandler)
+	// set up routes
+	routes.UserRoutes(engine.Group("/"), userHandler)
 
-	// Auth middleware
-	api := engine.Group("/api", middleware.AuthorizationMiddleware)
-
-	api.GET("users", userHandler.FindAll)
-	api.GET("users/:id", userHandler.FindByID)
-	api.POST("users", userHandler.Save)
-	api.DELETE("users/:id", userHandler.Delete)
+	// no handler
+	engine.NoRoute(func(ctx *gin.Context) {
+		ctx.JSON(http.StatusNotFound, gin.H{
+			"StatusCode": 404,
+			"msg":        "invalid url",
+		})
+	})
 
 	return &ServerHTTP{engine: engine}
 }

@@ -11,11 +11,15 @@ type Config struct {
 	DBName     string `mapstructure:"DB_NAME"`
 	DBPort     string `mapstructure:"DB_PORT"`
 	DBPassword string `mapstructure:"DB_PASSWORD"`
+	JWT        string `mapstructure:"JWT_CODE"`
 }
 
 var envs = []string{
-	"DB_HOST", "DB_USER", "DB_NAME", "DB_PORT", "DB_PASSWORD",
+	"DB_HOST", "DB_USER", "DB_NAME", "DB_PORT", "DB_PASSWORD", //DATABASE
+	"JWT_CODE", //JWT
 }
+
+var config Config
 
 func LoadConfig() (Config, error) {
 	var config Config
@@ -39,4 +43,13 @@ func LoadConfig() (Config, error) {
 	}
 
 	return config, nil
+}
+
+// to get the secret code for jwt
+func GetJWTCofig() string {
+	return config.JWT
+}
+
+func GetCofig() Config {
+	return config
 }
