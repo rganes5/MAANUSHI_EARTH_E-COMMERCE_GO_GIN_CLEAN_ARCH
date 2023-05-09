@@ -6,9 +6,9 @@ import (
 )
 
 func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler) {
-	// signup := api.Group("/user")
+	signup := api.Group("/user")
 	{
-		// signup.POST("/signup", userHandler.SignUp)
+		signup.POST("/signup", userHandler.UserSignUp)
 		// signup.POST("/signup/otp/verify", userHandler.SignupOtpverify)
 
 	}
