@@ -1,4 +1,5 @@
-# MAANUSHI_EARTH_E-COMMERCE
+# MAANUSHI_EARTH_E-COMMERCE_GO_GIN_CLEAN_ARCH
+
 Back-end E-commerce REST API with Go & PostgresSQL. Uses Gin framework , Wire for dependency injection, Viper for handling environment variables, GORM as ORM and Swagger for API documentation.
 
 Before using/cloning the folder, be sure to add a env file corresponding to the config.
