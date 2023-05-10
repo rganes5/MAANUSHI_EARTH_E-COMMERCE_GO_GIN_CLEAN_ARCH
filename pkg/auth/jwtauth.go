@@ -25,7 +25,7 @@ func GenerateJWT(email string) (string, error) {
 		},
 	})
 
-	// conver the token into signed string
+	// convert the token into signed string
 	tokenString, err := token.SignedString([]byte(config.GetJWTCofig()))
 
 	if err != nil {

@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+
 	"github.com/go-playground/validator/v10"
 	"github.com/spf13/viper"
 )
@@ -12,17 +14,20 @@ type Config struct {
 	DBPort     string `mapstructure:"DB_PORT"`
 	DBPassword string `mapstructure:"DB_PASSWORD"`
 	JWT        string `mapstructure:"JWT_CODE"`
+	AUTHTOKEN  string `mapstructure:"AUTH_TOKEN"`
+	ACCOUNTSID string `mapstructure:"ACCOUNT_SID"`
+	SERVICESID string `mapstructure:"SERVICE_SID"`
 }
 
 var envs = []string{
 	"DB_HOST", "DB_USER", "DB_NAME", "DB_PORT", "DB_PASSWORD", //DATABASE
-	"JWT_CODE", //JWT
+	"JWT_CODE",                                 //JWT
+	"AUTH_TOKEN", "ACCOUNT_SID", "SERVICE_SID", //twilio details
 }
 
 var config Config
 
 func LoadConfig() (Config, error) {
-	var config Config
 
 	viper.AddConfigPath("./")
 	viper.SetConfigFile(".env")
@@ -41,7 +46,7 @@ func LoadConfig() (Config, error) {
 	if err := validator.New().Struct(&config); err != nil {
 		return config, err
 	}
-
+	fmt.Println("config", config)
 	return config, nil
 }
 

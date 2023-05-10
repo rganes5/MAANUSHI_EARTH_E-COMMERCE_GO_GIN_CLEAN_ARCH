@@ -6,13 +6,18 @@ require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-playground/validator/v10 v10.11.0
 	github.com/google/wire v0.5.0
-	github.com/jinzhu/copier v0.3.5
 	github.com/spf13/viper v1.12.0
 	github.com/swaggo/files v0.0.0-20220610200504-28940afbdbfe
 	github.com/swaggo/gin-swagger v1.5.0
 	github.com/swaggo/swag v1.8.2
+	github.com/twilio/twilio-go v1.7.0
 	gorm.io/driver/postgres v1.3.7
 	gorm.io/gorm v1.23.6
+)
+
+require (
+	github.com/golang/mock v1.6.0 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 )
 
 require (
@@ -55,7 +60,7 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/subosito/gotenv v1.4.0 // indirect
 	github.com/ugorji/go/codec v1.2.7 // indirect
-	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
+	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e
 	golang.org/x/net v0.0.0-20220607020251-c690dde0001d // indirect
 	golang.org/x/sys v0.0.0-20220610221304-9f5ed59c137d // indirect
 	golang.org/x/text v0.3.7 // indirect

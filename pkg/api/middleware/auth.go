@@ -7,6 +7,7 @@ import (
 	"github.com/rganes5/go-gin-clean-arch/pkg/auth"
 )
 
+// The middleware verifies the presence and validity of a token stored in a cookie and sets the user's email in the Gin context if the authorization is successful.
 func AuthorizationMiddleware(role string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString, err := c.Cookie(role + "-token")

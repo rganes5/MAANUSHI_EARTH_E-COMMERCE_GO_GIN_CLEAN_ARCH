@@ -1,13 +1,18 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/rganes5/go-gin-clean-arch/pkg/auth"
+	"github.com/rganes5/go-gin-clean-arch/pkg/config"
 	domain "github.com/rganes5/go-gin-clean-arch/pkg/domain"
 	"github.com/rganes5/go-gin-clean-arch/pkg/support"
 	services "github.com/rganes5/go-gin-clean-arch/pkg/usecase/interface"
+	"github.com/rganes5/go-gin-clean-arch/pkg/utils"
 )
 
 type UserHandler struct {
@@ -28,8 +33,7 @@ func NewUserHandler(usecase services.UserUseCase) *UserHandler {
 // Variable declared contataining type as users which is already initialiazed in domanin folder.
 var signUp_user domain.Users
 
-// USER SIGN-UP
-// BINDING
+// USER SIGN-UP WITH OTP SENDING
 func (cr *UserHandler) UserSignUp(c *gin.Context) {
 	if err := c.BindJSON(&signUp_user); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -38,19 +42,12 @@ func (cr *UserHandler) UserSignUp(c *gin.Context) {
 		return
 	}
 
-	if ok := support.Email_validator(signUp_user.Email); !ok {
+	if err := support.Email_validator(signUp_user.Email); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": "Email Format is incorrect",
+			"error": err.Error(),
 		})
 		return
 	}
-
-	// if ok := support.MobileNum_validator(signUp_user.PhoneNum); !ok {
-	// 	c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-	// 		"error": "Enter a valid number",
-	// 	})
-	// 	return
-	// }
 
 	if err := support.MobileNum_validator(signUp_user.PhoneNum); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -66,6 +63,36 @@ func (cr *UserHandler) UserSignUp(c *gin.Context) {
 		return
 	}
 
+	fmt.Println("config variable", config.GetCofig())
+
+	_, err1 := utils.TwilioSendOTP("+91" + signUp_user.PhoneNum)
+	if err1 != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed generating otp",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"Success": "Enter the otp",
+	})
+}
+
+// SIGN UP OTP VERIFICATION
+
+func (cr *UserHandler) SignupOtpverify(c *gin.Context) {
+	var otp utils.Otpverify
+	if err := c.BindJSON(&otp); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": "Error binding json",
+		})
+		return
+	}
+	if err := utils.TwilioVerifyOTP("+91"+signUp_user.PhoneNum, otp.Otp); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid Otp",
+		})
+		return
+	}
 	signUp_user.Password, _ = support.HashPassword(signUp_user.Password)
 	err := cr.userUseCase.SignUpUser(c.Request.Context(), signUp_user)
 	if err != nil {
@@ -74,10 +101,62 @@ func (cr *UserHandler) UserSignUp(c *gin.Context) {
 		})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{
 		"User registration": "Success",
 	})
+}
+
+// USERLOGIN
+func (cr *UserHandler) UserLoginHandler(c *gin.Context) {
+	var loginBody utils.LoginBody
+	if err := c.BindJSON(&loginBody); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	//Checks whether such user email exits or not and also returns back the user details of that specific user related to the email and stores in user.
+	user, err := cr.userUseCase.FindByEmail(c.Request.Context(), loginBody.Email)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	//Checks the given password with retreived password to that specific email from the database(user variable)
+	if err := support.CheckPasswordHash(loginBody.Password, user.Password); err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	//GenerateJWT function from the auth package, passing user.Email as an argument. It assigns the generated JWT to the tokenString variable
+	tokenString, err := auth.GenerateJWT(user.Email)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error": "Error generating the jwt token",
+		})
+	}
+
+	//Sets a cookie named "user-token" with the value tokenString. The cookie has an expiration time of 60 minutes from the current time.
+	c.SetCookie("user-token", tokenString, int(time.Now().Add(60*time.Minute).Unix()), "/", "localhost", false, true)
+	c.Set("user-email", user.Email)
+	c.JSON(http.StatusOK, gin.H{
+		"Login": "Success",
+	})
+}
+
+// USERLOGOUT
+func (cr *UserHandler) UserLogoutHandler(c *gin.Context) {
+	c.SetCookie("user-token", "", -1, "/", "localhost", false, true)
+	c.JSON(http.StatusOK, gin.H{
+		"logout": "Success",
+	})
+}
+
+// HomeHandler
+func (cr *UserHandler) UserHomehandler(c *gin.Context) {
 
 }
 
