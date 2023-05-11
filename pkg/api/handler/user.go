@@ -30,7 +30,7 @@ func NewUserHandler(usecase services.UserUseCase) *UserHandler {
 	}
 }
 
-// Variable declared contataining type as users which is already initialiazed in domanin folder.
+// Variable declared contataining type as users which is already initialiazed in domain folder.
 var signUp_user domain.Users
 
 // USER SIGN-UP WITH OTP SENDING
@@ -108,6 +108,16 @@ func (cr *UserHandler) SignupOtpverify(c *gin.Context) {
 
 // USERLOGIN
 func (cr *UserHandler) UserLoginHandler(c *gin.Context) {
+	//Cookie check
+	_, err1 := c.Cookie("user-token")
+	if err1 == nil {
+		c.Redirect(http.StatusFound, "/user/home")
+		// c.AbortWithStatusJSON(http.StatusFound, gin.H{
+		// 	"alert": "User already logged in and cookie present",
+		// })
+		return
+	}
+	//Login logic
 	var loginBody utils.LoginBody
 	if err := c.BindJSON(&loginBody); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
@@ -157,8 +167,34 @@ func (cr *UserHandler) UserLogoutHandler(c *gin.Context) {
 
 // HomeHandler
 func (cr *UserHandler) UserHomehandler(c *gin.Context) {
-
+	email, ok := c.Get(("user-email"))
+	if !ok {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": "Invalid user",
+		})
+	}
+	user, err := cr.userUseCase.FindByEmail(c.Request.Context(), email.(string))
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": "Invalid user",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, user)
 }
+
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 // FindAll godoc
 // @summary Get all users
