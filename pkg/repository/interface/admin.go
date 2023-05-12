@@ -3,7 +3,7 @@ package interfaces
 import (
 	"context"
 
-	"github.com/rganes5/go-gin-clean-arch/pkg/domain"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 )
 
 type AdminRepository interface {

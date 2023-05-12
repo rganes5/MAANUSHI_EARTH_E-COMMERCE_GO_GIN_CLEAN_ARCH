@@ -3,7 +3,7 @@ package utils
 import (
 	"fmt"
 
-	"github.com/rganes5/go-gin-clean-arch/pkg/config"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/config"
 	"github.com/twilio/twilio-go"
 	twilioApi "github.com/twilio/twilio-go/rest/verify/v2"
 )

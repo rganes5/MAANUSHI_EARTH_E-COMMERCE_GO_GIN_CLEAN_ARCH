@@ -6,8 +6,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	config "github.com/rganes5/go-gin-clean-arch/pkg/config"
-	domain "github.com/rganes5/go-gin-clean-arch/pkg/domain"
+	config "github.com/rganes5/maanushi_earth_e-commerce/pkg/config"
+	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 )
 
 func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
@@ -17,6 +17,7 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 	})
 
 	db.AutoMigrate(&domain.Users{})
+	db.AutoMigrate(&domain.Admin{})
 
 	return db, dbErr
 }

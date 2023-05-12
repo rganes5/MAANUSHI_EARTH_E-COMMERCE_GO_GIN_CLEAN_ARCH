@@ -3,9 +3,9 @@ package usecase
 import (
 	"context"
 
-	domain "github.com/rganes5/go-gin-clean-arch/pkg/domain"
-	interfaces "github.com/rganes5/go-gin-clean-arch/pkg/repository/interface"
-	services "github.com/rganes5/go-gin-clean-arch/pkg/usecase/interface"
+	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
+	interfaces "github.com/rganes5/maanushi_earth_e-commerce/pkg/repository/interface"
+	services "github.com/rganes5/maanushi_earth_e-commerce/pkg/usecase/interface"
 )
 
 type adminUseCase struct {
@@ -19,11 +19,16 @@ func NewAdminUseCase(repo interfaces.AdminRepository) services.AdminUseCase {
 }
 
 func (c *adminUseCase) FindByEmail(ctx context.Context, Email string) (domain.Admin, error) {
-	users, err := c.adminRepo.FindByEmail(ctx, Email)
-	return users, err
+	admin, err := c.adminRepo.FindByEmail(ctx, Email)
+	return admin, err
 }
 
 func (c *adminUseCase) SignUpAdmin(ctx context.Context, admin domain.Admin) error {
 	err := c.adminRepo.SignUpAdmin(ctx, admin)
 	return err
 }
+
+// func (c *adminUseCase) ListUsers(ctx context.Context) error {
+// 	err := c.adminRepo.ListUsers()
+// 	return err
+// }

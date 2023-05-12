@@ -7,16 +7,16 @@ import (
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 
-	_ "github.com/rganes5/go-gin-clean-arch/cmd/api/docs"
-	handler "github.com/rganes5/go-gin-clean-arch/pkg/api/handler"
-	"github.com/rganes5/go-gin-clean-arch/pkg/api/routes"
+	_ "github.com/rganes5/maanushi_earth_e-commerce/cmd/api/docs"
+	handler "github.com/rganes5/maanushi_earth_e-commerce/pkg/api/handler"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/api/routes"
 )
 
 type ServerHTTP struct {
 	engine *gin.Engine
 }
 
-func NewServerHTTP(userHandler *handler.UserHandler) *ServerHTTP {
+func NewServerHTTP(userHandler *handler.UserHandler, adminHandler *handler.AdminHandler) *ServerHTTP {
 	engine := gin.New()
 
 	// Use logger from Gin
@@ -27,6 +27,7 @@ func NewServerHTTP(userHandler *handler.UserHandler) *ServerHTTP {
 
 	// set up routes
 	routes.UserRoutes(engine.Group("/"), userHandler)
+	routes.AdminRoutes(engine.Group("/"), adminHandler)
 
 	// no handler
 	engine.NoRoute(func(ctx *gin.Context) {

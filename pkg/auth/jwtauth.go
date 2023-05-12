@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
-	"github.com/rganes5/go-gin-clean-arch/pkg/config"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/config"
 )
 
 type Claims struct {

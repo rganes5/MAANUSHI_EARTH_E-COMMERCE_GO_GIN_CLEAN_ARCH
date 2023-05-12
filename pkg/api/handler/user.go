@@ -7,12 +7,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/rganes5/go-gin-clean-arch/pkg/auth"
-	"github.com/rganes5/go-gin-clean-arch/pkg/config"
-	domain "github.com/rganes5/go-gin-clean-arch/pkg/domain"
-	"github.com/rganes5/go-gin-clean-arch/pkg/support"
-	services "github.com/rganes5/go-gin-clean-arch/pkg/usecase/interface"
-	"github.com/rganes5/go-gin-clean-arch/pkg/utils"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/auth"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/config"
+	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/support"
+	services "github.com/rganes5/maanushi_earth_e-commerce/pkg/usecase/interface"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/utils"
 )
 
 type UserHandler struct {
@@ -107,7 +107,7 @@ func (cr *UserHandler) SignupOtpverify(c *gin.Context) {
 }
 
 // USERLOGIN
-func (cr *UserHandler) UserLoginHandler(c *gin.Context) {
+func (cr *UserHandler) LoginHandler(c *gin.Context) {
 	//Cookie check
 	_, err1 := c.Cookie("user-token")
 	if err1 == nil {
@@ -158,7 +158,7 @@ func (cr *UserHandler) UserLoginHandler(c *gin.Context) {
 }
 
 // USERLOGOUT
-func (cr *UserHandler) UserLogoutHandler(c *gin.Context) {
+func (cr *UserHandler) LogoutHandler(c *gin.Context) {
 	c.SetCookie("user-token", "", -1, "/", "localhost", false, true)
 	c.JSON(http.StatusOK, gin.H{
 		"logout": "Success",
@@ -166,7 +166,7 @@ func (cr *UserHandler) UserLogoutHandler(c *gin.Context) {
 }
 
 // HomeHandler
-func (cr *UserHandler) UserHomehandler(c *gin.Context) {
+func (cr *UserHandler) Homehandler(c *gin.Context) {
 	email, ok := c.Get(("user-email"))
 	if !ok {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{

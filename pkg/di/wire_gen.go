@@ -7,12 +7,12 @@
 package di
 
 import (
-	"github.com/rganes5/go-gin-clean-arch/pkg/api"
-	"github.com/rganes5/go-gin-clean-arch/pkg/api/handler"
-	"github.com/rganes5/go-gin-clean-arch/pkg/config"
-	"github.com/rganes5/go-gin-clean-arch/pkg/db"
-	"github.com/rganes5/go-gin-clean-arch/pkg/repository"
-	"github.com/rganes5/go-gin-clean-arch/pkg/usecase"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/api"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/api/handler"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/config"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/db"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/repository"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/usecase"
 )
 
 // Injectors from wire.go:
@@ -25,6 +25,9 @@ func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	userRepository := repository.NewUserRepository(gormDB)
 	userUseCase := usecase.NewUserUseCase(userRepository)
 	userHandler := handler.NewUserHandler(userUseCase)
-	serverHTTP := http.NewServerHTTP(userHandler)
+	adminRepository := repository.NewAdminRepository(gormDB)
+	adminUseCase := usecase.NewAdminUseCase(adminRepository)
+	adminHandler := handler.NewAdminHandler(adminUseCase)
+	serverHTTP := http.NewServerHTTP(userHandler, adminHandler)
 	return serverHTTP, nil
 }

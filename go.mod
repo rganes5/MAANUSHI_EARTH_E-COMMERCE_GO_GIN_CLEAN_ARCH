@@ -1,4 +1,4 @@
-module github.com/rganes5/go-gin-clean-arch
+module github.com/rganes5/maanushi_earth_e-commerce
 
 go 1.17
 

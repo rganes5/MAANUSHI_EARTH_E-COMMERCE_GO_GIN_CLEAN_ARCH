@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	domain "github.com/rganes5/go-gin-clean-arch/pkg/domain"
-	interfaces "github.com/rganes5/go-gin-clean-arch/pkg/repository/interface"
+	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
+	interfaces "github.com/rganes5/maanushi_earth_e-commerce/pkg/repository/interface"
 	"gorm.io/gorm"
 )
 
@@ -17,7 +17,7 @@ func NewAdminRepository(DB *gorm.DB) interfaces.AdminRepository {
 	return &adminDatabase{DB}
 }
 
-// Finds whether a email is already in the database or not and also checks whether a user is blocked or not
+// Finds whether a email is already in the database or not
 func (c *adminDatabase) FindByEmail(ctx context.Context, Email string) (domain.Admin, error) {
 	var admin domain.Admin
 	_ = c.DB.Where("Email=?", Email).Find(&admin)

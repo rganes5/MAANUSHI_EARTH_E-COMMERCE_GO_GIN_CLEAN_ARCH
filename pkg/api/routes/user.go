@@ -2,8 +2,8 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/rganes5/go-gin-clean-arch/pkg/api/handler"
-	"github.com/rganes5/go-gin-clean-arch/pkg/api/middleware"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/api/handler"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/api/middleware"
 )
 
 func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler) {
@@ -15,14 +15,14 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler) {
 	}
 	login := api.Group("/user")
 	{
-		login.POST("/login", userHandler.UserLoginHandler)
+		login.POST("/login", userHandler.LoginHandler)
 
 	}
 	home := api.Group("/user")
 	{
 		//AuthorizationMiddleware as middleware to perform authorization checks for users accessing the "/user" endpoint.
 		home.Use(middleware.AuthorizationMiddleware("user"))
-		home.GET("/home", userHandler.UserHomehandler)
-		home.POST("/logout", userHandler.UserLogoutHandler)
+		home.GET("/home", userHandler.Homehandler)
+		home.POST("/logout", userHandler.LogoutHandler)
 	}
 }

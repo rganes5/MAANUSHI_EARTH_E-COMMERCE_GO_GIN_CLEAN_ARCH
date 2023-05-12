@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	config "github.com/rganes5/go-gin-clean-arch/pkg/config"
-	di "github.com/rganes5/go-gin-clean-arch/pkg/di"
+	config "github.com/rganes5/maanushi_earth_e-commerce/pkg/config"
+	di "github.com/rganes5/maanushi_earth_e-commerce/pkg/di"
 )
 
 func main() {
