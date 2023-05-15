@@ -17,11 +17,6 @@ type AdminHandler struct {
 	adminUseCase services.AdminUseCase
 }
 
-// type Response struct {
-// 	ID   uint   `copier:"must"`
-// 	Name string `copier:"must"`
-// }
-
 func NewAdminHandler(usecase services.AdminUseCase) *AdminHandler {
 	return &AdminHandler{
 		adminUseCase: usecase,
@@ -195,6 +190,7 @@ func (cr *AdminHandler) AccessHandler(c *gin.Context) {
 
 // CATEGORY MANAGEMENT
 
+// ADD
 func (cr *AdminHandler) AddCategory(c *gin.Context) {
 	var category domain.Category
 	if err := c.BindJSON(&category); err != nil {
@@ -214,6 +210,7 @@ func (cr *AdminHandler) AddCategory(c *gin.Context) {
 	})
 }
 
+// DELETE
 func (cr *AdminHandler) DeleteCategory(c *gin.Context) {
 	id := c.Param("categoryid")
 	if err := cr.adminUseCase.DeleteCategory(c.Request.Context(), id); err != nil {
@@ -226,6 +223,7 @@ func (cr *AdminHandler) DeleteCategory(c *gin.Context) {
 	})
 }
 
+// LIST
 func (cr *AdminHandler) ListCategories(c *gin.Context) {
 	categories, err := cr.adminUseCase.ListCategories(c.Request.Context())
 	if err != nil {

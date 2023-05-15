@@ -16,7 +16,7 @@ type ServerHTTP struct {
 	engine *gin.Engine
 }
 
-func NewServerHTTP(userHandler *handler.UserHandler, adminHandler *handler.AdminHandler) *ServerHTTP {
+func NewServerHTTP(userHandler *handler.UserHandler, adminHandler *handler.AdminHandler, productHandler *handler.ProductHandler) *ServerHTTP {
 	engine := gin.New()
 
 	// Use logger from Gin
@@ -27,7 +27,7 @@ func NewServerHTTP(userHandler *handler.UserHandler, adminHandler *handler.Admin
 
 	// set up routes
 	routes.UserRoutes(engine.Group("/"), userHandler)
-	routes.AdminRoutes(engine.Group("/"), adminHandler)
+	routes.AdminRoutes(engine.Group("/"), adminHandler, productHandler)
 
 	// no handler
 	engine.NoRoute(func(ctx *gin.Context) {

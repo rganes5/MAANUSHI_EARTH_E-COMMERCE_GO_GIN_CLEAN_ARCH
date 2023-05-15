@@ -6,7 +6,7 @@ import (
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/api/middleware"
 )
 
-func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler) {
+func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, productHandler *handler.ProductHandler) {
 	signup := api.Group("/admin")
 	{
 		signup.POST("/signup", adminHandler.AdminSignUp)
@@ -31,10 +31,11 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler) {
 			category.POST("/delete/:categoryid", adminHandler.DeleteCategory)
 			category.GET("/listall", adminHandler.ListCategories)
 		}
-		// products := home.Group("/products")
-		// {
-
-		// }
+		products := home.Group("/products")
+		{
+			products.POST("/add", productHandler.AddProduct)
+			products.POST("/delete", productHandler.DeleteProduct)
+		}
 
 	}
 }

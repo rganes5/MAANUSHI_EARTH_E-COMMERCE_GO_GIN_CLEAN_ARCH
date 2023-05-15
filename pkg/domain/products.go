@@ -7,6 +7,9 @@ type Category struct {
 	CategoryName string `json:"categoryname" gorm:"uniqueIndex;not null"`
 }
 
-type products struct {
+type Products struct {
 	gorm.Model
+	ProductName string   `json:"productname" gorm:"uniqueIndex;not null"`
+	CategoryID  uint     `json:"categoryid"`
+	Category    Category `gorm:"foreignKey:CategoryID"`
 }

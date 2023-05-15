@@ -88,10 +88,3 @@ func (c *adminDatabase) ListCategories(ctx context.Context) ([]utils.ResponseCat
 	return categories, nil
 
 }
-
-// query := `SELECT first_name,last_name,email,phone_num,block from users`
-// err := c.DB.Raw(query).Scan(&users).Error
-// if err != nil {
-// 	return users, errors.New("failed to retrieve all the users")
-// }
-// return users, nil

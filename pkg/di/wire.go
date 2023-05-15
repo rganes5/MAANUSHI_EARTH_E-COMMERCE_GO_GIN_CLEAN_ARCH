@@ -5,19 +5,19 @@ package di
 
 import (
 	"github.com/google/wire"
-	http "github.com/rganes5/go-gin-clean-arch/pkg/api"
-	handler "github.com/rganes5/go-gin-clean-arch/pkg/api/handler"
-	config "github.com/rganes5/go-gin-clean-arch/pkg/config"
-	db "github.com/rganes5/go-gin-clean-arch/pkg/db"
-	repository "github.com/rganes5/go-gin-clean-arch/pkg/repository"
-	usecase "github.com/rganes5/go-gin-clean-arch/pkg/usecase"
+	http "github.com/rganes5/maanushi_earth_e-commerce/pkg/api"
+	handler "github.com/rganes5/maanushi_earth_e-commerce/pkg/api/handler"
+	config "github.com/rganes5/maanushi_earth_e-commerce/pkg/config"
+	db "github.com/rganes5/maanushi_earth_e-commerce/pkg/db"
+	repository "github.com/rganes5/maanushi_earth_e-commerce/pkg/repository"
+	usecase "github.com/rganes5/maanushi_earth_e-commerce/pkg/usecase"
 )
 
 func InitializeAPI(cfg config.Config) (*http.ServerHTTP, error) {
 	wire.Build(db.ConnectDatabase,
-		repository.NewUserRepository, repository.NewAdminRepository,
-		usecase.NewUserUseCase, usecase.NewAdminUseCase,
-		handler.NewUserHandler, handler.NewAdminHandler,
+		repository.NewUserRepository, repository.NewAdminRepository, repository.NewProductRepository,
+		usecase.NewUserUseCase, usecase.NewAdminUseCase, usecase.NewProductUseCase,
+		handler.NewUserHandler, handler.NewAdminHandler, handler.NewProductHandler,
 		http.NewServerHTTP)
 
 	return &http.ServerHTTP{}, nil
