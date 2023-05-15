@@ -6,6 +6,7 @@ import (
 	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 	interfaces "github.com/rganes5/maanushi_earth_e-commerce/pkg/repository/interface"
 	services "github.com/rganes5/maanushi_earth_e-commerce/pkg/usecase/interface"
+	utils "github.com/rganes5/maanushi_earth_e-commerce/pkg/utils"
 )
 
 type adminUseCase struct {
@@ -28,7 +29,12 @@ func (c *adminUseCase) SignUpAdmin(ctx context.Context, admin domain.Admin) erro
 	return err
 }
 
-// func (c *adminUseCase) ListUsers(ctx context.Context) error {
-// 	err := c.adminRepo.ListUsers()
-// 	return err
-// }
+func (c *adminUseCase) ListUsers(ctx context.Context) ([]utils.ResponseUsers, error) {
+	users, err := c.adminRepo.ListUsers(ctx)
+	return users, err
+}
+
+func (c *adminUseCase) AccessHandler(ctx context.Context, id string, email bool) error {
+	err := c.adminRepo.AccessHandler(ctx, id, email)
+	return err
+}

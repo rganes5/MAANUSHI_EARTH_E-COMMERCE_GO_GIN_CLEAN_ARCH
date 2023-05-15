@@ -15,11 +15,16 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler) {
 	{
 		login.POST("/login", adminHandler.AdminLogin)
 	}
-	home := api.Group("/admin")
+	home := login.Group("/")
 	{
 		home.Use(middleware.AuthorizationMiddleware("admin"))
 		home.GET("/home", adminHandler.HomeHandler)
 		home.POST("/logout", adminHandler.Logout)
+		users := home.Group("/user")
+		{
+			users.GET("/", adminHandler.ListUsers)
+			users.PATCH("/:userid/make", adminHandler.AccessHandler)
+		}
 
 	}
 }

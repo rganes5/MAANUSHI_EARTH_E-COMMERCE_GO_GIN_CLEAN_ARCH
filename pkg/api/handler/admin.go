@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -161,15 +162,33 @@ func (cr *AdminHandler) HomeHandler(c *gin.Context) {
 
 //list users
 
-// func (cr *AdminHandler) ListUsers(c *gin.Context) {
-// 	users, err := cr.adminUseCase.ListUsers(c.Request.Context())
-// 	if err != nil {
-// 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-// 			"error": err.Error(),
-// 		})
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, gin.H{
-// 		"users": users,
-// 	})
-// }
+func (cr *AdminHandler) ListUsers(c *gin.Context) {
+	users, err := cr.adminUseCase.ListUsers(c.Request.Context())
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"users": users,
+	})
+}
+
+//Block and unblock
+
+func (cr *AdminHandler) AccessHandler(c *gin.Context) {
+	id := c.Param("userid")
+	str := c.Query("access")
+	access, _ := strconv.ParseBool(str)
+	err := cr.adminUseCase.AccessHandler(c.Request.Context(), id, access)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"Access": "Updated",
+	})
+}
