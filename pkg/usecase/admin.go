@@ -38,3 +38,18 @@ func (c *adminUseCase) AccessHandler(ctx context.Context, id string, email bool)
 	err := c.adminRepo.AccessHandler(ctx, id, email)
 	return err
 }
+
+func (c *adminUseCase) AddCategory(ctx context.Context, category domain.Category) error {
+	err := c.adminRepo.AddCategory(ctx, category)
+	return err
+}
+
+func (c *adminUseCase) DeleteCategory(ctx context.Context, id string) error {
+	err := c.adminRepo.DeleteCategory(ctx, id)
+	return err
+}
+
+func (c *adminUseCase) ListCategories(ctx context.Context) ([]utils.ResponseCategory, error) {
+	categories, err := c.adminRepo.ListCategories(ctx)
+	return categories, err
+}

@@ -89,7 +89,7 @@ func (cr *UserHandler) SignupOtpverify(c *gin.Context) {
 	}
 	if err := utils.TwilioVerifyOTP("+91"+signUp_user.PhoneNum, otp.Otp); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": "Invalid Otp",
+			"error": err.Error(),
 		})
 		return
 	}

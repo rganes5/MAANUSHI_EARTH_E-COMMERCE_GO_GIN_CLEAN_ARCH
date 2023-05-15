@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/config"
@@ -23,7 +24,7 @@ func TwilioSendOTP(phoneNumber string) (string, error) {
 	params.SetTo(phoneNumber)
 	params.SetChannel("sms")
 	resp, err := client.VerifyV2.CreateVerification(seviceSid, params)
-	// fmt.Println(err)
+	// fmt.Println(resp)
 	if err != nil {
 		return "", err
 	}
@@ -46,10 +47,13 @@ func TwilioVerifyOTP(phoneNumber string, code string) error {
 
 	resp, err := client.VerifyV2.CreateVerificationCheck(seviceSid, params)
 	if err != nil {
-		return err
+		// fmt.Println("1response:", resp.Status)
+		return errors.New("invalid otp")
 	} else if *resp.Status == "approved" {
+		// fmt.Println("2response:", resp.Status)
 		return nil
+	} else {
+		// fmt.Println("3response:", resp.Status)
+		return errors.New("invalid otp")
 	}
-
-	return nil
 }

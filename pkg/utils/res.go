@@ -8,3 +8,5 @@ type ResponseUsers struct {
 	PhoneNum  string `json:"phonenum"`
 	Block     bool   `json:"block"`
 }
+
+type ResponseCategory string

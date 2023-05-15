@@ -25,6 +25,16 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler) {
 			users.GET("/", adminHandler.ListUsers)
 			users.PATCH("/:userid/make", adminHandler.AccessHandler)
 		}
+		category := home.Group("/category")
+		{
+			category.POST("/add", adminHandler.AddCategory)
+			category.POST("/delete/:categoryid", adminHandler.DeleteCategory)
+			category.GET("/listall", adminHandler.ListCategories)
+		}
+		// products := home.Group("/products")
+		// {
+
+		// }
 
 	}
 }
