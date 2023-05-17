@@ -183,6 +183,11 @@ func (cr *UserHandler) Homehandler(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+// ListProduct
+// func (cr *UserHandler) ProductHandler(c *gin.Context){
+
+// }
+
 //
 //
 //

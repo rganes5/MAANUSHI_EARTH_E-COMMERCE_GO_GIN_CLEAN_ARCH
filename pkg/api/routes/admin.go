@@ -34,7 +34,7 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 		products := home.Group("/products")
 		{
 			products.POST("/add", productHandler.AddProduct)
-			products.POST("/delete", productHandler.DeleteProduct)
+			products.POST("/delete/:productid", productHandler.DeleteProduct)
 		}
 
 	}
