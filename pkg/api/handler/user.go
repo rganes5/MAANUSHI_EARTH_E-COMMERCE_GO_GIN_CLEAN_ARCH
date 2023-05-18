@@ -17,6 +17,7 @@ import (
 
 type UserHandler struct {
 	userUseCase services.UserUseCase
+	otpUseCase  services.OtpUseCase
 }
 
 // type Response struct {
@@ -24,14 +25,17 @@ type UserHandler struct {
 // 	Name string `copier:"must"`
 // }
 
-func NewUserHandler(usecase services.UserUseCase) *UserHandler {
+func NewUserHandler(usecase services.UserUseCase, otpusecase services.OtpUseCase) *UserHandler {
 	return &UserHandler{
 		userUseCase: usecase,
+		otpUseCase:  otpusecase,
 	}
 }
 
 // Variable declared contataining type as users which is already initialiazed in domain folder.
 var signUp_user domain.Users
+
+// var otp_user domain.Users
 
 // USER SIGN-UP WITH OTP SENDING
 func (cr *UserHandler) UserSignUp(c *gin.Context) {
@@ -65,42 +69,64 @@ func (cr *UserHandler) UserSignUp(c *gin.Context) {
 
 	fmt.Println("config variable", config.GetCofig())
 
-	_, err1 := utils.TwilioSendOTP("+91" + signUp_user.PhoneNum)
+	signUp_user.Password, _ = support.HashPassword(signUp_user.Password)
+	PhoneNum, err := cr.userUseCase.SignUpUser(c.Request.Context(), signUp_user)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error":         "failed to add user",
+			"error_details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"User data": "Saved",
+	})
+
+	respSid, err1 := cr.otpUseCase.TwilioSendOTP(c.Request.Context(), PhoneNum)
+
 	if err1 != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": "Failed generating otp",
+			"error":         "Failed generating otp",
+			"error_details": err1.Error(),
 		})
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"Success": "Enter the otp",
+		"Success":    "Enter the otp",
+		"responseid": respSid,
 	})
 }
 
 // SIGN UP OTP VERIFICATION
 
 func (cr *UserHandler) SignupOtpverify(c *gin.Context) {
-	var otp utils.Otpverify
+	var otp utils.OtpVerify
 	if err := c.BindJSON(&otp); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": "Error binding json",
 		})
 		return
 	}
-	if err := utils.TwilioVerifyOTP("+91"+signUp_user.PhoneNum, otp.Otp); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-	signUp_user.Password, _ = support.HashPassword(signUp_user.Password)
-	err := cr.userUseCase.SignUpUser(c.Request.Context(), signUp_user)
+
+	session, err := cr.otpUseCase.TwilioVerifyOTP(c.Request.Context(), otp)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": "failed to add",
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error":  err.Error(),
+			"error1": "verification failed",
 		})
 		return
 	}
+
+	err1 := cr.userUseCase.UpdateVerify(c.Request.Context(), session.PhoneNum)
+	if err1 != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error":  err1.Error(),
+			"error1": "updation end fails",
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"User registration": "Success",
 	})

@@ -1,7 +1,8 @@
 package utils
 
-type Otpverify struct {
-	Otp string `binding:"required"`
+type OtpVerify struct {
+	Otp   string `json:"otp" binding:"required"`
+	OtpID string `json:"otpid" binding:"required"`
 }
 
 type LoginBody struct {

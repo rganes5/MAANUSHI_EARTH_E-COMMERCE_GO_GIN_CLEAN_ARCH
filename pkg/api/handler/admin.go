@@ -24,9 +24,10 @@ func NewAdminHandler(usecase services.AdminUseCase) *AdminHandler {
 }
 
 // Variable declared containing type as Admin which is already initialiazed in domain folder.
-var signUp_admin domain.Admin
 
 func (cr *AdminHandler) AdminSignUp(c *gin.Context) {
+	var signUp_admin domain.Admin
+
 	//Binding
 	if err := c.BindJSON(&signUp_admin); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{

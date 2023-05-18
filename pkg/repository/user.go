@@ -38,9 +38,21 @@ func (c *userDatabase) FindByEmail(ctx context.Context, Email string) (domain.Us
 }
 
 // UserSign-up
-func (c *userDatabase) SignUpUser(ctx context.Context, user domain.Users) error {
+func (c *userDatabase) SignUpUser(ctx context.Context, user domain.Users) (string, error) {
 	err := c.DB.Create(&user).Error
-	return err
+	if err != nil {
+		return user.PhoneNum, err
+	}
+	return user.PhoneNum, nil
+}
+
+// Verify the otp column
+func (c *userDatabase) UpdateVerify(ctx context.Context, PhoneNum string) error {
+	err := c.DB.Model(&domain.Users{}).Where("phone_num=?", PhoneNum).UpdateColumn("Verified", true).Error
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 // func (c *userDatabase) FindByID(ctx context.Context, id uint) (domain.Users, error) {

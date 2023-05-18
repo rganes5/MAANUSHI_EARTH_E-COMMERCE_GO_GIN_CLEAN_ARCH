@@ -28,8 +28,13 @@ func (c *userUseCase) FindByEmail(ctx context.Context, Email string) (domain.Use
 	return users, err
 }
 
-func (c *userUseCase) SignUpUser(ctx context.Context, user domain.Users) error {
-	err := c.userRepo.SignUpUser(ctx, user)
+func (c *userUseCase) SignUpUser(ctx context.Context, user domain.Users) (string, error) {
+	PhoneNum, err := c.userRepo.SignUpUser(ctx, user)
+	return PhoneNum, err
+}
+
+func (c userUseCase) UpdateVerify(ctx context.Context, PhoneNum string) error {
+	err := c.userRepo.UpdateVerify(ctx, PhoneNum)
 	return err
 }
 
