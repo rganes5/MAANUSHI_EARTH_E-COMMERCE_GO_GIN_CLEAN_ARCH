@@ -4,12 +4,12 @@ import "gorm.io/gorm"
 
 type Category struct {
 	gorm.Model
-	CategoryName string `json:"categoryname" gorm:"uniqueIndex;not null"`
+	CategoryName string `json:"categoryname" binding:"required" gorm:"uniqueIndex;not null" `
 }
 
 type Products struct {
 	gorm.Model
-	ProductName string   `json:"productname" gorm:"uniqueIndex;not null"`
-	CategoryID  uint     `json:"categoryid"`
-	Category    Category `gorm:"foreignKey:CategoryID"`
+	ProductName string `json:"productname" binding:"required" gorm:"uniqueIndex;not null"`
+	CategoryID  uint   `json:"categoryid"`
+	// Category    Category `gorm:"foreignKey:CategoryID"`
 }

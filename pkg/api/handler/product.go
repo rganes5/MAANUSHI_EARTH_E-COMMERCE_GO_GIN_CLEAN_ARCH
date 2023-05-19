@@ -53,16 +53,24 @@ func (cr *ProductHandler) DeleteProduct(c *gin.Context) {
 	})
 }
 
-// LIST PRODUCTS
-// func (cr *ProductHandler) ListProducts(c *gin.Context) {
-// 	products, err := cr.productUseCase.ListProducts(c.Request.Context())
-// 	if err != nil {
-// 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-// 			"error": err.Error(),
-// 		})
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, gin.H{
-// 		"Products_list": products,
-// 	})
-// }
+// EDIT PRODUCTS
+func (cr *ProductHandler) EditProduct(c *gin.Context) {
+	var product domain.Products
+	id := c.Param("productid")
+	if err := c.BindJSON(&product); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": "error while binding json",
+		})
+		return
+	}
+	err := cr.productUseCase.EditProduct(c.Request.Context(), product, id)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"Success": "Product updated",
+	})
+}

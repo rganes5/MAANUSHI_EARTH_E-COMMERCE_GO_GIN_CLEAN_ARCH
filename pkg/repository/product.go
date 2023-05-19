@@ -36,3 +36,13 @@ func (c *productDatabase) DeleteProduct(ctx context.Context, id string) error {
 	}
 	return nil
 }
+
+//Edit product
+
+func (c *productDatabase) EditProduct(ctx context.Context, product domain.Products, id string) error {
+	err := c.DB.Model(&domain.Products{}).Where("id = ?", id).Updates(&product).Error
+	if err != nil {
+		return errors.New("failed to update product information")
+	}
+	return nil
+}

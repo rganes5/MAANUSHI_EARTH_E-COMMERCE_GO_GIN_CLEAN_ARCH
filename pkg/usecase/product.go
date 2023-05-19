@@ -27,3 +27,8 @@ func (c *ProductUseCase) DeleteProduct(ctx context.Context, id string) error {
 	err := c.ProductRepo.DeleteProduct(ctx, id)
 	return err
 }
+
+func (c *ProductUseCase) EditProduct(ctx context.Context, product domain.Products, id string) error {
+	err := c.ProductRepo.EditProduct(ctx, product, id)
+	return err
+}
