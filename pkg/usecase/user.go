@@ -44,6 +44,11 @@ func (c userUseCase) ListProducts(ctx context.Context) ([]utils.ResponseProductU
 	return products, err
 }
 
+func (c userUseCase) AddAddress(ctx context.Context, address domain.Address) error {
+	err := c.userRepo.AddAddress(ctx, address)
+	return err
+}
+
 // func (c *userUseCase) FindByID(ctx context.Context, id uint) (domain.Users, error) {
 // 	user, err := c.userRepo.FindByID(ctx, id)
 // 	return user, err

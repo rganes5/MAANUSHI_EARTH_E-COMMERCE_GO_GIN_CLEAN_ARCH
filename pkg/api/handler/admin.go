@@ -113,7 +113,7 @@ func (cr *AdminHandler) AdminLogin(c *gin.Context) {
 	}
 
 	//Create a jwt token and store it in cookie
-	tokenstring, err := auth.GenerateJWT(admin.Email)
+	tokenstring, err := auth.GenerateJWT(admin.Email, admin.ID)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),

@@ -28,6 +28,10 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler) {
 		{
 			product.GET("/listall", userHandler.ListProducts)
 		}
+		userprofile := home.Group("/profile")
+		{
+			userprofile.POST("/add/address", userHandler.AddAddress)
+		}
 	}
 
 }

@@ -26,4 +26,5 @@ type Address struct {
 	Country     string `json:"country" binding:"required" gorm:"not null"`
 	Primary     bool   `json:"primary" gorm:"default:false"`
 	UserID      uint   `json:"userid"`
+	// User      User   `gorm:"foreignkey:UserID"`
 }

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/copier"
 
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/auth"
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/config"
@@ -167,8 +168,8 @@ func (cr *UserHandler) LoginHandler(c *gin.Context) {
 		return
 	}
 
-	//GenerateJWT function from the auth package, passing user.Email as an argument. It assigns the generated JWT to the tokenString variable
-	tokenString, err := auth.GenerateJWT(user.Email)
+	//GenerateJWT function from the auth package, passing user.Email and User.ID as an argument. It assigns the generated JWT to the tokenString variable
+	tokenString, err := auth.GenerateJWT(user.Email, user.ID)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": "Error generating the jwt token",
@@ -207,6 +208,11 @@ func (cr *UserHandler) Homehandler(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, user)
+	// user, err := cr.userUseCase.Homehandler(c.Request.Context())
+	// if err != nil {
+	// 	response := utils.ErrorResponse(400, "Failed to fetch user details", err.Error(), nil)
+	// 	c.JSON(http.StatusInternalServerError, response)
+	// }
 }
 
 // ListProduct
@@ -220,6 +226,33 @@ func (cr *UserHandler) ListProducts(c *gin.Context) {
 	}
 	response := utils.SuccessResponse(200, "All product details", products)
 	c.JSON(http.StatusOK, response)
+}
+
+// Add Address
+func (cr *UserHandler) AddAddress(c *gin.Context) {
+	id, ok := c.Get("user-id")
+	if !ok {
+		response := utils.ErrorResponse(401, "Failed to get the id from the token string", "", nil)
+		c.JSON(http.StatusUnauthorized, response)
+		return
+	}
+	var body utils.Address
+	if err := c.BindJSON(&body); err != nil {
+		response := utils.ErrorResponse(http.StatusBadRequest, "Failed to bind JSON body", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	body.UserID = id.(uint)
+	var address domain.Address
+	copier.Copy(&address, &body)
+	if err := cr.userUseCase.AddAddress(c.Request.Context(), address); err != nil {
+		response := utils.ErrorResponse(500, "Failed to add address", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Successfully added the address", nil)
+	c.JSON(http.StatusOK, response)
+
 }
 
 //

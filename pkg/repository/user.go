@@ -67,6 +67,15 @@ func (c *userDatabase) ListProducts(ctx context.Context) ([]utils.ResponseProduc
 	return products, nil
 }
 
+// Add address
+func (c *userDatabase) AddAddress(ctx context.Context, address domain.Address) error {
+	err := c.DB.Create(&address).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // func (c *userDatabase) FindByID(ctx context.Context, id uint) (domain.Users, error) {
 // 	var user domain.Users
 // 	err := c.DB.First(&user, id).Error

@@ -11,6 +11,15 @@ type ResponseUsers struct {
 	Block     bool   `json:"block"`
 }
 
+// struct used to list all users from admins end
+type ResponseUsersDetails struct {
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+	Email     string `json:"email"`
+	PhoneNum  string `json:"phonenum"`
+	Password  string `json:"password"`
+}
+
 // struct to list all categories from admins end
 type ResponseCategory string
 

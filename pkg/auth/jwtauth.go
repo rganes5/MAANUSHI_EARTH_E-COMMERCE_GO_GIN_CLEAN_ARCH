@@ -10,16 +10,18 @@ import (
 
 type Claims struct {
 	Email string
+	ID    uint
 	jwt.RegisteredClaims
 }
 
-func GenerateJWT(email string) (string, error) {
+func GenerateJWT(email string, ID uint) (string, error) {
 
 	expireTime := time.Now().Add(60 * time.Minute)
 
 	// create token with expire time and claims id as user id
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &Claims{
 		Email: email,
+		ID:    ID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expireTime),
 		},
