@@ -18,11 +18,16 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler) {
 		login.POST("/login", userHandler.LoginHandler)
 
 	}
-	home := api.Group("/user")
+	home := login.Group("/")
 	{
 		//AuthorizationMiddleware as middleware to perform authorization checks for users accessing the "/user" endpoint.
 		home.Use(middleware.AuthorizationMiddleware("user"))
 		home.GET("/home", userHandler.Homehandler)
 		home.POST("/logout", userHandler.LogoutHandler)
+		product := home.Group("/products")
+		{
+			product.GET("/listall", userHandler.ListProducts)
+		}
 	}
+
 }

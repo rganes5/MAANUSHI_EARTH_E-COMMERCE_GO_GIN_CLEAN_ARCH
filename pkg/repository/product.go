@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"errors"
 
 	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 	interfaces "github.com/rganes5/maanushi_earth_e-commerce/pkg/repository/interface"
@@ -29,12 +28,21 @@ func (c *productDatabase) AddCategory(ctx context.Context, category domain.Categ
 	return nil
 }
 
+// Edit category
+func (c *productDatabase) UpdateCategory(ctx context.Context, categories domain.Category, id string) error {
+	err := c.DB.Model(&domain.Category{}).Where("id=?", id).Updates(&categories).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // Delete category
 
 func (c *productDatabase) DeleteCategory(ctx context.Context, id string) error {
 	err := c.DB.Where("id=?", id).Delete(&domain.Category{}).Error
 	if err != nil {
-		return errors.New("failed to delete the category")
+		return err
 	}
 	return nil
 }
@@ -46,7 +54,7 @@ func (c *productDatabase) ListCategories(ctx context.Context) ([]utils.ResponseC
 	query := `select category_name from categories where deleted_at is null`
 	err := c.DB.Raw(query).Scan(&categories).Error
 	if err != nil {
-		return categories, errors.New("failed to retrieve all the categories")
+		return categories, err
 	}
 	return categories, nil
 
@@ -67,7 +75,7 @@ func (c *productDatabase) AddProduct(ctx context.Context, product domain.Product
 func (c *productDatabase) DeleteProduct(ctx context.Context, id string) error {
 	err := c.DB.Where("id=?", id).Delete(&domain.Products{}).Error
 	if err != nil {
-		return errors.New("failed to delete the category")
+		return err
 	}
 	return nil
 }
@@ -77,7 +85,19 @@ func (c *productDatabase) DeleteProduct(ctx context.Context, id string) error {
 func (c *productDatabase) EditProduct(ctx context.Context, product domain.Products, id string) error {
 	err := c.DB.Model(&domain.Products{}).Where("id = ?", id).Updates(&product).Error
 	if err != nil {
-		return errors.New("failed to update product information")
+		return err
 	}
 	return nil
+}
+
+//List products on admins end
+
+func (c *productDatabase) ListProducts(ctx context.Context) ([]utils.ResponseProductAdmin, error) {
+	var products []utils.ResponseProductAdmin
+	query := `select product_name,image,details,price,discount_price,category_id from products where deleted_at is null`
+	err := c.DB.Raw(query).Scan(&products).Error
+	if err != nil {
+		return products, err
+	}
+	return products, nil
 }

@@ -14,6 +14,25 @@ type ResponseUsers struct {
 // struct to list all categories from admins end
 type ResponseCategory string
 
+// struct to list all products from admins and users end
+type ResponseProductAdmin struct {
+	ProductName   string `json:"productname"`
+	Image         string `json:"image"`
+	Details       string `json:"details"`
+	Price         uint   `json:"price"`
+	DiscountPrice uint   `json:"discountprice"`
+	CategoryID    uint   `json:"categoryid"`
+}
+
+type ResponseProductUser struct {
+	ProductName   string `json:"productname"`
+	Image         string `json:"image"`
+	Details       string `json:"details"`
+	Price         uint   `json:"price"`
+	DiscountPrice uint   `json:"discountprice"`
+}
+
+// ERROR MANAGEMENT
 // Req,Res,Err coding standard
 type Response struct {
 	StatusCode int         `json:"status_code"`

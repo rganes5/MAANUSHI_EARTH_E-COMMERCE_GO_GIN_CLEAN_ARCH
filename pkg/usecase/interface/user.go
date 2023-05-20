@@ -4,6 +4,7 @@ import (
 	"context"
 
 	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/utils"
 )
 
 type UserUseCase interface {
@@ -11,6 +12,7 @@ type UserUseCase interface {
 	FindByEmail(ctx context.Context, Email string) (domain.Users, error)
 	SignUpUser(ctx context.Context, user domain.Users) (string, error)
 	UpdateVerify(ctx context.Context, PhoneNum string) error
+	ListProducts(ctx context.Context) ([]utils.ResponseProductUser, error)
 	// FindByID(ctx context.Context, id uint) (domain.Users, error)
 	// Save(ctx context.Context, user domain.Users) (domain.Users, error)
 	// Delete(ctx context.Context, user domain.Users) error

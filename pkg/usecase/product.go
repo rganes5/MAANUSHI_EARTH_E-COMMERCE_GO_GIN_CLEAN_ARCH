@@ -24,6 +24,11 @@ func (c *ProductUseCase) AddCategory(ctx context.Context, category domain.Catego
 	return err
 }
 
+func (c *ProductUseCase) UpdateCategory(ctx context.Context, categories domain.Category, id string) error {
+	err := c.ProductRepo.UpdateCategory(ctx, categories, id)
+	return err
+}
+
 func (c *ProductUseCase) DeleteCategory(ctx context.Context, id string) error {
 	err := c.ProductRepo.DeleteCategory(ctx, id)
 	return err
@@ -47,4 +52,9 @@ func (c *ProductUseCase) DeleteProduct(ctx context.Context, id string) error {
 func (c *ProductUseCase) EditProduct(ctx context.Context, product domain.Products, id string) error {
 	err := c.ProductRepo.EditProduct(ctx, product, id)
 	return err
+}
+
+func (c *ProductUseCase) ListProducts(ctx context.Context) ([]utils.ResponseProductAdmin, error) {
+	products, err := c.ProductRepo.ListProducts(ctx)
+	return products, err
 }

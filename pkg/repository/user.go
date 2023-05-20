@@ -6,6 +6,7 @@ import (
 
 	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 	interfaces "github.com/rganes5/maanushi_earth_e-commerce/pkg/repository/interface"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/utils"
 	"gorm.io/gorm"
 )
 
@@ -53,6 +54,17 @@ func (c *userDatabase) UpdateVerify(ctx context.Context, PhoneNum string) error 
 		return err
 	}
 	return nil
+}
+
+// List products
+func (c *userDatabase) ListProducts(ctx context.Context) ([]utils.ResponseProductUser, error) {
+	var products []utils.ResponseProductUser
+	query := `select product_name,image,details,price,discount_price from products where deleted_at is null`
+	err := c.DB.Raw(query).Scan(&products).Error
+	if err != nil {
+		return products, err
+	}
+	return products, nil
 }
 
 // func (c *userDatabase) FindByID(ctx context.Context, id uint) (domain.Users, error) {

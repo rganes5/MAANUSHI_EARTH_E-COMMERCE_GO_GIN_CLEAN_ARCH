@@ -28,6 +28,7 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 		category := home.Group("/category")
 		{
 			category.POST("/add", productHandler.AddCategory)
+			category.PATCH("/update/:categoryid", productHandler.UpdateCategory)
 			category.POST("/delete/:categoryid", productHandler.DeleteCategory)
 			category.GET("/listall", productHandler.ListCategories)
 		}
@@ -36,6 +37,7 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 			products.POST("/add", productHandler.AddProduct)
 			products.POST("/delete/:productid", productHandler.DeleteProduct)
 			products.PATCH("/update/:productid", productHandler.EditProduct)
+			products.GET("/listall", productHandler.ListProducts)
 		}
 
 	}

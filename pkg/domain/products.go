@@ -9,7 +9,11 @@ type Category struct {
 
 type Products struct {
 	gorm.Model
-	ProductName string `json:"productname" binding:"required" gorm:"uniqueIndex;not null"`
-	CategoryID  uint   `json:"categoryid"`
-	// Category    Category `gorm:"foreignKey:CategoryID"`
+	ProductName   string `json:"productname" binding:"required" gorm:"uniqueIndex;not null"`
+	Image         string `json:"image" gorm:"not null"`
+	Details       string `json:"details" binding:"required" gorm:"not null"`
+	Price         uint   `json:"price" gorm:"not null" binding:"required,numeric"`
+	DiscountPrice uint   `json:"discountprice"`
+	CategoryID    uint   `json:"categoryid"`
+	// Category Category `gorm:"foreignKey:CategoryID"`
 }

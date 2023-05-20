@@ -6,6 +6,7 @@ import (
 	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 	interfaces "github.com/rganes5/maanushi_earth_e-commerce/pkg/repository/interface"
 	services "github.com/rganes5/maanushi_earth_e-commerce/pkg/usecase/interface"
+	utils "github.com/rganes5/maanushi_earth_e-commerce/pkg/utils"
 )
 
 type userUseCase struct {
@@ -36,6 +37,11 @@ func (c *userUseCase) SignUpUser(ctx context.Context, user domain.Users) (string
 func (c userUseCase) UpdateVerify(ctx context.Context, PhoneNum string) error {
 	err := c.userRepo.UpdateVerify(ctx, PhoneNum)
 	return err
+}
+
+func (c userUseCase) ListProducts(ctx context.Context) ([]utils.ResponseProductUser, error) {
+	products, err := c.userRepo.ListProducts(ctx)
+	return products, err
 }
 
 // func (c *userUseCase) FindByID(ctx context.Context, id uint) (domain.Users, error) {
