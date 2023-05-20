@@ -27,9 +27,9 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 		}
 		category := home.Group("/category")
 		{
-			category.POST("/add", adminHandler.AddCategory)
-			category.POST("/delete/:categoryid", adminHandler.DeleteCategory)
-			category.GET("/listall", adminHandler.ListCategories)
+			category.POST("/add", productHandler.AddCategory)
+			category.POST("/delete/:categoryid", productHandler.DeleteCategory)
+			category.GET("/listall", productHandler.ListCategories)
 		}
 		products := home.Group("/products")
 		{

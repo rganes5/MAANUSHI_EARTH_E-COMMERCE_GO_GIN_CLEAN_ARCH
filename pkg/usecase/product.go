@@ -6,6 +6,7 @@ import (
 	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 	interfaces "github.com/rganes5/maanushi_earth_e-commerce/pkg/repository/interface"
 	services "github.com/rganes5/maanushi_earth_e-commerce/pkg/usecase/interface"
+	utils "github.com/rganes5/maanushi_earth_e-commerce/pkg/utils"
 )
 
 type ProductUseCase struct {
@@ -16,6 +17,21 @@ func NewProductUseCase(repo interfaces.ProductRepository) services.ProductUseCas
 	return &ProductUseCase{
 		ProductRepo: repo,
 	}
+}
+
+func (c *ProductUseCase) AddCategory(ctx context.Context, category domain.Category) error {
+	err := c.ProductRepo.AddCategory(ctx, category)
+	return err
+}
+
+func (c *ProductUseCase) DeleteCategory(ctx context.Context, id string) error {
+	err := c.ProductRepo.DeleteCategory(ctx, id)
+	return err
+}
+
+func (c *ProductUseCase) ListCategories(ctx context.Context) ([]utils.ResponseCategory, error) {
+	categories, err := c.ProductRepo.ListCategories(ctx)
+	return categories, err
 }
 
 func (c *ProductUseCase) AddProduct(ctx context.Context, product domain.Products) error {

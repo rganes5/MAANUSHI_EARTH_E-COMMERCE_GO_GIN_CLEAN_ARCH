@@ -189,51 +189,51 @@ func (cr *AdminHandler) AccessHandler(c *gin.Context) {
 	})
 }
 
-// CATEGORY MANAGEMENT
+// // CATEGORY MANAGEMENT
 
-// ADD
-func (cr *AdminHandler) AddCategory(c *gin.Context) {
-	var category domain.Category
-	if err := c.BindJSON(&category); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": "error while binding json",
-		})
-		return
-	}
-	if err := cr.adminUseCase.AddCategory(c.Request.Context(), category); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"Category": "Successfully added",
-	})
-}
+// // ADD
+// func (cr *AdminHandler) AddCategory(c *gin.Context) {
+// 	var category domain.Category
+// 	if err := c.BindJSON(&category); err != nil {
+// 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+// 			"error": "error while binding json",
+// 		})
+// 		return
+// 	}
+// 	if err := cr.adminUseCase.AddCategory(c.Request.Context(), category); err != nil {
+// 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+// 			"error": err.Error(),
+// 		})
+// 		return
+// 	}
+// 	c.JSON(http.StatusOK, gin.H{
+// 		"Category": "Successfully added",
+// 	})
+// }
 
-// DELETE
-func (cr *AdminHandler) DeleteCategory(c *gin.Context) {
-	id := c.Param("categoryid")
-	if err := cr.adminUseCase.DeleteCategory(c.Request.Context(), id); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"category": "Deleted successfully",
-	})
-}
+// // DELETE
+// func (cr *AdminHandler) DeleteCategory(c *gin.Context) {
+// 	id := c.Param("categoryid")
+// 	if err := cr.adminUseCase.DeleteCategory(c.Request.Context(), id); err != nil {
+// 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+// 			"error": err.Error(),
+// 		})
+// 	}
+// 	c.JSON(http.StatusOK, gin.H{
+// 		"category": "Deleted successfully",
+// 	})
+// }
 
-// LIST
-func (cr *AdminHandler) ListCategories(c *gin.Context) {
-	categories, err := cr.adminUseCase.ListCategories(c.Request.Context())
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{
-		"categories": categories,
-	})
-}
+// // LIST
+// func (cr *AdminHandler) ListCategories(c *gin.Context) {
+// 	categories, err := cr.adminUseCase.ListCategories(c.Request.Context())
+// 	if err != nil {
+// 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+// 			"error": err.Error(),
+// 		})
+// 		return
+// 	}
+// 	c.JSON(http.StatusOK, gin.H{
+// 		"categories": categories,
+// 	})
+// }

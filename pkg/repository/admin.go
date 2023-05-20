@@ -54,37 +54,3 @@ func (c *adminDatabase) AccessHandler(ctx context.Context, id string, access boo
 	}
 	return nil
 }
-
-// Add category
-
-func (c *adminDatabase) AddCategory(ctx context.Context, category domain.Category) error {
-	err := c.DB.Create(&category).Error
-	if err != nil {
-		// return errors.New("failed to add the category")
-		return err
-	}
-	return nil
-}
-
-// Delete category
-
-func (c *adminDatabase) DeleteCategory(ctx context.Context, id string) error {
-	err := c.DB.Where("id=?", id).Delete(&domain.Category{}).Error
-	if err != nil {
-		return errors.New("failed to delete the category")
-	}
-	return nil
-}
-
-//List categories
-
-func (c *adminDatabase) ListCategories(ctx context.Context) ([]utils.ResponseCategory, error) {
-	var categories []utils.ResponseCategory
-	query := `select category_name from categories where deleted_at is null`
-	err := c.DB.Raw(query).Scan(&categories).Error
-	if err != nil {
-		return categories, errors.New("failed to retrieve all the categories")
-	}
-	return categories, nil
-
-}
