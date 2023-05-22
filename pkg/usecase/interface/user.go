@@ -14,6 +14,7 @@ type UserUseCase interface {
 	UpdateVerify(ctx context.Context, PhoneNum string) error
 	ListProducts(ctx context.Context) ([]utils.ResponseProductUser, error)
 	AddAddress(ctx context.Context, address domain.Address) error
+	HomeHandler(ctx context.Context, id uint) (utils.ResponseUsersDetails, error)
 	// FindByID(ctx context.Context, id uint) (domain.Users, error)
 	// Save(ctx context.Context, user domain.Users) (domain.Users, error)
 	// Delete(ctx context.Context, user domain.Users) error

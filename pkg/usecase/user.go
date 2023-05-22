@@ -49,6 +49,11 @@ func (c userUseCase) AddAddress(ctx context.Context, address domain.Address) err
 	return err
 }
 
+func (c userUseCase) HomeHandler(ctx context.Context, id uint) (utils.ResponseUsersDetails, error) {
+	user, err := c.userRepo.HomeHandler(ctx, id)
+	return user, err
+}
+
 // func (c *userUseCase) FindByID(ctx context.Context, id uint) (domain.Users, error) {
 // 	user, err := c.userRepo.FindByID(ctx, id)
 // 	return user, err

@@ -193,26 +193,36 @@ func (cr *UserHandler) LogoutHandler(c *gin.Context) {
 }
 
 // HomeHandler
-func (cr *UserHandler) Homehandler(c *gin.Context) {
-	email, ok := c.Get(("user-email"))
+func (cr *UserHandler) HomeHandler(c *gin.Context) {
+	// email, ok := c.Get(("user-email"))
+	// if !ok {
+	// 	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+	// 		"error": "Invalid user",
+	// 	})
+	// }
+	// user, err := cr.userUseCase.FindByEmail(c.Request.Context(), email.(string))
+	// if err != nil {
+	// 	c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+	// 		"error": "Invalid user",
+	// 	})
+	// 	return
+	// }
+	// c.JSON(http.StatusOK, user)
+	id, ok := c.Get("user-id")
 	if !ok {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": "Invalid user",
-		})
-	}
-	user, err := cr.userUseCase.FindByEmail(c.Request.Context(), email.(string))
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": "Invalid user",
-		})
+		response := utils.ErrorResponse(401, "Failed to get the id from the token string", "", nil)
+		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
-	c.JSON(http.StatusOK, user)
-	// user, err := cr.userUseCase.Homehandler(c.Request.Context())
-	// if err != nil {
-	// 	response := utils.ErrorResponse(400, "Failed to fetch user details", err.Error(), nil)
-	// 	c.JSON(http.StatusInternalServerError, response)
-	// }
+	user, err := cr.userUseCase.HomeHandler(c.Request.Context(), id.(uint))
+	if err != nil {
+		response := utils.ErrorResponse(400, "Failed to fetch user details", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Personal details", user)
+	c.JSON(http.StatusOK, response)
+
 }
 
 // ListProduct

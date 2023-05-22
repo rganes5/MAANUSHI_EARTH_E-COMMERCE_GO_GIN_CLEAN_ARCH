@@ -17,7 +17,6 @@ type ResponseUsersDetails struct {
 	LastName  string `json:"lastname"`
 	Email     string `json:"email"`
 	PhoneNum  string `json:"phonenum"`
-	Password  string `json:"password"`
 }
 
 // struct to list all categories from admins end

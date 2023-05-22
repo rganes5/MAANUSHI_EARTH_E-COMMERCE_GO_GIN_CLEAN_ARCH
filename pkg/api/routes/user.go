@@ -22,7 +22,7 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler) {
 	{
 		//AuthorizationMiddleware as middleware to perform authorization checks for users accessing the "/user" endpoint.
 		home.Use(middleware.AuthorizationMiddleware("user"))
-		home.GET("/home", userHandler.Homehandler)
+		home.GET("/home", userHandler.HomeHandler)
 		home.POST("/logout", userHandler.LogoutHandler)
 		product := home.Group("/products")
 		{

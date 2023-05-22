@@ -76,6 +76,17 @@ func (c *userDatabase) AddAddress(ctx context.Context, address domain.Address) e
 	return nil
 }
 
+// User home handler
+func (c *userDatabase) HomeHandler(ctx context.Context, id uint) (utils.ResponseUsersDetails, error) {
+	var user utils.ResponseUsersDetails
+	query := `SELECT first_name,last_name,email,phone_num from users where id=?`
+	err := c.DB.Raw(query, id).Scan(&user).Error
+	if err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
 // func (c *userDatabase) FindByID(ctx context.Context, id uint) (domain.Users, error) {
 // 	var user domain.Users
 // 	err := c.DB.First(&user, id).Error
