@@ -39,6 +39,11 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 			products.PATCH("/update/:productid", productHandler.EditProduct)
 			products.GET("/listall", productHandler.ListProducts)
 		}
+		productDetails := home.Group("/productsDetails")
+		{
+			productDetails.POST("/add", productHandler.AddProductDetails)
+			productDetails.GET("/findproductdetails/:productid", productHandler.ListProductDetailsById)
+		}
 
 	}
 }

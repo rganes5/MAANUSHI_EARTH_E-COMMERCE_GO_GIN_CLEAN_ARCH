@@ -1,5 +1,10 @@
 package utils
 
+type Pagination struct {
+	Offset uint `json:"offset"`
+	Limit  uint `json:"limit"`
+}
+
 type OtpVerify struct {
 	Otp         string `json:"otp" binding:"required"`
 	OtpID       string `json:"otpid" binding:"required"`
@@ -24,6 +29,12 @@ type Products struct {
 	DiscountPrice uint   `json:"discountprice"`
 	CategoryID    uint   `json:"categoryid"`
 	// Category    Category `gorm:"foreignKey:CategoryID"`
+}
+
+type ProductDetails struct {
+	ProductID      uint   `json:"productid"`
+	ProductDetails string `json:"productdetails"`
+	InStock        uint   `json:"qty_in_stock"`
 }
 
 type UpdateCategory struct {

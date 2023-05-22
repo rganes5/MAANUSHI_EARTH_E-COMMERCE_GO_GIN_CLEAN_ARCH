@@ -35,10 +35,12 @@ func (c *adminDatabase) SignUpAdmin(ctx context.Context, admin domain.Admin) err
 }
 
 // List all users
-func (c *adminDatabase) ListUsers(ctx context.Context) ([]utils.ResponseUsers, error) {
+func (c *adminDatabase) ListUsers(ctx context.Context, pagination utils.Pagination) ([]utils.ResponseUsers, error) {
+	offset := pagination.Offset
+	limit := pagination.Limit
 	var users []utils.ResponseUsers
-	query := `SELECT first_name,last_name,email,phone_num,block from users`
-	err := c.DB.Raw(query).Scan(&users).Error
+	query := `SELECT first_name,last_name,email,phone_num,block from users LIMIT $1 OFFSET $2`
+	err := c.DB.Raw(query, limit, offset).Scan(&users).Error
 	if err != nil {
 		return users, errors.New("failed to retrieve all the users")
 	}

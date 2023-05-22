@@ -75,15 +75,15 @@ func (c *userDatabase) UpdateVerify(ctx context.Context, PhoneNum string) error 
 }
 
 // List products
-func (c *userDatabase) ListProducts(ctx context.Context) ([]utils.ResponseProductUser, error) {
-	var products []utils.ResponseProductUser
-	query := `select product_name,image,details,price,discount_price from products where deleted_at is null`
-	err := c.DB.Raw(query).Scan(&products).Error
-	if err != nil {
-		return products, err
-	}
-	return products, nil
-}
+// func (c *userDatabase) ListProducts(ctx context.Context) ([]utils.ResponseProductUser, error) {
+// 	var products []utils.ResponseProductUser
+// 	query := `select product_name,image,details,price,discount_price from products where deleted_at is null`
+// 	err := c.DB.Raw(query).Scan(&products).Error
+// 	if err != nil {
+// 		return products, err
+// 	}
+// 	return products, nil
+// }
 
 // User home handler
 func (c *userDatabase) HomeHandler(ctx context.Context, id uint) (utils.ResponseUsersDetails, error) {
@@ -115,10 +115,12 @@ func (c *userDatabase) AddAddress(ctx context.Context, address domain.Address) e
 }
 
 // List addresses
-func (c *userDatabase) ListAddress(ctx context.Context, id uint) ([]utils.ResponseAddress, error) {
+func (c *userDatabase) ListAddress(ctx context.Context, id uint, pagination utils.Pagination) ([]utils.ResponseAddress, error) {
+	offset := pagination.Offset
+	limit := pagination.Limit
 	var address []utils.ResponseAddress
-	query := `SELECT name, phone_number, house, area, land_mark, city, pincode, state, country, "primary" FROM addresses WHERE deleted_at IS NULL AND user_id = ?`
-	err := c.DB.Raw(query, id).Scan(&address).Error
+	query := `SELECT name, phone_number, house, area, land_mark, city, pincode, state, country, "primary" FROM addresses WHERE deleted_at IS NULL AND user_id = ? LIMIT ? OFFSET ?`
+	err := c.DB.Raw(query, id, limit, offset).Scan(&address).Error
 	if err != nil {
 		return address, err
 	}

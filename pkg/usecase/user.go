@@ -44,18 +44,18 @@ func (c userUseCase) UpdateVerify(ctx context.Context, PhoneNum string) error {
 	return err
 }
 
-func (c userUseCase) ListProducts(ctx context.Context) ([]utils.ResponseProductUser, error) {
-	products, err := c.userRepo.ListProducts(ctx)
-	return products, err
-}
+// func (c userUseCase) ListProducts(ctx context.Context) ([]utils.ResponseProductUser, error) {
+// 	products, err := c.userRepo.ListProducts(ctx)
+// 	return products, err
+// }
 
 func (c userUseCase) AddAddress(ctx context.Context, address domain.Address) error {
 	err := c.userRepo.AddAddress(ctx, address)
 	return err
 }
 
-func (c userUseCase) ListAddress(ctx context.Context, id uint) ([]utils.ResponseAddress, error) {
-	address, err := c.userRepo.ListAddress(ctx, id)
+func (c userUseCase) ListAddress(ctx context.Context, id uint, pagination utils.Pagination) ([]utils.ResponseAddress, error) {
+	address, err := c.userRepo.ListAddress(ctx, id, pagination)
 	return address, err
 }
 

@@ -6,7 +6,7 @@ import (
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/api/middleware"
 )
 
-func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler) {
+func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productHandler *handler.ProductHandler) {
 	//sets up a route group for the "/user" endpoint
 	signup := api.Group("/user")
 	{
@@ -30,7 +30,9 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler) {
 		home.POST("/logout", userHandler.LogoutHandler)
 		product := home.Group("/products")
 		{
-			product.GET("/listall", userHandler.ListProducts)
+			product.GET("/listall", productHandler.ListProducts)
+			product.GET("/findproductdetails/:productid", productHandler.ListProductDetailsById)
+
 		}
 		userprofile := home.Group("/profile")
 		{

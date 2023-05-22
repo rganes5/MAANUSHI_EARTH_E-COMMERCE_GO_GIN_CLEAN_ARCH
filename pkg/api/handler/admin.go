@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 	"time"
@@ -159,7 +160,21 @@ func (cr *AdminHandler) HomeHandler(c *gin.Context) {
 //list users
 
 func (cr *AdminHandler) ListUsers(c *gin.Context) {
-	users, err := cr.adminUseCase.ListUsers(c.Request.Context())
+	page, err := strconv.Atoi(c.Query("page"))
+	limit, err1 := strconv.Atoi(c.Query("limit"))
+	err = errors.Join(err, err1)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	offset := (page - 1) * limit
+	pagination := utils.Pagination{
+		Offset: uint(offset),
+		Limit:  uint(limit),
+	}
+	users, err := cr.adminUseCase.ListUsers(c.Request.Context(), pagination)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),

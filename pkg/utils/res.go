@@ -23,22 +23,28 @@ type ResponseUsersDetails struct {
 type ResponseCategory string
 
 // struct to list all products from admins and users end
-type ResponseProductAdmin struct {
+type ResponseProduct struct {
 	ProductName   string `json:"productname"`
 	Image         string `json:"image"`
 	Details       string `json:"details"`
 	Price         uint   `json:"price"`
 	DiscountPrice uint   `json:"discountprice"`
-	CategoryID    uint   `json:"categoryid"`
+	// CategoryID    uint   `json:"categoryid"`
 }
 
-type ResponseProductUser struct {
-	ProductName   string `json:"productname"`
-	Image         string `json:"image"`
-	Details       string `json:"details"`
-	Price         uint   `json:"price"`
-	DiscountPrice uint   `json:"discountprice"`
+type ResponseProductDetails struct {
+	// ProductID      uint   `json:"productid"`
+	ProductDetails string `json:"productdetails"`
+	InStock        uint   `json:"qty_in_stock"`
 }
+
+// type ResponseProductUser struct {
+// 	ProductName   string `json:"productname"`
+// 	Image         string `json:"image"`
+// 	Details       string `json:"details"`
+// 	Price         uint   `json:"price"`
+// 	DiscountPrice uint   `json:"discountprice"`
+// }
 
 type ResponseAddress struct {
 	Name        string `json:"name" gorm:"not null" binding:"required"`

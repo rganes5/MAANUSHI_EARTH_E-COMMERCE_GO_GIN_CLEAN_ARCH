@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
@@ -148,7 +150,21 @@ func (cr *ProductHandler) EditProduct(c *gin.Context) {
 
 // LIST PRODUCTS
 func (cr *ProductHandler) ListProducts(c *gin.Context) {
-	products, err := cr.productUseCase.ListProducts(c.Request.Context())
+	page, err := strconv.Atoi(c.Query("page"))
+	limit, err1 := strconv.Atoi(c.Query("limit"))
+	err = errors.Join(err, err1)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	offset := (page - 1) * limit
+	pagination := utils.Pagination{
+		Offset: uint(offset),
+		Limit:  uint(limit),
+	}
+	products, err := cr.productUseCase.ListProducts(c.Request.Context(), pagination)
 	if err != nil {
 		response := utils.ErrorResponse(500, "Failed to list the products", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)
@@ -157,4 +173,37 @@ func (cr *ProductHandler) ListProducts(c *gin.Context) {
 	response := utils.SuccessResponse(200, "Product list", products)
 	c.JSON(http.StatusOK, response)
 
+}
+
+// ADD PRODUCT DETAILS
+func (cr *ProductHandler) AddProductDetails(c *gin.Context) {
+	var body utils.ProductDetails
+	if err := c.BindJSON(&body); err != nil {
+		response := utils.ErrorResponse(400, "Failed to bind json", err.Error(), body)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	var ProductDetails domain.ProductDetails
+	copier.Copy(&ProductDetails, &body)
+	if err := cr.productUseCase.AddProductDetails(c.Request.Context(), ProductDetails); err != nil {
+		response := utils.ErrorResponse(500, "Failed to add product details", err.Error(), body)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Successfully added the product details", ProductDetails.ProductDetails, ProductDetails.InStock)
+	c.JSON(http.StatusOK, response)
+}
+
+// LIST product details
+func (cr *ProductHandler) ListProductDetailsById(c *gin.Context) {
+	id := c.Param("productid")
+
+	productDetails, err := cr.productUseCase.ListProductDetailsById(c.Request.Context(), id)
+	if err != nil {
+		response := utils.ErrorResponse(500, "Failed to list product details", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Product details", productDetails)
+	c.JSON(http.StatusOK, response)
 }

@@ -13,9 +13,9 @@ type UserRepository interface {
 	FindByEmailOrNumber(ctx context.Context, body utils.OtpLogin) (domain.Users, error)
 	SignUpUser(ctx context.Context, user domain.Users) (string, error)
 	UpdateVerify(ctx context.Context, PhoneNum string) error
-	ListProducts(ctx context.Context) ([]utils.ResponseProductUser, error)
+	// ListProducts(ctx context.Context) ([]utils.ResponseProductUser, error)
 	AddAddress(ctx context.Context, address domain.Address) error
-	ListAddress(ctx context.Context, id uint) ([]utils.ResponseAddress, error)
+	ListAddress(ctx context.Context, id uint, pagination utils.Pagination) ([]utils.ResponseAddress, error)
 	DeleteAddress(ctx context.Context, id string) error
 	UpdateAddress(ctx context.Context, updateAddress domain.Address, id string) error
 	HomeHandler(ctx context.Context, id uint) (utils.ResponseUsersDetails, error)

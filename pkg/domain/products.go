@@ -17,3 +17,10 @@ type Products struct {
 	CategoryID    uint   `json:"categoryid"`
 	// Category Category `gorm:"foreignKey:CategoryID"`
 }
+
+type ProductDetails struct {
+	gorm.Model
+	ProductID      uint   `json:"productid" binding:"required,numeric"`
+	ProductDetails string `json:"productdetails"`
+	InStock        uint   `json:"qty_in_stock" gorm:"not null" binding:"required"`
+}

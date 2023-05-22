@@ -22,6 +22,7 @@ func ConnectDatabase(cfg config.Config) (*gorm.DB, error) {
 	db.AutoMigrate(&domain.Products{})
 	db.AutoMigrate(&domain.OtpSession{})
 	db.AutoMigrate(&domain.Address{})
+	db.AutoMigrate(&domain.ProductDetails{})
 
 	return db, dbErr
 }

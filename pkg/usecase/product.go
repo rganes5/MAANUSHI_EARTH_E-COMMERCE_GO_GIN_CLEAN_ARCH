@@ -54,7 +54,17 @@ func (c *ProductUseCase) EditProduct(ctx context.Context, product domain.Product
 	return err
 }
 
-func (c *ProductUseCase) ListProducts(ctx context.Context) ([]utils.ResponseProductAdmin, error) {
-	products, err := c.ProductRepo.ListProducts(ctx)
+func (c *ProductUseCase) ListProducts(ctx context.Context, pagination utils.Pagination) ([]utils.ResponseProduct, error) {
+	products, err := c.ProductRepo.ListProducts(ctx, pagination)
 	return products, err
+}
+
+func (c *ProductUseCase) AddProductDetails(ctx context.Context, productDetails domain.ProductDetails) error {
+	err := c.ProductRepo.AddProductDetails(ctx, productDetails)
+	return err
+}
+
+func (c *ProductUseCase) ListProductDetailsById(ctx context.Context, id string) ([]utils.ResponseProductDetails, error) {
+	productDetails, err := c.ProductRepo.ListProductDetailsById(ctx, id)
+	return productDetails, err
 }

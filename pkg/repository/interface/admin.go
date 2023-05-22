@@ -11,7 +11,7 @@ type AdminRepository interface {
 	// FindAll(ctx context.Context) ([]domain.Users, error)
 	FindByEmail(ctx context.Context, Email string) (domain.Admin, error)
 	SignUpAdmin(ctx context.Context, admin domain.Admin) error
-	ListUsers(ctx context.Context) ([]utils.ResponseUsers, error)
+	ListUsers(ctx context.Context, pagination utils.Pagination) ([]utils.ResponseUsers, error)
 	AccessHandler(ctx context.Context, id string, access bool) error
 
 	// FindByID(ctx context.Context, id uint) (domain.Users, error)

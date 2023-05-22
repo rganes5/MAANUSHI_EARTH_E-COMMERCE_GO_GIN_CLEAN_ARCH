@@ -1,8 +1,10 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -307,17 +309,17 @@ func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 }
 
 // ListProduct
-func (cr *UserHandler) ListProducts(c *gin.Context) {
-	products, err := cr.userUseCase.ListProducts(c.Request.Context())
+// func (cr *UserHandler) ListProducts(c *gin.Context) {
+// 	products, err := cr.userUseCase.ListProducts(c.Request.Context())
 
-	if err != nil {
-		response := utils.ErrorResponse(500, "Failed to list products", err.Error(), nil)
-		c.JSON(http.StatusInternalServerError, response)
-		return
-	}
-	response := utils.SuccessResponse(200, "All product details", products)
-	c.JSON(http.StatusOK, response)
-}
+// 	if err != nil {
+// 		response := utils.ErrorResponse(500, "Failed to list products", err.Error(), nil)
+// 		c.JSON(http.StatusInternalServerError, response)
+// 		return
+// 	}
+// 	response := utils.SuccessResponse(200, "All product details", products)
+// 	c.JSON(http.StatusOK, response)
+// }
 
 // Add Address
 func (cr *UserHandler) AddAddress(c *gin.Context) {
@@ -348,13 +350,27 @@ func (cr *UserHandler) AddAddress(c *gin.Context) {
 
 // List address
 func (cr *UserHandler) ListAddress(c *gin.Context) {
+	page, err := strconv.Atoi(c.Query("page"))
+	limit, err1 := strconv.Atoi(c.Query("limit"))
+	err = errors.Join(err, err1)
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	offset := (page - 1) * limit
+	pagination := utils.Pagination{
+		Offset: uint(offset),
+		Limit:  uint(limit),
+	}
 	id, ok := c.Get("user-id")
 	if !ok {
 		response := utils.ErrorResponse(401, "Failed to get the id from the token string", "", nil)
 		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
-	address, err := cr.userUseCase.ListAddress(c.Request.Context(), id.(uint))
+	address, err := cr.userUseCase.ListAddress(c.Request.Context(), id.(uint), pagination)
 	if err != nil {
 		response := utils.ErrorResponse(500, "failed to retreive the addresses", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)

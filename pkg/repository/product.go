@@ -92,12 +92,34 @@ func (c *productDatabase) EditProduct(ctx context.Context, product domain.Produc
 
 //List products on admins end
 
-func (c *productDatabase) ListProducts(ctx context.Context) ([]utils.ResponseProductAdmin, error) {
-	var products []utils.ResponseProductAdmin
-	query := `select product_name,image,details,price,discount_price,category_id from products where deleted_at is null`
-	err := c.DB.Raw(query).Scan(&products).Error
+func (c *productDatabase) ListProducts(ctx context.Context, pagination utils.Pagination) ([]utils.ResponseProduct, error) {
+	var products []utils.ResponseProduct
+	offset := pagination.Offset
+	limit := pagination.Limit
+	query := `select product_name,image,details,price,discount_price from products where deleted_at is null LIMIT $1 OFFSET $2`
+	err := c.DB.Raw(query, limit, offset).Scan(&products).Error
 	if err != nil {
 		return products, err
 	}
 	return products, nil
+}
+
+// Add product details
+func (c *productDatabase) AddProductDetails(ctx context.Context, productDetails domain.ProductDetails) error {
+	err := c.DB.Create(&productDetails).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// List  product details
+func (c *productDatabase) ListProductDetailsById(ctx context.Context, id string) ([]utils.ResponseProductDetails, error) {
+	var productDetails []utils.ResponseProductDetails
+	query := `SELECT product_details,in_stock FROM product_details WHERE id = ? AND deleted_at IS NULL`
+	err := c.DB.Raw(query, id).Scan(&productDetails).Error
+	if err != nil {
+		return productDetails, err
+	}
+	return productDetails, nil
 }

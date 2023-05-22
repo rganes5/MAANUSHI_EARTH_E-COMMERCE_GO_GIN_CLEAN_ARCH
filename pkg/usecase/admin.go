@@ -29,8 +29,8 @@ func (c *adminUseCase) SignUpAdmin(ctx context.Context, admin domain.Admin) erro
 	return err
 }
 
-func (c *adminUseCase) ListUsers(ctx context.Context) ([]utils.ResponseUsers, error) {
-	users, err := c.adminRepo.ListUsers(ctx)
+func (c *adminUseCase) ListUsers(ctx context.Context, pagination utils.Pagination) ([]utils.ResponseUsers, error) {
+	users, err := c.adminRepo.ListUsers(ctx, pagination)
 	return users, err
 }
 
