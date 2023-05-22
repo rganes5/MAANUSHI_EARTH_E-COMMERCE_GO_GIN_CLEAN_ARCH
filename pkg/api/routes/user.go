@@ -18,11 +18,15 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler) {
 		login.POST("/login", userHandler.LoginHandler)
 
 	}
+	forgotPassword := api.Group("/user/forgot/password")
+	{
+		forgotPassword.POST("/", userHandler.ForgotPassword)
+		forgotPassword.PATCH("/otp/verify", userHandler.ForgotPasswordOtpVerify)
+	}
 	home := login.Group("/")
 	{
 		//AuthorizationMiddleware as middleware to perform authorization checks for users accessing the "/user" endpoint.
 		home.Use(middleware.AuthorizationMiddleware("user"))
-		home.GET("/home", userHandler.HomeHandler)
 		home.POST("/logout", userHandler.LogoutHandler)
 		product := home.Group("/products")
 		{
@@ -30,7 +34,12 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler) {
 		}
 		userprofile := home.Group("/profile")
 		{
+			userprofile.GET("/home", userHandler.HomeHandler)
+			userprofile.PATCH("/edit/profile", userHandler.UpdateProfile)
 			userprofile.POST("/add/address", userHandler.AddAddress)
+			userprofile.GET("/list/address", userHandler.ListAddress)
+			userprofile.PATCH("/edit/address/:addressid", userHandler.UpdateAddress)
+			userprofile.POST("/delete/address/:addressid", userHandler.DeleteAddress)
 		}
 	}
 

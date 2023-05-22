@@ -40,6 +40,19 @@ type ResponseProductUser struct {
 	DiscountPrice uint   `json:"discountprice"`
 }
 
+type ResponseAddress struct {
+	Name        string `json:"name" gorm:"not null" binding:"required"`
+	PhoneNumber string `json:"phone_number"`
+	House       string `json:"house" gorm:"not null" binding:"required"`
+	Area        string `json:"area"`
+	LandMark    string `json:"land_mark" gorm:"not null" binding:"required"`
+	City        string `json:"city"  binding:"required"`
+	Pincode     uint   `json:"pincode" gorm:"not null" binding:"required"`
+	State       string `json:"state" binding:"required" gorm:"not null"`
+	Country     string `json:"country" binding:"required" gorm:"not null"`
+	Primary     bool   `json:"primary" gorm:"default:false"`
+}
+
 // ERROR MANAGEMENT
 // Req,Res,Err coding standard
 type Response struct {

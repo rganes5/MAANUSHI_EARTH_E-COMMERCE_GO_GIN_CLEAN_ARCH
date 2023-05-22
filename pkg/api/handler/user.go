@@ -11,9 +11,9 @@ import (
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/auth"
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/config"
 	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
-	"github.com/rganes5/maanushi_earth_e-commerce/pkg/support"
+	support "github.com/rganes5/maanushi_earth_e-commerce/pkg/support"
 	services "github.com/rganes5/maanushi_earth_e-commerce/pkg/usecase/interface"
-	"github.com/rganes5/maanushi_earth_e-commerce/pkg/utils"
+	utils "github.com/rganes5/maanushi_earth_e-commerce/pkg/utils"
 )
 
 type UserHandler struct {
@@ -138,7 +138,7 @@ func (cr *UserHandler) LoginHandler(c *gin.Context) {
 	//Cookie check
 	_, err1 := c.Cookie("user-token")
 	if err1 == nil {
-		c.Redirect(http.StatusFound, "/user/home")
+		c.Redirect(http.StatusFound, "/user/profile/home")
 		// c.AbortWithStatusJSON(http.StatusFound, gin.H{
 		// 	"alert": "User already logged in and cookie present",
 		// })
@@ -184,6 +184,62 @@ func (cr *UserHandler) LoginHandler(c *gin.Context) {
 	})
 }
 
+// Forgot password
+func (cr *UserHandler) ForgotPassword(c *gin.Context) {
+	var body utils.OtpLogin
+	if err := c.BindJSON(&body); err != nil {
+		response := utils.ErrorResponse(400, "Failed to bind json", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	user, err := cr.userUseCase.FindByEmailOrNumber(c.Request.Context(), body)
+	if err != nil {
+		response := utils.ErrorResponse(500, "Incorrect email or password", err.Error(), user)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	respSid, err := cr.otpUseCase.TwilioSendOTP(c.Request.Context(), user.PhoneNum)
+	fmt.Println("Send otp")
+	if err != nil {
+		response := utils.ErrorResponse(500, "Failed to send otp", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	fmt.Println("This is the response id", respSid)
+	response := utils.SuccessResponse(200, "Successfully sent the otp. Now enter the otp,response id and new password", "", respSid)
+	c.JSON(http.StatusOK, response)
+}
+
+// Forgot password otp verify
+func (cr *UserHandler) ForgotPasswordOtpVerify(c *gin.Context) {
+	var body utils.OtpVerify
+	if err := c.BindJSON(&body); err != nil {
+		response := utils.ErrorResponse(400, "Failed to bind json", err.Error(), body)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	session, err := cr.otpUseCase.TwilioVerifyOTP(c.Request.Context(), body)
+	if err != nil {
+		response := utils.ErrorResponse(500, "Failed to verify otp", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	NewHashedPassword, err := support.HashPassword(body.NewPassword)
+	if err != nil {
+		response := utils.ErrorResponse(500, "Failed to Hash New password", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	if err := cr.userUseCase.ChangePassword(c.Request.Context(), NewHashedPassword, session.PhoneNum); err != nil {
+		response := utils.ErrorResponse(500, "Failed to update new password", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Successfully updated new password", nil)
+	c.JSON(http.StatusOK, response)
+
+}
+
 // USERLOGOUT
 func (cr *UserHandler) LogoutHandler(c *gin.Context) {
 	c.SetCookie("user-token", "", -1, "/", "localhost", false, true)
@@ -225,6 +281,31 @@ func (cr *UserHandler) HomeHandler(c *gin.Context) {
 
 }
 
+// update personal details
+func (cr *UserHandler) UpdateProfile(c *gin.Context) {
+	id, ok := c.Get("user-id")
+	var body utils.UpdateProfile
+	if !ok {
+		reponse := utils.ErrorResponse(401, "failed to get id from token strin", "", nil)
+		c.JSON(http.StatusUnauthorized, reponse)
+		return
+	}
+	if err := c.BindJSON(&body); err != nil {
+		response := utils.ErrorResponse(400, "Failed to bind Json", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	var updateProfile domain.Users
+	copier.Copy(&updateProfile, &body)
+	if err := cr.userUseCase.UpdateProfile(c.Request.Context(), updateProfile, id.(uint)); err != nil {
+		response := utils.ErrorResponse(500, "Failed to update profile", err.Error(), updateProfile)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Successfully updated profile details", nil)
+	c.JSON(http.StatusOK, response)
+}
+
 // ListProduct
 func (cr *UserHandler) ListProducts(c *gin.Context) {
 	products, err := cr.userUseCase.ListProducts(c.Request.Context())
@@ -248,7 +329,7 @@ func (cr *UserHandler) AddAddress(c *gin.Context) {
 	}
 	var body utils.Address
 	if err := c.BindJSON(&body); err != nil {
-		response := utils.ErrorResponse(http.StatusBadRequest, "Failed to bind JSON body", err.Error(), nil)
+		response := utils.ErrorResponse(400, "Failed to bind JSON body", err.Error(), nil)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
@@ -263,6 +344,57 @@ func (cr *UserHandler) AddAddress(c *gin.Context) {
 	response := utils.SuccessResponse(200, "Successfully added the address", nil)
 	c.JSON(http.StatusOK, response)
 
+}
+
+// List address
+func (cr *UserHandler) ListAddress(c *gin.Context) {
+	id, ok := c.Get("user-id")
+	if !ok {
+		response := utils.ErrorResponse(401, "Failed to get the id from the token string", "", nil)
+		c.JSON(http.StatusUnauthorized, response)
+		return
+	}
+	address, err := cr.userUseCase.ListAddress(c.Request.Context(), id.(uint))
+	if err != nil {
+		response := utils.ErrorResponse(500, "failed to retreive the addresses", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Addresses:", address)
+	c.JSON(http.StatusOK, response)
+}
+
+// Edit address
+func (cr *UserHandler) UpdateAddress(c *gin.Context) {
+	id := c.Param("addressid")
+	var body utils.UpdateAddress
+	if err := c.BindJSON(&body); err != nil {
+		response := utils.ErrorResponse(400, "Failed to bind Json", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	// body.UserID = id.(uint)
+	var updateAddress domain.Address
+	copier.Copy(&updateAddress, &body)
+	if err := cr.userUseCase.UpdateAddress(c.Request.Context(), updateAddress, id); err != nil {
+		response := utils.ErrorResponse(500, "Failed to update the address", err.Error(), updateAddress)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Updated successfully", updateAddress)
+	c.JSON(http.StatusOK, response)
+}
+
+// Delete adderss
+func (cr *UserHandler) DeleteAddress(c *gin.Context) {
+	id := c.Param("addressid")
+	if err := cr.userUseCase.DeleteAddress(c.Request.Context(), id); err != nil {
+		response := utils.ErrorResponse(500, "Failed to delete the address", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Successfully deleted the address", nil)
+	c.JSON(http.StatusOK, response)
 }
 
 //

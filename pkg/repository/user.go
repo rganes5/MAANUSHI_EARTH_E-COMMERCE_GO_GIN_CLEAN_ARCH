@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 	interfaces "github.com/rganes5/maanushi_earth_e-commerce/pkg/repository/interface"
@@ -38,6 +39,23 @@ func (c *userDatabase) FindByEmail(ctx context.Context, Email string) (domain.Us
 	return user, nil
 }
 
+func (c *userDatabase) FindByEmailOrNumber(ctx context.Context, body utils.OtpLogin) (domain.Users, error) {
+	var user domain.Users
+	_ = c.DB.Where("email=? or phone_num=?", body.Email, body.PhoneNum).Find(&user)
+	fmt.Println("The user is", user)
+	if user.ID == 0 {
+		return domain.Users{}, errors.New("user with such email or phone number does not exist in database")
+	}
+	if user.Block {
+		return user, errors.New("you are blocked")
+
+	}
+	if !user.Verified {
+		return user, errors.New("your phone number is not verified")
+	}
+	return user, nil
+}
+
 // UserSign-up
 func (c *userDatabase) SignUpUser(ctx context.Context, user domain.Users) (string, error) {
 	err := c.DB.Create(&user).Error
@@ -67,15 +85,6 @@ func (c *userDatabase) ListProducts(ctx context.Context) ([]utils.ResponseProduc
 	return products, nil
 }
 
-// Add address
-func (c *userDatabase) AddAddress(ctx context.Context, address domain.Address) error {
-	err := c.DB.Create(&address).Error
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 // User home handler
 func (c *userDatabase) HomeHandler(ctx context.Context, id uint) (utils.ResponseUsersDetails, error) {
 	var user utils.ResponseUsersDetails
@@ -85,6 +94,64 @@ func (c *userDatabase) HomeHandler(ctx context.Context, id uint) (utils.Response
 		return user, err
 	}
 	return user, nil
+}
+
+// Update profile
+func (c *userDatabase) UpdateProfile(ctx context.Context, updateProfile domain.Users, id uint) error {
+	err := c.DB.Model(&domain.Users{}).Where("id=?", id).Updates(&updateProfile).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Add address
+func (c *userDatabase) AddAddress(ctx context.Context, address domain.Address) error {
+	err := c.DB.Create(&address).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// List addresses
+func (c *userDatabase) ListAddress(ctx context.Context, id uint) ([]utils.ResponseAddress, error) {
+	var address []utils.ResponseAddress
+	query := `SELECT name, phone_number, house, area, land_mark, city, pincode, state, country, "primary" FROM addresses WHERE deleted_at IS NULL AND user_id = ?`
+	err := c.DB.Raw(query, id).Scan(&address).Error
+	if err != nil {
+		return address, err
+	}
+	return address, nil
+}
+
+// Edit address
+func (c *userDatabase) UpdateAddress(ctx context.Context, updateAddress domain.Address, id string) error {
+	err := c.DB.Model(&domain.Address{}).Where("id=?", id).Updates(&updateAddress).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Delete address
+func (c *userDatabase) DeleteAddress(ctx context.Context, id string) error {
+	err := c.DB.Where("id=?", id).Delete(&domain.Address{}).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// Update new password
+func (c *userDatabase) ChangePassword(ctx context.Context, NewHashedPassword string, PhoneNum string) error {
+	err := c.DB.Model(&domain.Users{}).Where("phone_num=?", PhoneNum).UpdateColumn("password", NewHashedPassword)
+	if err.RowsAffected == 0 {
+		return errors.New("no row updated")
+	} else if err.Error != nil {
+		return err.Error
+	}
+	return nil
 }
 
 // func (c *userDatabase) FindByID(ctx context.Context, id uint) (domain.Users, error) {

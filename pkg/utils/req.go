@@ -1,13 +1,19 @@
 package utils
 
 type OtpVerify struct {
-	Otp   string `json:"otp" binding:"required"`
-	OtpID string `json:"otpid" binding:"required"`
+	Otp         string `json:"otp" binding:"required"`
+	OtpID       string `json:"otpid" binding:"required"`
+	NewPassword string `json:"newpassword"`
 }
 
 type LoginBody struct {
 	Email    string `binding:"required"`
 	Password string `binding:"required"`
+}
+
+type OtpLogin struct {
+	Email    string `json:"email"`
+	PhoneNum string `json:"phonenum"`
 }
 
 type Products struct {
@@ -50,4 +56,10 @@ type UpdateAddress struct {
 	Country     string `json:"country" binding:"required" gorm:"not null"`
 	Primary     bool   `json:"primary" gorm:"default:false"`
 	UserID      uint   `json:"userid"`
+}
+
+type UpdateProfile struct {
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+	Email     string `json:"email"`
 }

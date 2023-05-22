@@ -29,6 +29,11 @@ func (c *userUseCase) FindByEmail(ctx context.Context, Email string) (domain.Use
 	return users, err
 }
 
+func (c *userUseCase) FindByEmailOrNumber(ctx context.Context, body utils.OtpLogin) (domain.Users, error) {
+	users, err := c.userRepo.FindByEmailOrNumber(ctx, body)
+	return users, err
+}
+
 func (c *userUseCase) SignUpUser(ctx context.Context, user domain.Users) (string, error) {
 	PhoneNum, err := c.userRepo.SignUpUser(ctx, user)
 	return PhoneNum, err
@@ -49,9 +54,32 @@ func (c userUseCase) AddAddress(ctx context.Context, address domain.Address) err
 	return err
 }
 
+func (c userUseCase) ListAddress(ctx context.Context, id uint) ([]utils.ResponseAddress, error) {
+	address, err := c.userRepo.ListAddress(ctx, id)
+	return address, err
+}
+
+func (c userUseCase) UpdateAddress(ctx context.Context, updateAddress domain.Address, id string) error {
+	err := c.userRepo.UpdateAddress(ctx, updateAddress, id)
+	return err
+}
+
+func (c userUseCase) DeleteAddress(ctx context.Context, id string) error {
+	err := c.userRepo.DeleteAddress(ctx, id)
+	return err
+}
 func (c userUseCase) HomeHandler(ctx context.Context, id uint) (utils.ResponseUsersDetails, error) {
 	user, err := c.userRepo.HomeHandler(ctx, id)
 	return user, err
+}
+func (c userUseCase) UpdateProfile(ctx context.Context, updateProfile domain.Users, id uint) error {
+	err := c.userRepo.UpdateProfile(ctx, updateProfile, id)
+	return err
+}
+
+func (c userUseCase) ChangePassword(ctx context.Context, NewHashedPassword string, PhoneNum string) error {
+	err := c.userRepo.ChangePassword(ctx, NewHashedPassword, PhoneNum)
+	return err
 }
 
 // func (c *userUseCase) FindByID(ctx context.Context, id uint) (domain.Users, error) {
