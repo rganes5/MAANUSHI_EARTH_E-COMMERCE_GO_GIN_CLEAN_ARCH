@@ -19,7 +19,7 @@ func NewCartHandler(service services.CartUseCase) *CartHandler {
 }
 
 func (cr *CartHandler) AddToCart(c *gin.Context) {
-	productId := c.Param("id")
+	productId := c.Param("productid")
 	id, ok := c.Get("user-id")
 	if !ok {
 		response := utils.ErrorResponse(401, "Failed to get the id from the token string", "", nil)

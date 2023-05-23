@@ -53,9 +53,46 @@ func (c *cartDatabase) FindDuplicateProduct(ctx context.Context, productId strin
 }
 
 func (c *cartDatabase) UpdateCartItem(ctx context.Context, existingItem domain.CartItem) error {
+	var grantTotal int
+	tx := c.DB.Begin()
+	if err := tx.Model(&domain.CartItem{}).Where("id=?", existingItem.ID).UpdateColumns(&existingItem).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Model(&domain.CartItem{}).Where("cart_id=?", existingItem.CartID).Select("SUM(total_price)").Scan(&grantTotal).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Model(&domain.Cart{}).Where("id=?", existingItem.ID).UpdateColumn("grant_total", grantTotal).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
 	return nil
 }
 
 func (c *cartDatabase) AddNewItem(ctx context.Context, newItem domain.CartItem) error {
-
+	var grantTotal int
+	tx := c.DB.Begin()
+	if err := tx.Create(&newItem).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Model(&domain.CartItem{}).Where("cart_id=?", newItem.CartID).Select("SUM(total_price)").Scan(&grantTotal).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Model(&domain.Cart{}).Where("id=?", newItem.ID).UpdateColumn("grant_total", grantTotal).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	return nil
 }

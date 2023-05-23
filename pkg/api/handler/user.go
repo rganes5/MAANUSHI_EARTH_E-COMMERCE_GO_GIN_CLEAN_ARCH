@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -351,14 +350,15 @@ func (cr *UserHandler) AddAddress(c *gin.Context) {
 // List address
 func (cr *UserHandler) ListAddress(c *gin.Context) {
 	page, err := strconv.Atoi(c.Query("page"))
-	limit, err1 := strconv.Atoi(c.Query("limit"))
-	err = errors.Join(err, err1)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return
+		page = 1 // Default page number is 1 if not provided
 	}
+
+	limit, err := strconv.Atoi(c.Query("limit"))
+	if err != nil || limit <= 0 {
+		limit = 3 // Default limit is 3 items if not provided or if an invalid value is entered
+	}
+
 	offset := (page - 1) * limit
 	pagination := utils.Pagination{
 		Offset: uint(offset),
