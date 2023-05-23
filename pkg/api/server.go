@@ -16,7 +16,7 @@ type ServerHTTP struct {
 	engine *gin.Engine
 }
 
-func NewServerHTTP(userHandler *handler.UserHandler, adminHandler *handler.AdminHandler, productHandler *handler.ProductHandler) *ServerHTTP {
+func NewServerHTTP(userHandler *handler.UserHandler, adminHandler *handler.AdminHandler, productHandler *handler.ProductHandler, cartHandler *handler.CartHandler) *ServerHTTP {
 	engine := gin.New()
 
 	// Use logger from Gin
@@ -26,7 +26,7 @@ func NewServerHTTP(userHandler *handler.UserHandler, adminHandler *handler.Admin
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
 	// set up routes
-	routes.UserRoutes(engine.Group("/"), userHandler, productHandler)
+	routes.UserRoutes(engine.Group("/"), userHandler, productHandler, cartHandler)
 	routes.AdminRoutes(engine.Group("/"), adminHandler, productHandler)
 
 	// no handler

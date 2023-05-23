@@ -6,7 +6,7 @@ import (
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/api/middleware"
 )
 
-func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productHandler *handler.ProductHandler) {
+func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productHandler *handler.ProductHandler, cartHandler *handler.CartHandler) {
 	//sets up a route group for the "/user" endpoint
 	signup := api.Group("/user")
 	{

@@ -74,3 +74,17 @@ type UpdateProfile struct {
 	LastName  string `json:"lastname"`
 	Email     string `json:"email"`
 }
+
+type ReqCart struct {
+	ID         uint `json:"id"`
+	UserID     uint `json:"userid"`
+	GrandTotal int  `json:"grandtotal"`
+}
+
+type ReqCartItem struct {
+	ID         uint `json:"id"`
+	CartID     uint `json:"cartid"`
+	ProductId  uint `json:"productid"`
+	Quantity   uint `json:"quantity"`
+	TotalPrice uint `json:"totalprice"`
+}
