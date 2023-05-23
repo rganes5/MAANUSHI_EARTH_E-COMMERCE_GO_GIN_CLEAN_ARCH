@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 	interfaces "github.com/rganes5/maanushi_earth_e-commerce/pkg/repository/interface"
@@ -33,20 +34,37 @@ func (c *cartDatabase) FindCartById(ctx context.Context, id uint) (domain.Cart, 
 //		return products, ProductDetails, nil
 //	}
 
-func (c *cartDatabase) FindProductDetailsById(ctx context.Context, id string) (domain.Products, domain.ProductDetails, error) {
-	var productDetails domain.ProductDetails
-	var product domain.Products
+// func (c *cartDatabase) FindProductDetailsById(ctx context.Context, id string) (domain.Products, domain.ProductDetails, error) {
+// 	var productDetails domain.ProductDetails
+// 	var product domain.Products
 
-	if err := c.DB.Preload("Product").Where("product_id = ?", id).Find(&productDetails).Error; err != nil {
-		return product, productDetails, err
+// 	if err := c.DB.Preload("Product").Where("product_id = ?", id).Find(&productDetails).Error; err != nil {
+// 		return product, productDetails, err
+// 	}
+
+// 	return product, productDetails, nil
+// }
+
+func (c *cartDatabase) FindProductDetailsById(ctx context.Context, id string) (domain.ProductDetails, error) {
+	var productDetails domain.ProductDetails
+	if err := c.DB.Where("product_id = ?", id).Find(&productDetails).Error; err != nil {
+		return productDetails, err
 	}
 
-	return product, productDetails, nil
+	return productDetails, nil
+}
+
+func (c *cartDatabase) FindProductById(ctx context.Context, productId string) (domain.Products, error) {
+	var product domain.Products
+	if err := c.DB.Where("id=?", productId).Find(&product).Error; err != nil {
+		return product, err
+	}
+	return product, nil
 }
 
 func (c *cartDatabase) FindDuplicateProduct(ctx context.Context, productId string, cartID uint) (domain.CartItem, error) {
 	var duplicateItem domain.CartItem
-	if err := c.DB.Where("product_id=$1 and cartitems_id=$2", productId, cartID).Find(&duplicateItem).Error; err != nil {
+	if err := c.DB.Where("product_id=$1 and id=$2", productId, cartID).Find(&duplicateItem).Error; err != nil {
 		return duplicateItem, err
 	}
 	return duplicateItem, nil
@@ -63,7 +81,7 @@ func (c *cartDatabase) UpdateCartItem(ctx context.Context, existingItem domain.C
 		tx.Rollback()
 		return err
 	}
-	if err := tx.Model(&domain.Cart{}).Where("id=?", existingItem.ID).UpdateColumn("grant_total", grantTotal).Error; err != nil {
+	if err := tx.Model(&domain.Cart{}).Where("id=?", existingItem.ID).UpdateColumn("grand_total", grantTotal).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -86,7 +104,7 @@ func (c *cartDatabase) AddNewItem(ctx context.Context, newItem domain.CartItem) 
 		tx.Rollback()
 		return err
 	}
-	if err := tx.Model(&domain.Cart{}).Where("id=?", newItem.ID).UpdateColumn("grant_total", grantTotal).Error; err != nil {
+	if err := tx.Model(&domain.Cart{}).Where("id=?", newItem.ID).UpdateColumn("grand_total", grantTotal).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -94,5 +112,6 @@ func (c *cartDatabase) AddNewItem(ctx context.Context, newItem domain.CartItem) 
 		tx.Rollback()
 		return err
 	}
+	fmt.Println("added item is", newItem)
 	return nil
 }
