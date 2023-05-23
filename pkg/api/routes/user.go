@@ -32,7 +32,7 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 		{
 			product.GET("/listall", productHandler.ListProducts)
 			product.GET("/findproductdetails/:productid", productHandler.ListProductDetailsById)
-
+			product.GET("/findproductanddetails/:productid", productHandler.ListProductAndDetailsById)
 		}
 		userprofile := home.Group("/profile")
 		{

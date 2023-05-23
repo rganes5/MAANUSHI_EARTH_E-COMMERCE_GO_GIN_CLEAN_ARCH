@@ -123,3 +123,14 @@ func (c *productDatabase) ListProductDetailsById(ctx context.Context, id string)
 	}
 	return productDetails, nil
 }
+
+// List product and details
+func (c *productDatabase) ListProductAndDetailsById(ctx context.Context, id string) ([]utils.ResponseProductAndDetails, error) {
+	var productAndDetails []utils.ResponseProductAndDetails
+	query := `SELECT products.product_name, products.image, products.details, products.price, products.discount_price, product_details.product_details, product_details.in_stock FROM products JOIN product_details ON products.id = product_details.product_id WHERE products.id = ? AND products.deleted_at IS NULL`
+	err := c.DB.Raw(query, id).Scan(&productAndDetails).Error
+	if err != nil {
+		return productAndDetails, err
+	}
+	return productAndDetails, nil
+}

@@ -18,4 +18,5 @@ type ProductRepository interface {
 	ListProducts(ctx context.Context, pagination utils.Pagination) ([]utils.ResponseProduct, error)
 	AddProductDetails(ctx context.Context, productDetails domain.ProductDetails) error
 	ListProductDetailsById(ctx context.Context, id string) ([]utils.ResponseProductDetails, error)
+	ListProductAndDetailsById(ctx context.Context, id string) ([]utils.ResponseProductAndDetails, error)
 }

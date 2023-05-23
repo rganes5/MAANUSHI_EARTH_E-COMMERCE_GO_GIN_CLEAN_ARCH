@@ -207,3 +207,22 @@ func (cr *ProductHandler) ListProductDetailsById(c *gin.Context) {
 	response := utils.SuccessResponse(200, "Product details", productDetails)
 	c.JSON(http.StatusOK, response)
 }
+
+// List Product and product details
+func (cr *ProductHandler) ListProductAndDetailsById(c *gin.Context) {
+	id := c.Param("productid")
+
+	productAndDetails, err := cr.productUseCase.ListProductAndDetailsById(c.Request.Context(), id)
+	if err != nil {
+		response := utils.ErrorResponse(500, "Failed to list product details", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Product details", productAndDetails)
+	c.JSON(http.StatusOK, response)
+}
+
+// EDIT product details
+// func (cr *ProductHandler) UpdateProductDetailsbyId(c *gin.Context) {
+// 	id:= c.Param("productdetailsid")
+// }

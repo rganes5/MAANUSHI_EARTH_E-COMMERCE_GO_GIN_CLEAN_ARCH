@@ -38,6 +38,17 @@ type ResponseProductDetails struct {
 	InStock        uint   `json:"qty_in_stock"`
 }
 
+type ResponseProductAndDetails struct {
+	// ProductID      uint   `json:"productid"`
+	ProductName    string `json:"productname"`
+	Image          string `json:"image"`
+	Details        string `json:"details"`
+	Price          uint   `json:"price"`
+	DiscountPrice  uint   `json:"discountprice"`
+	ProductDetails string `json:"productdetails"`
+	InStock        uint   `json:"qty_in_stock"`
+}
+
 // type ResponseProductUser struct {
 // 	ProductName   string `json:"productname"`
 // 	Image         string `json:"image"`

@@ -68,3 +68,8 @@ func (c *ProductUseCase) ListProductDetailsById(ctx context.Context, id string) 
 	productDetails, err := c.ProductRepo.ListProductDetailsById(ctx, id)
 	return productDetails, err
 }
+
+func (c *ProductUseCase) ListProductAndDetailsById(ctx context.Context, id string) ([]utils.ResponseProductAndDetails, error) {
+	productAndDetails, err := c.ProductRepo.ListProductAndDetailsById(ctx, id)
+	return productAndDetails, err
+}
