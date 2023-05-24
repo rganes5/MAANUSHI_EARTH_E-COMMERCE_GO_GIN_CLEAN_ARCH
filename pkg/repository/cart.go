@@ -64,11 +64,13 @@ func (c *cartDatabase) FindProductById(ctx context.Context, productId string) (d
 
 func (c *cartDatabase) FindDuplicateProduct(ctx context.Context, productId string, cartID uint) (domain.CartItem, error) {
 	var duplicateItem domain.CartItem
-	if err := c.DB.Where("product_id=$1 and id=$2", productId, cartID).Find(&duplicateItem).Error; err != nil {
+	if err := c.DB.Where("product_id=? and id=?", productId, cartID).Find(&duplicateItem).Error; err != nil {
 		return duplicateItem, err
 	}
 	return duplicateItem, nil
 }
+
+//result := c.DB.Where("product_detail_id=$1 and cart_id=$2", id, cartid).Find(&exsistitem)
 
 func (c *cartDatabase) UpdateCartItem(ctx context.Context, existingItem domain.CartItem) error {
 	var grantTotal int
@@ -81,7 +83,7 @@ func (c *cartDatabase) UpdateCartItem(ctx context.Context, existingItem domain.C
 		tx.Rollback()
 		return err
 	}
-	if err := tx.Model(&domain.Cart{}).Where("id=?", existingItem.ID).UpdateColumn("grand_total", grantTotal).Error; err != nil {
+	if err := tx.Model(&domain.Cart{}).Where("id=?", existingItem.CartID).UpdateColumn("grand_total", grantTotal).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
@@ -104,7 +106,7 @@ func (c *cartDatabase) AddNewItem(ctx context.Context, newItem domain.CartItem) 
 		tx.Rollback()
 		return err
 	}
-	if err := tx.Model(&domain.Cart{}).Where("id=?", newItem.ID).UpdateColumn("grand_total", grantTotal).Error; err != nil {
+	if err := tx.Model(&domain.Cart{}).Where("id=?", newItem.CartID).UpdateColumn("grand_total", grantTotal).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
