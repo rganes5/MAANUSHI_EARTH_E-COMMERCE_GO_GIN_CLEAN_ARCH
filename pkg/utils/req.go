@@ -5,10 +5,23 @@ type Pagination struct {
 	Limit  uint `json:"limit"`
 }
 
+type UsersSignUp struct {
+	FirstName string `json:"firstname" binding:"required"`
+	LastName  string `json:"lastname" binding:"required"`
+	Email     string `json:"email" binding:"required"`
+	PhoneNum  string `json:"phonenum" binding:"required"`
+	Password  string `json:"password" binding:"required"`
+}
+
 type OtpVerify struct {
 	Otp         string `json:"otp" binding:"required"`
 	OtpID       string `json:"otpid" binding:"required"`
 	NewPassword string `json:"newpassword"`
+}
+
+type OtpSignUpVerify struct {
+	Otp   string `json:"otp" binding:"required"`
+	OtpID string `json:"otpid" binding:"required"`
 }
 
 type LoginBody struct {

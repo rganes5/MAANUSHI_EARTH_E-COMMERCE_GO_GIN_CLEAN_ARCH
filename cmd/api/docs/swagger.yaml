@@ -1,9 +1,118 @@
+definitions:
+  utils.OtpSignUpVerify:
+    properties:
+      otp:
+        type: string
+      otpid:
+        type: string
+    required:
+    - otp
+    - otpid
+    type: object
+  utils.Response:
+    properties:
+      data: {}
+      errors: {}
+      message:
+        type: string
+      status_code:
+        type: integer
+    type: object
+  utils.UsersSignUp:
+    properties:
+      email:
+        type: string
+      firstname:
+        type: string
+      lastname:
+        type: string
+      password:
+        type: string
+      phonenum:
+        type: string
+    required:
+    - email
+    - firstname
+    - lastname
+    - password
+    - phonenum
+    type: object
 host: localhost:3000
 info:
   contact: {}
   description: maanushi_earth_e-commerce REST API built using Go, PSQL, REST API following
     Clean Architecture.
   title: maanushi_earth_e-commerce REST API
-  version: "1.0"
-paths: {}
+  version: "2.0"
+paths:
+  /user/signup:
+    post:
+      consumes:
+      - application/json
+      description: CREATE A NEW USER WITH REQUIRED DETAILS
+      operationId: SIGNUP-USER
+      parameters:
+      - description: New user Details
+        in: body
+        name: user_details
+        required: true
+        schema:
+          $ref: '#/definitions/utils.UsersSignUp'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR NEW USER SIGN UP
+      tags:
+      - USER
+  /user/signup/otp/verify:
+    post:
+      consumes:
+      - application/json
+      description: VERIFY THE OTP AND UPDATE THE VERIFIED COLUMN
+      operationId: SIGNUP-USER-OTP-VERIFY
+      parameters:
+      - description: otp
+        in: body
+        name: otp_details
+        required: true
+        schema:
+          $ref: '#/definitions/utils.OtpSignUpVerify'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR NEW USER SIGN UP OTP VERIFICATION
+      tags:
+      - USER
 swagger: "2.0"

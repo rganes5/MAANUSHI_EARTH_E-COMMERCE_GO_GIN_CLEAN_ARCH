@@ -60,7 +60,7 @@ func (cr *AdminHandler) AdminSignUp(c *gin.Context) {
 	//Hash the password and sign up
 	signUp_admin.Password, _ = support.HashPassword(signUp_admin.Password)
 	if err := cr.adminUseCase.SignUpAdmin(c.Request.Context(), signUp_admin); err != nil {
-		response := utils.ErrorResponse(401, "Error: Failed to Add Admin, please try again", err.Error(), signUp_user)
+		response := utils.ErrorResponse(401, "Error: Failed to Add Admin, please try again", err.Error(), signUp_admin)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}

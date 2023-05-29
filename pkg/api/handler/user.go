@@ -9,12 +9,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/copier"
 
+	_ "github.com/jinzhu/gorm"
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/auth"
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/config"
 	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 	support "github.com/rganes5/maanushi_earth_e-commerce/pkg/support"
 	services "github.com/rganes5/maanushi_earth_e-commerce/pkg/usecase/interface"
 	utils "github.com/rganes5/maanushi_earth_e-commerce/pkg/utils"
+	_ "gorm.io/gorm"
 )
 
 type UserHandler struct {
@@ -35,12 +37,11 @@ func NewUserHandler(usecase services.UserUseCase, otpusecase services.OtpUseCase
 }
 
 // Variable declared contataining type as users which is already initialiazed in domain folder.
-var signUp_user domain.Users
 
 // var otp_user domain.Users
 
 // @title maanushi_earth_e-commerce REST API
-// @version 1.0
+// @version 2.0
 // @description maanushi_earth_e-commerce REST API built using Go, PSQL, REST API following Clean Architecture.
 
 // @contact
@@ -60,14 +61,28 @@ var signUp_user domain.Users
 // @Router / [get]
 
 // USER SIGN-UP WITH SENDING OTP
-
+// @Summary API FOR NEW USER SIGN UP
+// @ID SIGNUP-USER
+// @Description CREATE A NEW USER WITH REQUIRED DETAILS
+// @Tags USER
+// @Accept json
+// @Produce json
+// @Param user_details body utils.UsersSignUp true "New user Details"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/signup [post]
 func (cr *UserHandler) UserSignUp(c *gin.Context) {
-	if err := c.BindJSON(&signUp_user); err != nil {
-		response := utils.ErrorResponse(400, "Error: Failed to read json body", err.Error(), signUp_user)
+	var body utils.UsersSignUp
+
+	if err := c.BindJSON(&body); err != nil {
+		response := utils.ErrorResponse(400, "Error: Failed to read json body", err.Error(), body)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-
+	var signUp_user domain.Users
+	copier.Copy(&signUp_user, &body)
 	if err := support.Email_validator(signUp_user.Email); err != nil {
 		response := utils.ErrorResponse(400, "Error: Enter a valid email. Email format is incorrect", err.Error(), signUp_user)
 		c.JSON(http.StatusBadRequest, response)
@@ -91,7 +106,7 @@ func (cr *UserHandler) UserSignUp(c *gin.Context) {
 	signUp_user.Password, _ = support.HashPassword(signUp_user.Password)
 	PhoneNum, err := cr.userUseCase.SignUpUser(c.Request.Context(), signUp_user)
 	if err != nil {
-		response := utils.ErrorResponse(401, "Error: Failed to Add user, please try again", err.Error(), signUp_user)
+		response := utils.ErrorResponse(500, "Error: Failed to Add user, please try again", err.Error(), signUp_user)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
@@ -101,7 +116,7 @@ func (cr *UserHandler) UserSignUp(c *gin.Context) {
 	respSid, err1 := cr.otpUseCase.TwilioSendOTP(c.Request.Context(), PhoneNum)
 
 	if err1 != nil {
-		response := utils.ErrorResponse(401, "Error: Failed to generate OTP!", err.Error(), signUp_user)
+		response := utils.ErrorResponse(500, "Error: Failed to generate OTP!", err.Error(), signUp_user)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
@@ -110,25 +125,40 @@ func (cr *UserHandler) UserSignUp(c *gin.Context) {
 	c.JSON(http.StatusOK, response1)
 }
 
-// SIGN UP OTP VERIFICATION
-
+// USER SIGN-UP WITH VERIFICATION OF OTP
+// @Summary API FOR NEW USER SIGN UP OTP VERIFICATION
+// @ID SIGNUP-USER-OTP-VERIFY
+// @Description VERIFY THE OTP AND UPDATE THE VERIFIED COLUMN
+// @Tags USER
+// @Accept json
+// @Produce json
+// @Param otp_details body utils.OtpSignUpVerify true "otp"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/signup/otp/verify [post]
 func (cr *UserHandler) SignupOtpverify(c *gin.Context) {
-	var otp utils.OtpVerify
-	if err := c.BindJSON(&otp); err != nil {
-		response := utils.ErrorResponse(400, "Error: Failed to read json body", err.Error(), signUp_user)
+	var SignUpOtpverify utils.OtpSignUpVerify
+	if err := c.BindJSON(&SignUpOtpverify); err != nil {
+		response := utils.ErrorResponse(400, "Error: Failed to read json body", err.Error(), SignUpOtpverify)
 		c.JSON(http.StatusBadRequest, response)
 	}
+	var signUp_user domain.Users
+	var otp utils.OtpVerify
+
+	copier.Copy(&otp, &SignUpOtpverify)
 
 	session, err := cr.otpUseCase.TwilioVerifyOTP(c.Request.Context(), otp)
 	if err != nil {
 		response := utils.ErrorResponse(401, "Error: Verification failed", err.Error(), signUp_user)
-		c.JSON(http.StatusInternalServerError, response)
+		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
 
 	err1 := cr.userUseCase.UpdateVerify(c.Request.Context(), session.PhoneNum)
 	if err1 != nil {
-		response := utils.ErrorResponse(401, "Error: Failed to update the verification status of user", err.Error(), signUp_user)
+		response := utils.ErrorResponse(500, "Error: Failed to update the verification status of user", err.Error(), signUp_user)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}

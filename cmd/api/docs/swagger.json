@@ -4,8 +4,172 @@
         "description": "maanushi_earth_e-commerce REST API built using Go, PSQL, REST API following Clean Architecture.",
         "title": "maanushi_earth_e-commerce REST API",
         "contact": {},
-        "version": "1.0"
+        "version": "2.0"
     },
     "host": "localhost:3000",
-    "paths": {}
+    "paths": {
+        "/user/signup": {
+            "post": {
+                "description": "CREATE A NEW USER WITH REQUIRED DETAILS",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "USER"
+                ],
+                "summary": "API FOR NEW USER SIGN UP",
+                "operationId": "SIGNUP-USER",
+                "parameters": [
+                    {
+                        "description": "New user Details",
+                        "name": "user_details",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/utils.UsersSignUp"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/signup/otp/verify": {
+            "post": {
+                "description": "VERIFY THE OTP AND UPDATE THE VERIFIED COLUMN",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "USER"
+                ],
+                "summary": "API FOR NEW USER SIGN UP OTP VERIFICATION",
+                "operationId": "SIGNUP-USER-OTP-VERIFY",
+                "parameters": [
+                    {
+                        "description": "otp",
+                        "name": "otp_details",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/utils.OtpSignUpVerify"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "utils.OtpSignUpVerify": {
+            "type": "object",
+            "required": [
+                "otp",
+                "otpid"
+            ],
+            "properties": {
+                "otp": {
+                    "type": "string"
+                },
+                "otpid": {
+                    "type": "string"
+                }
+            }
+        },
+        "utils.Response": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "errors": {},
+                "message": {
+                    "type": "string"
+                },
+                "status_code": {
+                    "type": "integer"
+                }
+            }
+        },
+        "utils.UsersSignUp": {
+            "type": "object",
+            "required": [
+                "email",
+                "firstname",
+                "lastname",
+                "password",
+                "phonenum"
+            ],
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "firstname": {
+                    "type": "string"
+                },
+                "lastname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phonenum": {
+                    "type": "string"
+                }
+            }
+        }
+    }
 }

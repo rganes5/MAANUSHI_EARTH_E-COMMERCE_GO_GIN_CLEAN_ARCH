@@ -68,6 +68,7 @@ require (
 	github.com/go-openapi/spec v0.20.9 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0
+	github.com/jinzhu/gorm v1.9.16
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.8 // indirect
