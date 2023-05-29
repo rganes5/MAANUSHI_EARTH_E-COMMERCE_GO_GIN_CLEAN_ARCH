@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 
 	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 	interfaces "github.com/rganes5/maanushi_earth_e-commerce/pkg/repository/interface"
@@ -30,6 +31,13 @@ func (c *ProductUseCase) UpdateCategory(ctx context.Context, categories domain.C
 }
 
 func (c *ProductUseCase) DeleteCategory(ctx context.Context, id string) error {
+	product, err1 := c.ProductRepo.CheckItemsPresent(ctx, id)
+	if err1 != nil {
+		return err1
+	}
+	if product.ID != 0 {
+		return fmt.Errorf("items exist under the category")
+	}
 	err := c.ProductRepo.DeleteCategory(ctx, id)
 	return err
 }

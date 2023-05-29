@@ -38,6 +38,15 @@ func (c *productDatabase) UpdateCategory(ctx context.Context, categories domain.
 }
 
 // Delete category
+// Checking whether the category contains items
+func (c *productDatabase) CheckItemsPresent(ctx context.Context, id string) (domain.Products, error) {
+	var product domain.Products
+	err1 := c.DB.Where("category_id=?", id).Find(&product).Error
+	if err1 != nil {
+		return product, err1
+	}
+	return product, nil
+}
 
 func (c *productDatabase) DeleteCategory(ctx context.Context, id string) error {
 	err := c.DB.Where("id=?", id).Delete(&domain.Category{}).Error
