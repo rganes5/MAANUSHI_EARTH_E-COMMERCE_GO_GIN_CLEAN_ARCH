@@ -27,17 +27,17 @@ func NewProductHandler(service services.ProductUseCase) *ProductHandler {
 func (cr *ProductHandler) AddCategory(c *gin.Context) {
 	var category domain.Category
 	if err := c.BindJSON(&category); err != nil {
-		response := utils.ErrorResponse(400, "invalid input", err.Error(), category)
+		response := utils.ErrorResponse(400, "Error: invalid input", err.Error(), category)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 	err := cr.productUseCase.AddCategory(c.Request.Context(), category)
 	if err != nil {
-		response := utils.ErrorResponse(500, "Faild to add cateogy", err.Error(), category)
+		response := utils.ErrorResponse(500, "Error: Faild to add cateogy", err.Error(), category)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "successfully added a new category", category)
+	response := utils.SuccessResponse(200, "Success: successfully added a new category", category)
 	c.JSON(http.StatusOK, response)
 }
 
@@ -46,18 +46,18 @@ func (cr *ProductHandler) UpdateCategory(c *gin.Context) {
 	id := c.Param("categoryid")
 	var categoryname utils.UpdateCategory
 	if err := c.BindJSON(&categoryname); err != nil {
-		response := utils.ErrorResponse(400, "Failed to bind JSON", err.Error(), categoryname)
+		response := utils.ErrorResponse(400, "Error: Failed to bind JSON", err.Error(), categoryname)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 	var categories domain.Category
 	copier.Copy(&categories, &categoryname)
 	if err := cr.productUseCase.UpdateCategory(c.Request.Context(), categories, id); err != nil {
-		response := utils.ErrorResponse(500, "Failed to update category", err.Error(), categories)
+		response := utils.ErrorResponse(500, "Error: Failed to update category", err.Error(), categories)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "Successfully updated", categories)
+	response := utils.SuccessResponse(200, "Success:Successfully updated", categories)
 	c.JSON(http.StatusOK, response)
 }
 
@@ -65,11 +65,11 @@ func (cr *ProductHandler) UpdateCategory(c *gin.Context) {
 func (cr *ProductHandler) DeleteCategory(c *gin.Context) {
 	id := c.Param("categoryid")
 	if err := cr.productUseCase.DeleteCategory(c.Request.Context(), id); err != nil {
-		response := utils.ErrorResponse(500, "Faild to Delete Cateogy with id", err.Error(), id)
+		response := utils.ErrorResponse(500, "Error: Faild to Delete Cateogy with id", err.Error(), id)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "successfully deleted category with id", id)
+	response := utils.SuccessResponse(200, "Success: Successfully deleted category with id", id)
 	c.JSON(http.StatusOK, response)
 }
 
@@ -81,14 +81,14 @@ func (cr *ProductHandler) ListCategories(c *gin.Context) {
 		// 	"error": err.Error(),
 		// })
 		// return
-		response := utils.ErrorResponse(500, "Faild to List Categories", err.Error(), categories)
+		response := utils.ErrorResponse(500, "Error: Faild to List Categories", err.Error(), categories)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 	// c.JSON(http.StatusOK, gin.H{
 	// 	"categories": categories,
 	// })
-	response := utils.SuccessResponse(200, "List of categories:", categories)
+	response := utils.SuccessResponse(200, "Success: List of categories:", categories)
 	c.JSON(http.StatusOK, response)
 }
 
@@ -97,18 +97,18 @@ func (cr *ProductHandler) ListCategories(c *gin.Context) {
 func (cr *ProductHandler) AddProduct(c *gin.Context) {
 	var body utils.Products
 	if err := c.BindJSON(&body); err != nil {
-		response := utils.ErrorResponse(400, "Failed to bind json", err.Error(), body)
+		response := utils.ErrorResponse(400, "Error: Failed to bind json", err.Error(), body)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 	var products domain.Products
 	copier.Copy(&products, &body)
 	if err := cr.productUseCase.AddProduct(c.Request.Context(), products); err != nil {
-		response := utils.ErrorResponse(500, "Failed to add product", err.Error(), products)
+		response := utils.ErrorResponse(500, "Error: Failed to add product", err.Error(), products)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "Product Added Successfully", products)
+	response := utils.SuccessResponse(200, "Success:Product Added Successfully", products)
 	c.JSON(http.StatusOK, response)
 
 }
@@ -117,11 +117,11 @@ func (cr *ProductHandler) AddProduct(c *gin.Context) {
 func (cr *ProductHandler) DeleteProduct(c *gin.Context) {
 	id := c.Param("productid")
 	if err := cr.productUseCase.DeleteProduct(c.Request.Context(), id); err != nil {
-		response := utils.ErrorResponse(500, "Failed to delete the product", err.Error(), id)
+		response := utils.ErrorResponse(500, "Error: Failed to delete the product", err.Error(), id)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "Product successfully deleted with product id", id)
+	response := utils.SuccessResponse(200, "Success: Product successfully deleted with product id", id)
 	c.JSON(http.StatusOK, response)
 }
 
@@ -131,7 +131,7 @@ func (cr *ProductHandler) EditProduct(c *gin.Context) {
 	var body utils.Products
 	id := c.Param("productid")
 	if err := c.BindJSON(&body); err != nil {
-		response := utils.ErrorResponse(400, " Error while binding json", err.Error(), body)
+		response := utils.ErrorResponse(400, "Error:  Error while binding json", err.Error(), body)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
@@ -139,11 +139,11 @@ func (cr *ProductHandler) EditProduct(c *gin.Context) {
 	copier.Copy(&product, &body)
 	err := cr.productUseCase.EditProduct(c.Request.Context(), product, id)
 	if err != nil {
-		response := utils.ErrorResponse(500, "Error while editing the product", err.Error(), product)
+		response := utils.ErrorResponse(500, "Error: Error while editing the product", err.Error(), product)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "Successfully edited the product", product)
+	response := utils.SuccessResponse(200, "Success: Successfully edited the product", product)
 	c.JSON(http.StatusOK, response)
 }
 
@@ -165,11 +165,11 @@ func (cr *ProductHandler) ListProducts(c *gin.Context) {
 	}
 	products, err := cr.productUseCase.ListProducts(c.Request.Context(), pagination)
 	if err != nil {
-		response := utils.ErrorResponse(500, "Failed to list the products", err.Error(), nil)
+		response := utils.ErrorResponse(500, "Error: Failed to list the products", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "Product list", products)
+	response := utils.SuccessResponse(200, "Success: Product list", products)
 	c.JSON(http.StatusOK, response)
 
 }
@@ -178,18 +178,18 @@ func (cr *ProductHandler) ListProducts(c *gin.Context) {
 func (cr *ProductHandler) AddProductDetails(c *gin.Context) {
 	var body utils.ProductDetails
 	if err := c.BindJSON(&body); err != nil {
-		response := utils.ErrorResponse(400, "Failed to bind json", err.Error(), body)
+		response := utils.ErrorResponse(400, "Error: Failed to bind json", err.Error(), body)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 	var ProductDetails domain.ProductDetails
 	copier.Copy(&ProductDetails, &body)
 	if err := cr.productUseCase.AddProductDetails(c.Request.Context(), ProductDetails); err != nil {
-		response := utils.ErrorResponse(500, "Failed to add product details", err.Error(), body)
+		response := utils.ErrorResponse(500, "Error: Failed to add product details", err.Error(), body)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "Successfully added the product details", ProductDetails.ProductDetails, ProductDetails.InStock)
+	response := utils.SuccessResponse(200, "Success: Successfully added the product details", ProductDetails.ProductDetails, ProductDetails.InStock)
 	c.JSON(http.StatusOK, response)
 }
 
@@ -199,11 +199,11 @@ func (cr *ProductHandler) ListProductDetailsById(c *gin.Context) {
 
 	productDetails, err := cr.productUseCase.ListProductDetailsById(c.Request.Context(), id)
 	if err != nil {
-		response := utils.ErrorResponse(500, "Failed to list product details", err.Error(), nil)
+		response := utils.ErrorResponse(500, "Error: Failed to list product details", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "Product details", productDetails)
+	response := utils.SuccessResponse(200, "Success: Product details", productDetails)
 	c.JSON(http.StatusOK, response)
 }
 
@@ -213,11 +213,11 @@ func (cr *ProductHandler) ListProductAndDetailsById(c *gin.Context) {
 
 	productAndDetails, err := cr.productUseCase.ListProductAndDetailsById(c.Request.Context(), id)
 	if err != nil {
-		response := utils.ErrorResponse(500, "Failed to list product details", err.Error(), nil)
+		response := utils.ErrorResponse(500, "Error: Failed to list product details", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "Product details", productAndDetails)
+	response := utils.SuccessResponse(200, "Success: Product details", productAndDetails)
 	c.JSON(http.StatusOK, response)
 }
 

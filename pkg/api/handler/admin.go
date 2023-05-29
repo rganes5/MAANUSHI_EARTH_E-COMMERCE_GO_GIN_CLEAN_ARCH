@@ -30,49 +30,43 @@ func (cr *AdminHandler) AdminSignUp(c *gin.Context) {
 
 	//Binding
 	if err := c.BindJSON(&signUp_admin); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		response := utils.ErrorResponse(400, "Error: Failed to read json body", err.Error(), signUp_admin)
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	//Check the email format
 	if err := support.Email_validator(signUp_admin.Email); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		response := utils.ErrorResponse(400, "Error: Enter a valid email. Email format is incorrect", err.Error(), signUp_admin)
+		c.JSON(http.StatusBadRequest, response)
 		return
+
 	}
 
 	//Check the phone number format
 	if err := support.MobileNum_validator(signUp_admin.PhoneNum); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		response := utils.ErrorResponse(400, "Error: Enter a valid Phone Number. Phone Number format is incorrect", err.Error(), signUp_admin)
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	//Check whether such email already exits
 	if _, err := cr.adminUseCase.FindByEmail(c.Request.Context(), signUp_admin.Email); err == nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": err.Error(),
-		})
+		response := utils.ErrorResponse(401, "Error: Admin with the email already exits!", err.Error(), signUp_admin)
+		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
 
 	//Hash the password and sign up
 	signUp_admin.Password, _ = support.HashPassword(signUp_admin.Password)
 	if err := cr.adminUseCase.SignUpAdmin(c.Request.Context(), signUp_admin); err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		response := utils.ErrorResponse(401, "Error: Failed to Add Admin, please try again", err.Error(), signUp_user)
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"Admin Sign up": "Success",
-	})
-
+	response := utils.SuccessResponse(200, "success: Admin sign-up Successful", signUp_admin)
+	c.JSON(http.StatusOK, response)
 }
 
 // admin login
@@ -89,50 +83,42 @@ func (cr *AdminHandler) AdminLogin(c *gin.Context) {
 	//binding
 	var Login_admin utils.LoginBody
 	if err := c.BindJSON(&Login_admin); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		response := utils.ErrorResponse(400, "Error: Failed to read json body", err.Error(), Login_admin)
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	//check email
 	admin, err := cr.adminUseCase.FindByEmail(c.Request.Context(), Login_admin.Email)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": err.Error(),
-		})
-		return
+		response := utils.ErrorResponse(401, "Error: Please check the email", err.Error(), Login_admin)
+		c.JSON(http.StatusUnauthorized, response)
 	}
 
 	//check the password
 	if err := support.CheckPasswordHash(Login_admin.Password, admin.Password); err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": err.Error(),
-		})
-		return
+		response := utils.ErrorResponse(401, "Error: Please check the password", err.Error(), Login_admin)
+		c.JSON(http.StatusUnauthorized, response)
 	}
 
 	//Create a jwt token and store it in cookie
 	tokenstring, err := auth.GenerateJWT(admin.Email, admin.ID)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
-		return
+		response := utils.ErrorResponse(401, "Error: Error generating the jwt token", err.Error(), Login_admin)
+		c.JSON(http.StatusInternalServerError, response)
 	}
 	c.SetCookie("admin-token", tokenstring, int(time.Now().Add(60*time.Minute).Unix()), "/", "localhost", false, true)
-	c.JSON(http.StatusOK, gin.H{
-		"Admin": "Success",
-	})
+	response1 := utils.SuccessResponse(200, "Success: Login Successful")
+	c.JSON(http.StatusOK, response1)
 }
 
 //admin logout
 
 func (cr *AdminHandler) Logout(c *gin.Context) {
 	c.SetCookie("admin-token", "", -1, "/", "localhost", false, true)
-	c.JSON(http.StatusOK, gin.H{
-		"Logout": "success",
-	})
+	response := utils.SuccessResponse(200, "Success: Logout Successful", nil)
+	c.JSON(http.StatusOK, response)
+
 }
 
 //home handler
@@ -140,20 +126,19 @@ func (cr *AdminHandler) Logout(c *gin.Context) {
 func (cr *AdminHandler) HomeHandler(c *gin.Context) {
 	email, ok := c.Get(("admin-email"))
 	if !ok {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": "Unauthorized admin",
-		})
+		response := utils.ErrorResponse(401, "Error: Failed to get the id from the token string", "", nil)
+		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
 
 	admin, err := cr.adminUseCase.FindByEmail(c.Request.Context(), email.(string))
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		response := utils.ErrorResponse(400, "Error:Failed to fetch user details", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	c.JSON(http.StatusOK, admin)
+	response := utils.SuccessResponse(200, "Success: Personal details", admin)
+	c.JSON(http.StatusOK, response)
 }
 
 //list users
@@ -175,14 +160,12 @@ func (cr *AdminHandler) ListUsers(c *gin.Context) {
 	}
 	users, err := cr.adminUseCase.ListUsers(c.Request.Context(), pagination)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		response := utils.ErrorResponse(401, "Error: Failed to List users", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"users": users,
-	})
+	response := utils.SuccessResponse(200, "Success: ", users)
+	c.JSON(http.StatusOK, response)
 }
 
 //Block and unblock
@@ -193,14 +176,13 @@ func (cr *AdminHandler) AccessHandler(c *gin.Context) {
 	access, _ := strconv.ParseBool(str)
 	err := cr.adminUseCase.AccessHandler(c.Request.Context(), id, access)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": err.Error(),
-		})
+		response := utils.ErrorResponse(401, "Error: Failed to update the access", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"Access": "Updated",
-	})
+	response := utils.SuccessResponse(200, "Success: User access updated", access)
+	c.JSON(http.StatusOK, response)
+
 }
 
 // // CATEGORY MANAGEMENT

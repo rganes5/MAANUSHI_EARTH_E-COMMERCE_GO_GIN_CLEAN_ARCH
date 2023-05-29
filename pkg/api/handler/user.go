@@ -39,33 +39,50 @@ var signUp_user domain.Users
 
 // var otp_user domain.Users
 
-// USER SIGN-UP WITH OTP SENDING
+// @title maanushi_earth_e-commerce REST API
+// @version 1.0
+// @description maanushi_earth_e-commerce REST API built using Go, PSQL, REST API following Clean Architecture.
+
+// @contact
+// name: Ganesh R
+// url: https://github.com/rganes5
+// email: ganeshraveendranit@gmail.com
+
+// @license
+// name: MIT
+// url: https://opensource.org/licenses/MIT
+
+// @host localhost:3000
+
+// @Basepath /
+// @Accept json
+// @Produce json
+// @Router / [get]
+
+// USER SIGN-UP WITH SENDING OTP
+
 func (cr *UserHandler) UserSignUp(c *gin.Context) {
 	if err := c.BindJSON(&signUp_user); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		response := utils.ErrorResponse(400, "Error: Failed to read json body", err.Error(), signUp_user)
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	if err := support.Email_validator(signUp_user.Email); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		response := utils.ErrorResponse(400, "Error: Enter a valid email. Email format is incorrect", err.Error(), signUp_user)
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	if err := support.MobileNum_validator(signUp_user.PhoneNum); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
+		response := utils.ErrorResponse(400, "Error: Enter a valid Phone Number. Phone Number format is incorrect", err.Error(), signUp_user)
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	if _, err := cr.userUseCase.FindByEmail(c.Request.Context(), signUp_user.Email); err == nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": "User with the email already exits!",
-		})
+		response := utils.ErrorResponse(401, "Error: User with the email already exits!", err.Error(), signUp_user)
+		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
 
@@ -74,30 +91,23 @@ func (cr *UserHandler) UserSignUp(c *gin.Context) {
 	signUp_user.Password, _ = support.HashPassword(signUp_user.Password)
 	PhoneNum, err := cr.userUseCase.SignUpUser(c.Request.Context(), signUp_user)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error":         "failed to add user",
-			"error_details": err.Error(),
-		})
+		response := utils.ErrorResponse(401, "Error: Failed to Add user, please try again", err.Error(), signUp_user)
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"User data": "Saved",
-	})
+	response := utils.SuccessResponse(200, "Success: User data saved", signUp_user)
+	c.JSON(http.StatusOK, response)
 
 	respSid, err1 := cr.otpUseCase.TwilioSendOTP(c.Request.Context(), PhoneNum)
 
 	if err1 != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error":         "Failed generating otp",
-			"error_details": err1.Error(),
-		})
+		response := utils.ErrorResponse(401, "Error: Failed to generate OTP!", err.Error(), signUp_user)
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"Success":    "Enter the otp",
-		"responseid": respSid,
-	})
+
+	response1 := utils.SuccessResponse(200, "Success: Enter the otp and the response id", respSid)
+	c.JSON(http.StatusOK, response1)
 }
 
 // SIGN UP OTP VERIFICATION
@@ -105,33 +115,26 @@ func (cr *UserHandler) UserSignUp(c *gin.Context) {
 func (cr *UserHandler) SignupOtpverify(c *gin.Context) {
 	var otp utils.OtpVerify
 	if err := c.BindJSON(&otp); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": "Error binding json",
-		})
-		return
+		response := utils.ErrorResponse(400, "Error: Failed to read json body", err.Error(), signUp_user)
+		c.JSON(http.StatusBadRequest, response)
 	}
 
 	session, err := cr.otpUseCase.TwilioVerifyOTP(c.Request.Context(), otp)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error":  err.Error(),
-			"error1": "verification failed",
-		})
+		response := utils.ErrorResponse(401, "Error: Verification failed", err.Error(), signUp_user)
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
 	err1 := cr.userUseCase.UpdateVerify(c.Request.Context(), session.PhoneNum)
 	if err1 != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error":  err1.Error(),
-			"error1": "updation end fails",
-		})
+		response := utils.ErrorResponse(401, "Error: Failed to update the verification status of user", err.Error(), signUp_user)
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"User registration": "Success",
-	})
+	response1 := utils.SuccessResponse(200, "Success: Users Phone Number Successfully verified", session.PhoneNum)
+	c.JSON(http.StatusOK, response1)
 }
 
 // USERLOGIN
@@ -148,66 +151,58 @@ func (cr *UserHandler) LoginHandler(c *gin.Context) {
 	//Login logic
 	var loginBody utils.LoginBody
 	if err := c.BindJSON(&loginBody); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return
+		response := utils.ErrorResponse(400, "Error: Failed to read json body", err.Error(), loginBody)
+		c.JSON(http.StatusBadRequest, response)
 	}
 	//Checks whether such user email exits or not and also returns back the user details of that specific user related to the email and stores in user.
 	user, err := cr.userUseCase.FindByEmail(c.Request.Context(), loginBody.Email)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": err.Error(),
-		})
-		return
+		response := utils.ErrorResponse(401, "Error: Please check the email", err.Error(), loginBody)
+		c.JSON(http.StatusUnauthorized, response)
 	}
 	//Checks the given password with retreived password to that specific email from the database(user variable)
 	if err := support.CheckPasswordHash(loginBody.Password, user.Password); err != nil {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": err.Error(),
-		})
-		return
+		response := utils.ErrorResponse(401, "Error: Please check the password", err.Error(), loginBody)
+		c.JSON(http.StatusUnauthorized, response)
 	}
 
 	//GenerateJWT function from the auth package, passing user.Email and User.ID as an argument. It assigns the generated JWT to the tokenString variable
 	tokenString, err := auth.GenerateJWT(user.Email, user.ID)
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-			"error": "Error generating the jwt token",
-		})
+		response := utils.ErrorResponse(401, "Error: Error generating the jwt token", err.Error(), loginBody)
+		c.JSON(http.StatusInternalServerError, response)
 	}
 
 	//Sets a cookie named "user-token" with the value tokenString. The cookie has an expiration time of 60 minutes from the current time.
 	c.SetCookie("user-token", tokenString, int(time.Now().Add(60*time.Minute).Unix()), "/", "localhost", false, true)
 	c.Set("user-email", user.Email)
-	c.JSON(http.StatusOK, gin.H{
-		"Login": "Success",
-	})
+	response1 := utils.SuccessResponse(200, "Success: Login Successful")
+	c.JSON(http.StatusOK, response1)
 }
 
 // Forgot password
 func (cr *UserHandler) ForgotPassword(c *gin.Context) {
 	var body utils.OtpLogin
 	if err := c.BindJSON(&body); err != nil {
-		response := utils.ErrorResponse(400, "Failed to bind json", err.Error(), nil)
+		response := utils.ErrorResponse(400, "Error: Failed to bind json", err.Error(), nil)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 	user, err := cr.userUseCase.FindByEmailOrNumber(c.Request.Context(), body)
 	if err != nil {
-		response := utils.ErrorResponse(500, "Incorrect email or password", err.Error(), user)
+		response := utils.ErrorResponse(500, "Error: Incorrect email or password", err.Error(), user)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 	respSid, err := cr.otpUseCase.TwilioSendOTP(c.Request.Context(), user.PhoneNum)
 	fmt.Println("Send otp")
 	if err != nil {
-		response := utils.ErrorResponse(500, "Failed to send otp", err.Error(), nil)
+		response := utils.ErrorResponse(500, "Error: Failed to send otp", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 	fmt.Println("This is the response id", respSid)
-	response := utils.SuccessResponse(200, "Successfully sent the otp. Now enter the otp,response id and new password", "", respSid)
+	response := utils.SuccessResponse(200, "Success: Successfully sent the otp. Now enter the otp,response id and new password", "", respSid)
 	c.JSON(http.StatusOK, response)
 }
 
@@ -215,28 +210,28 @@ func (cr *UserHandler) ForgotPassword(c *gin.Context) {
 func (cr *UserHandler) ForgotPasswordOtpVerify(c *gin.Context) {
 	var body utils.OtpVerify
 	if err := c.BindJSON(&body); err != nil {
-		response := utils.ErrorResponse(400, "Failed to bind json", err.Error(), body)
+		response := utils.ErrorResponse(400, "Error: Failed to bind json", err.Error(), body)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 	session, err := cr.otpUseCase.TwilioVerifyOTP(c.Request.Context(), body)
 	if err != nil {
-		response := utils.ErrorResponse(500, "Failed to verify otp", err.Error(), nil)
+		response := utils.ErrorResponse(500, "Error: Failed to verify otp", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 	NewHashedPassword, err := support.HashPassword(body.NewPassword)
 	if err != nil {
-		response := utils.ErrorResponse(500, "Failed to Hash New password", err.Error(), nil)
+		response := utils.ErrorResponse(500, "Error:  Failed to Hash New password", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 	if err := cr.userUseCase.ChangePassword(c.Request.Context(), NewHashedPassword, session.PhoneNum); err != nil {
-		response := utils.ErrorResponse(500, "Failed to update new password", err.Error(), nil)
+		response := utils.ErrorResponse(500, "Error: Failed to update new password", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "Successfully updated new password", nil)
+	response := utils.SuccessResponse(200, "Success: Successfully updated new password", nil)
 	c.JSON(http.StatusOK, response)
 
 }
@@ -244,9 +239,8 @@ func (cr *UserHandler) ForgotPasswordOtpVerify(c *gin.Context) {
 // USERLOGOUT
 func (cr *UserHandler) LogoutHandler(c *gin.Context) {
 	c.SetCookie("user-token", "", -1, "/", "localhost", false, true)
-	c.JSON(http.StatusOK, gin.H{
-		"logout": "Success",
-	})
+	response := utils.SuccessResponse(200, "Success: Logout Successful", nil)
+	c.JSON(http.StatusOK, response)
 }
 
 // HomeHandler
@@ -267,17 +261,17 @@ func (cr *UserHandler) HomeHandler(c *gin.Context) {
 	// c.JSON(http.StatusOK, user)
 	id, ok := c.Get("user-id")
 	if !ok {
-		response := utils.ErrorResponse(401, "Failed to get the id from the token string", "", nil)
+		response := utils.ErrorResponse(401, "Error: Failed to get the id from the token string", "", nil)
 		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
 	user, err := cr.userUseCase.HomeHandler(c.Request.Context(), id.(uint))
 	if err != nil {
-		response := utils.ErrorResponse(400, "Failed to fetch user details", err.Error(), nil)
+		response := utils.ErrorResponse(400, "Error: Failed to fetch user details", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "Personal details", user)
+	response := utils.SuccessResponse(200, "Success: Personal details", user)
 	c.JSON(http.StatusOK, response)
 
 }
@@ -287,23 +281,23 @@ func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 	id, ok := c.Get("user-id")
 	var body utils.UpdateProfile
 	if !ok {
-		reponse := utils.ErrorResponse(401, "failed to get id from token strin", "", nil)
+		reponse := utils.ErrorResponse(401, "Error: failed to get id from token strin", "", nil)
 		c.JSON(http.StatusUnauthorized, reponse)
 		return
 	}
 	if err := c.BindJSON(&body); err != nil {
-		response := utils.ErrorResponse(400, "Failed to bind Json", err.Error(), nil)
+		response := utils.ErrorResponse(400, "Error: Failed to bind Json", err.Error(), nil)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 	var updateProfile domain.Users
 	copier.Copy(&updateProfile, &body)
 	if err := cr.userUseCase.UpdateProfile(c.Request.Context(), updateProfile, id.(uint)); err != nil {
-		response := utils.ErrorResponse(500, "Failed to update profile", err.Error(), updateProfile)
+		response := utils.ErrorResponse(500, "Error: Failed to update profile", err.Error(), updateProfile)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "Successfully updated profile details", nil)
+	response := utils.SuccessResponse(200, "Success: Successfully updated profile details", nil)
 	c.JSON(http.StatusOK, response)
 }
 
@@ -324,13 +318,13 @@ func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 func (cr *UserHandler) AddAddress(c *gin.Context) {
 	id, ok := c.Get("user-id")
 	if !ok {
-		response := utils.ErrorResponse(401, "Failed to get the id from the token string", "", nil)
+		response := utils.ErrorResponse(401, "Error: Failed to get the id from the token string", "", nil)
 		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
 	var body utils.Address
 	if err := c.BindJSON(&body); err != nil {
-		response := utils.ErrorResponse(400, "Failed to bind JSON body", err.Error(), nil)
+		response := utils.ErrorResponse(400, "Error: Failed to bind JSON body", err.Error(), nil)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
@@ -338,11 +332,11 @@ func (cr *UserHandler) AddAddress(c *gin.Context) {
 	var address domain.Address
 	copier.Copy(&address, &body)
 	if err := cr.userUseCase.AddAddress(c.Request.Context(), address); err != nil {
-		response := utils.ErrorResponse(500, "Failed to add address", err.Error(), nil)
+		response := utils.ErrorResponse(500, "Error: Failed to add address", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "Successfully added the address", nil)
+	response := utils.SuccessResponse(200, "Success: Successfully added the address", nil)
 	c.JSON(http.StatusOK, response)
 
 }
@@ -366,17 +360,17 @@ func (cr *UserHandler) ListAddress(c *gin.Context) {
 	}
 	id, ok := c.Get("user-id")
 	if !ok {
-		response := utils.ErrorResponse(401, "Failed to get the id from the token string", "", nil)
+		response := utils.ErrorResponse(401, "Error: Failed to get the id from the token string", "", nil)
 		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
 	address, err := cr.userUseCase.ListAddress(c.Request.Context(), id.(uint), pagination)
 	if err != nil {
-		response := utils.ErrorResponse(500, "failed to retreive the addresses", err.Error(), nil)
+		response := utils.ErrorResponse(500, "Error: failed to retreive the addresses", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "Addresses:", address)
+	response := utils.SuccessResponse(200, "Success:", address)
 	c.JSON(http.StatusOK, response)
 }
 
@@ -385,7 +379,7 @@ func (cr *UserHandler) UpdateAddress(c *gin.Context) {
 	id := c.Param("addressid")
 	var body utils.UpdateAddress
 	if err := c.BindJSON(&body); err != nil {
-		response := utils.ErrorResponse(400, "Failed to bind Json", err.Error(), nil)
+		response := utils.ErrorResponse(400, "Error: Failed to bind Json", err.Error(), nil)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
@@ -393,11 +387,11 @@ func (cr *UserHandler) UpdateAddress(c *gin.Context) {
 	var updateAddress domain.Address
 	copier.Copy(&updateAddress, &body)
 	if err := cr.userUseCase.UpdateAddress(c.Request.Context(), updateAddress, id); err != nil {
-		response := utils.ErrorResponse(500, "Failed to update the address", err.Error(), updateAddress)
+		response := utils.ErrorResponse(500, "Error: Failed to update the address", err.Error(), updateAddress)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "Updated successfully", updateAddress)
+	response := utils.SuccessResponse(200, "Success: Updated successfully", updateAddress)
 	c.JSON(http.StatusOK, response)
 }
 
@@ -405,11 +399,11 @@ func (cr *UserHandler) UpdateAddress(c *gin.Context) {
 func (cr *UserHandler) DeleteAddress(c *gin.Context) {
 	id := c.Param("addressid")
 	if err := cr.userUseCase.DeleteAddress(c.Request.Context(), id); err != nil {
-		response := utils.ErrorResponse(500, "Failed to delete the address", err.Error(), nil)
+		response := utils.ErrorResponse(500, "Error: Failed to delete the address", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "Successfully deleted the address", nil)
+	response := utils.SuccessResponse(200, "Success: Successfully deleted the address", nil)
 	c.JSON(http.StatusOK, response)
 }
 

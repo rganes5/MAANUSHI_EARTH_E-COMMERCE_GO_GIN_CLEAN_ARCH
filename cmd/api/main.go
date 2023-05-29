@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	_ "github.com/rganes5/maanushi_earth_e-commerce/cmd/api/docs"
 	config "github.com/rganes5/maanushi_earth_e-commerce/pkg/config"
 	di "github.com/rganes5/maanushi_earth_e-commerce/pkg/di"
 )
