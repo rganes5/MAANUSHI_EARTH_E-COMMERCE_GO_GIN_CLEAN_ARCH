@@ -1,6 +1,68 @@
 definitions:
+  utils.Address:
+    properties:
+      area:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
+      house:
+        type: string
+      land_mark:
+        type: string
+      name:
+        type: string
+      phone_number:
+        type: string
+      pincode:
+        type: integer
+      primary:
+        type: boolean
+      state:
+        type: string
+      userid:
+        type: integer
+    required:
+    - city
+    - country
+    - house
+    - land_mark
+    - name
+    - pincode
+    - state
+    type: object
+  utils.LoginBody:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  utils.OtpLogin:
+    properties:
+      email:
+        type: string
+      phonenum:
+        type: string
+    type: object
   utils.OtpSignUpVerify:
     properties:
+      otp:
+        type: string
+      otpid:
+        type: string
+    required:
+    - otp
+    - otpid
+    type: object
+  utils.OtpVerify:
+    properties:
+      newpassword:
+        type: string
       otp:
         type: string
       otpid:
@@ -17,6 +79,48 @@ definitions:
         type: string
       status_code:
         type: integer
+    type: object
+  utils.UpdateAddress:
+    properties:
+      area:
+        type: string
+      city:
+        type: string
+      country:
+        type: string
+      house:
+        type: string
+      land_mark:
+        type: string
+      name:
+        type: string
+      phone_number:
+        type: string
+      pincode:
+        type: integer
+      primary:
+        type: boolean
+      state:
+        type: string
+      userid:
+        type: integer
+    required:
+    - city
+    - country
+    - house
+    - land_mark
+    - name
+    - pincode
+    - state
+    type: object
+  utils.UpdateProfile:
+    properties:
+      email:
+        type: string
+      firstname:
+        type: string
+      lastname:
+        type: string
     type: object
   utils.UsersSignUp:
     properties:
@@ -40,11 +144,355 @@ definitions:
 host: localhost:3000
 info:
   contact: {}
-  description: maanushi_earth_e-commerce REST API built using Go, PSQL, REST API following
+  description: MAANUSHI_EARTH_E-COMMERCE REST API built using Go, PSQL, REST API following
     Clean Architecture.
-  title: maanushi_earth_e-commerce REST API
+  title: MAANUSHI_EARTH_E-COMMERCE REST API
   version: "2.0"
 paths:
+  /user/forgot/password:
+    post:
+      consumes:
+      - application/json
+      description: VERIFY THE EMAIL AND NUMBER AND FIND THE DATA. SEND THE OTP AND
+        VERIFY WITH NEW PASSWORD AND OTP.
+      operationId: USER-FORGOT-PASSWORD
+      parameters:
+      - description: Enter the email and phoneNumber
+        in: body
+        name: login_details
+        required: true
+        schema:
+          $ref: '#/definitions/utils.OtpLogin'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR USER FORGOT PASSWORD OPTION
+      tags:
+      - USER
+  /user/forgot/password/otp/verify:
+    patch:
+      consumes:
+      - application/json
+      description: VERIFY THE OTP AND ENTER A NEW PASSWORD
+      operationId: USER-FORGOT-PASSWORD-OTP-VERIFY
+      parameters:
+      - description: Enter the Otp and New Password
+        in: body
+        name: verify_details
+        required: true
+        schema:
+          $ref: '#/definitions/utils.OtpVerify'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR USER FORGOT PASSWORD OTP VERIFICATION
+      tags:
+      - USER
+  /user/login:
+    post:
+      consumes:
+      - application/json
+      description: VERIFY THE EMAIL,PASSWORD, HASH THE PASSWORD AND GENERATE A JWT
+        TOKEN AND SET IT TO A COOKIE
+      operationId: USER-LOGIN
+      parameters:
+      - description: Enter the email and password
+        in: body
+        name: login_details
+        required: true
+        schema:
+          $ref: '#/definitions/utils.LoginBody'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR USER LOGIN
+      tags:
+      - USER
+  /user/logout:
+    post:
+      consumes:
+      - application/json
+      description: LOGOUT USER AND ALSO CLEAR COOKIES
+      operationId: USER-LOGOUT
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR USER LOGOUT
+      tags:
+      - USER
+  /user/profile/add/address:
+    post:
+      consumes:
+      - application/json
+      description: ADDING NEW ADDRESS TO USER PROFILE
+      operationId: USER-ADD-ADDRESS
+      parameters:
+      - description: Add the address details
+        in: body
+        name: address_details
+        required: true
+        schema:
+          $ref: '#/definitions/utils.Address'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR ADDING ADDRESS
+      tags:
+      - USER
+  /user/profile/delete/address/{addressid}:
+    post:
+      consumes:
+      - application/json
+      description: DELETING EXISTING ADDRESS ON USER PROFILE
+      operationId: USER-DELETE-ADDRESS
+      parameters:
+      - description: Enter the address id that you need to delete
+        in: path
+        name: address_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR DELETING ADDRESS
+      tags:
+      - USER
+  /user/profile/edit/address/{addressid}:
+    patch:
+      consumes:
+      - application/json
+      description: EDITING EXISTING ADDRESS ON USER PROFILE
+      operationId: USER-EDIT-ADDRESS
+      parameters:
+      - description: Enter the address id that you need to update
+        in: path
+        name: address_id
+        required: true
+        type: string
+      - description: edit the address details
+        in: body
+        name: address_details
+        required: true
+        schema:
+          $ref: '#/definitions/utils.UpdateAddress'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR EDITING/UPDATING ADDRESS
+      tags:
+      - USER
+  /user/profile/edit/profile:
+    patch:
+      consumes:
+      - application/json
+      description: EDIT/UPDATE USER PROFILE
+      operationId: USER-PROFILE EDIT
+      parameters:
+      - description: Edit the details as per wish
+        in: body
+        name: update_details
+        required: true
+        schema:
+          $ref: '#/definitions/utils.UpdateProfile'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR EDIT PROFILE
+      tags:
+      - USER
+  /user/profile/home:
+    get:
+      consumes:
+      - application/json
+      description: DISPLAY USER PROFILE
+      operationId: USER-PROFILE
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR USER PROFILE
+      tags:
+      - USER
+  /user/profile/list/address:
+    get:
+      consumes:
+      - application/json
+      description: LISTING ALL ADDRESSES FOR THE PARTICULAR USER
+      operationId: USER-LIST-ADDRESS
+      parameters:
+      - description: Enter the page number to display
+        in: query
+        name: page
+        type: integer
+      - description: Number of items to retrieve per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR LISTING ADDRESSES
+      tags:
+      - USER
   /user/signup:
     post:
       consumes:

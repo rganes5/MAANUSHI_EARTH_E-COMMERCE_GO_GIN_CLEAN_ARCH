@@ -40,9 +40,9 @@ func NewUserHandler(usecase services.UserUseCase, otpusecase services.OtpUseCase
 
 // var otp_user domain.Users
 
-// @title maanushi_earth_e-commerce REST API
+// @title MAANUSHI_EARTH_E-COMMERCE REST API
 // @version 2.0
-// @description maanushi_earth_e-commerce REST API built using Go, PSQL, REST API following Clean Architecture.
+// @description MAANUSHI_EARTH_E-COMMERCE REST API built using Go, PSQL, REST API following Clean Architecture.
 
 // @contact
 // name: Ganesh R
@@ -167,7 +167,19 @@ func (cr *UserHandler) SignupOtpverify(c *gin.Context) {
 	c.JSON(http.StatusOK, response1)
 }
 
-// USERLOGIN
+// USER USERLOGIN
+// @Summary API FOR USER LOGIN
+// @ID USER-LOGIN
+// @Description VERIFY THE EMAIL,PASSWORD, HASH THE PASSWORD AND GENERATE A JWT TOKEN AND SET IT TO A COOKIE
+// @Tags USER
+// @Accept json
+// @Produce json
+// @Param login_details body utils.LoginBody true "Enter the email and password"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/login [post]
 func (cr *UserHandler) LoginHandler(c *gin.Context) {
 	//Cookie check
 	_, err1 := c.Cookie("user-token")
@@ -183,24 +195,31 @@ func (cr *UserHandler) LoginHandler(c *gin.Context) {
 	if err := c.BindJSON(&loginBody); err != nil {
 		response := utils.ErrorResponse(400, "Error: Failed to read json body", err.Error(), loginBody)
 		c.JSON(http.StatusBadRequest, response)
+		return
 	}
 	//Checks whether such user email exits or not and also returns back the user details of that specific user related to the email and stores in user.
 	user, err := cr.userUseCase.FindByEmail(c.Request.Context(), loginBody.Email)
 	if err != nil {
 		response := utils.ErrorResponse(401, "Error: Please check the email", err.Error(), loginBody)
 		c.JSON(http.StatusUnauthorized, response)
+		return
+
 	}
 	//Checks the given password with retreived password to that specific email from the database(user variable)
 	if err := support.CheckPasswordHash(loginBody.Password, user.Password); err != nil {
 		response := utils.ErrorResponse(401, "Error: Please check the password", err.Error(), loginBody)
 		c.JSON(http.StatusUnauthorized, response)
+		return
+
 	}
 
 	//GenerateJWT function from the auth package, passing user.Email and User.ID as an argument. It assigns the generated JWT to the tokenString variable
 	tokenString, err := auth.GenerateJWT(user.Email, user.ID)
 	if err != nil {
-		response := utils.ErrorResponse(401, "Error: Error generating the jwt token", err.Error(), loginBody)
+		response := utils.ErrorResponse(500, "Error: Error generating the jwt token", err.Error(), loginBody)
 		c.JSON(http.StatusInternalServerError, response)
+		return
+
 	}
 
 	//Sets a cookie named "user-token" with the value tokenString. The cookie has an expiration time of 60 minutes from the current time.
@@ -210,7 +229,19 @@ func (cr *UserHandler) LoginHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, response1)
 }
 
-// Forgot password
+// USER FORGOT PASSWORD
+// @Summary API FOR USER FORGOT PASSWORD OPTION
+// @ID USER-FORGOT-PASSWORD
+// @Description VERIFY THE EMAIL AND NUMBER AND FIND THE DATA. SEND THE OTP AND VERIFY WITH NEW PASSWORD AND OTP.
+// @Tags USER
+// @Accept json
+// @Produce json
+// @Param login_details body utils.OtpLogin true "Enter the email and phoneNumber"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/forgot/password [post]
 func (cr *UserHandler) ForgotPassword(c *gin.Context) {
 	var body utils.OtpLogin
 	if err := c.BindJSON(&body); err != nil {
@@ -236,7 +267,19 @@ func (cr *UserHandler) ForgotPassword(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// Forgot password otp verify
+// USER FORGOT PASSWORD OTP VERIFY
+// @Summary API FOR USER FORGOT PASSWORD OTP VERIFICATION
+// @ID USER-FORGOT-PASSWORD-OTP-VERIFY
+// @Description VERIFY THE OTP AND ENTER A NEW PASSWORD
+// @Tags USER
+// @Accept json
+// @Produce json
+// @Param verify_details body utils.OtpVerify true "Enter the Otp and New Password"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/forgot/password/otp/verify [patch]
 func (cr *UserHandler) ForgotPasswordOtpVerify(c *gin.Context) {
 	var body utils.OtpVerify
 	if err := c.BindJSON(&body); err != nil {
@@ -267,13 +310,35 @@ func (cr *UserHandler) ForgotPasswordOtpVerify(c *gin.Context) {
 }
 
 // USERLOGOUT
+// @Summary API FOR USER LOGOUT
+// @ID USER-LOGOUT
+// @Description LOGOUT USER AND ALSO CLEAR COOKIES
+// @Tags USER
+// @Accept json
+// @Produce json
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/logout [post]
 func (cr *UserHandler) LogoutHandler(c *gin.Context) {
 	c.SetCookie("user-token", "", -1, "/", "localhost", false, true)
 	response := utils.SuccessResponse(200, "Success: Logout Successful", nil)
 	c.JSON(http.StatusOK, response)
 }
 
-// HomeHandler
+// USER PROFILE
+// @Summary API FOR USER PROFILE
+// @ID USER-PROFILE
+// @Description DISPLAY USER PROFILE
+// @Tags USER
+// @Accept json
+// @Produce json
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/profile/home [get]
 func (cr *UserHandler) HomeHandler(c *gin.Context) {
 	// email, ok := c.Get(("user-email"))
 	// if !ok {
@@ -297,7 +362,7 @@ func (cr *UserHandler) HomeHandler(c *gin.Context) {
 	}
 	user, err := cr.userUseCase.HomeHandler(c.Request.Context(), id.(uint))
 	if err != nil {
-		response := utils.ErrorResponse(400, "Error: Failed to fetch user details", err.Error(), nil)
+		response := utils.ErrorResponse(500, "Error: Failed to fetch user details", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
@@ -306,7 +371,19 @@ func (cr *UserHandler) HomeHandler(c *gin.Context) {
 
 }
 
-// update personal details
+// EDIT PROFILE
+// @Summary API FOR EDIT PROFILE
+// @ID USER-PROFILE EDIT
+// @Description EDIT/UPDATE USER PROFILE
+// @Tags USER
+// @Accept json
+// @Produce json
+// @Param update_details body utils.UpdateProfile true "Edit the details as per wish"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/profile/edit/profile [patch]
 func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 	id, ok := c.Get("user-id")
 	var body utils.UpdateProfile
@@ -344,7 +421,19 @@ func (cr *UserHandler) UpdateProfile(c *gin.Context) {
 // 	c.JSON(http.StatusOK, response)
 // }
 
-// Add Address
+// ADD ADDRESS
+// @Summary API FOR ADDING ADDRESS
+// @ID USER-ADD-ADDRESS
+// @Description ADDING NEW ADDRESS TO USER PROFILE
+// @Tags USER
+// @Accept json
+// @Produce json
+// @Param address_details body utils.Address true "Add the address details"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/profile/add/address [post]
 func (cr *UserHandler) AddAddress(c *gin.Context) {
 	id, ok := c.Get("user-id")
 	if !ok {
@@ -371,7 +460,20 @@ func (cr *UserHandler) AddAddress(c *gin.Context) {
 
 }
 
-// List address
+// LIST ADDRESS
+// @Summary API FOR LISTING ADDRESSES
+// @ID USER-LIST-ADDRESS
+// @Description LISTING ALL ADDRESSES FOR THE PARTICULAR USER
+// @Tags USER
+// @Accept json
+// @Produce json
+// @Param page query int false "Enter the page number to display"
+// @Param limit query int false "Number of items to retrieve per page"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/profile/list/address [get]
 func (cr *UserHandler) ListAddress(c *gin.Context) {
 	page, err := strconv.Atoi(c.Query("page"))
 	if err != nil {
@@ -404,7 +506,20 @@ func (cr *UserHandler) ListAddress(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// Edit address
+// EDIT ADDRESS
+// @Summary API FOR EDITING/UPDATING ADDRESS
+// @ID USER-EDIT-ADDRESS
+// @Description EDITING EXISTING ADDRESS ON USER PROFILE
+// @Tags USER
+// @Accept json
+// @Produce json
+// @Param address_id path string true "Enter the address id that you need to update"
+// @Param address_details body utils.UpdateAddress true "edit the address details"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/profile/edit/address/{addressid} [patch]
 func (cr *UserHandler) UpdateAddress(c *gin.Context) {
 	id := c.Param("addressid")
 	var body utils.UpdateAddress
@@ -425,7 +540,19 @@ func (cr *UserHandler) UpdateAddress(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// Delete adderss
+// DELETE ADDRESS
+// @Summary API FOR DELETING ADDRESS
+// @ID USER-DELETE-ADDRESS
+// @Description DELETING EXISTING ADDRESS ON USER PROFILE
+// @Tags USER
+// @Accept json
+// @Produce json
+// @Param address_id path string true "Enter the address id that you need to delete"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/profile/delete/address/{addressid} [post]
 func (cr *UserHandler) DeleteAddress(c *gin.Context) {
 	id := c.Param("addressid")
 	if err := cr.userUseCase.DeleteAddress(c.Request.Context(), id); err != nil {

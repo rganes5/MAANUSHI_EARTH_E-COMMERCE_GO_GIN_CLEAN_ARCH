@@ -23,8 +23,19 @@ func NewAdminHandler(usecase services.AdminUseCase) *AdminHandler {
 	}
 }
 
-// Variable declared containing type as Admin which is already initialiazed in domain folder.
-
+// ADMIN SIGN-UP WITH SENDING OTP
+// @Summary API FOR NEW USER SIGN UP
+// @ID SIGNUP-USER
+// @Description CREATE A NEW USER WITH REQUIRED DETAILS
+// @Tags USER
+// @Accept json
+// @Produce json
+// @Param user_details body utils.UsersSignUp true "New user Details"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/signup [post]
 func (cr *AdminHandler) AdminSignUp(c *gin.Context) {
 	var signUp_admin domain.Admin
 
