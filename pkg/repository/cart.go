@@ -69,14 +69,6 @@ func (c *cartDatabase) FindDuplicateProduct(ctx context.Context, productId strin
 	return duplicateItem, nil
 }
 
-func (c *cartDatabase) DeleteFromCart(ctx context.Context, productId string, existingItem domain.CartItem) error {
-	err := c.DB.Where("product_id=?", productId).Delete(&existingItem).Error
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func (c *cartDatabase) ListCart(ctx context.Context, id uint, pagination utils.Pagination) ([]utils.ResponseCart, error) {
 	var cartDetails []utils.ResponseCart
 	offset := pagination.Offset
@@ -149,5 +141,27 @@ func (c *cartDatabase) AddNewItem(ctx context.Context, newItem domain.CartItem) 
 		return err
 	}
 	fmt.Println("new item updated from add item is", newItem.ProductId)
+	return nil
+}
+
+func (c *cartDatabase) DeleteFromCart(ctx context.Context, productId string, existingItem domain.CartItem) error {
+	var grantTotal int
+	tx := c.DB.Begin()
+	if err := c.DB.Where("product_id=?", productId).Delete(&existingItem).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Model(&domain.CartItem{}).Where("cart_id=?", existingItem.CartID).Select("SUM(total_price)").Scan(&grantTotal).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Model(&domain.Cart{}).Where("id=?", existingItem.CartID).UpdateColumn("grand_total", grantTotal).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return err
+	}
 	return nil
 }
