@@ -42,8 +42,8 @@ func (c *ProductUseCase) DeleteCategory(ctx context.Context, id string) error {
 	return err
 }
 
-func (c *ProductUseCase) ListCategories(ctx context.Context) ([]utils.ResponseCategory, error) {
-	categories, err := c.ProductRepo.ListCategories(ctx)
+func (c *ProductUseCase) ListCategories(ctx context.Context, pagination utils.Pagination) ([]utils.ResponseCategory, error) {
+	categories, err := c.ProductRepo.ListCategories(ctx, pagination)
 	return categories, err
 }
 

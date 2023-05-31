@@ -58,10 +58,12 @@ func (c *productDatabase) DeleteCategory(ctx context.Context, id string) error {
 
 //List categories
 
-func (c *productDatabase) ListCategories(ctx context.Context) ([]utils.ResponseCategory, error) {
+func (c *productDatabase) ListCategories(ctx context.Context, pagination utils.Pagination) ([]utils.ResponseCategory, error) {
 	var categories []utils.ResponseCategory
-	query := `select category_name from categories where deleted_at is null`
-	err := c.DB.Raw(query).Scan(&categories).Error
+	offset := pagination.Offset
+	limit := pagination.Limit
+	query := `select id,category_name from categories where deleted_at is null LIMIT $1 OFFSET $2`
+	err := c.DB.Raw(query, limit, offset).Scan(&categories).Error
 	if err != nil {
 		return categories, err
 	}
@@ -92,7 +94,7 @@ func (c *productDatabase) DeleteProduct(ctx context.Context, id string) error {
 //Edit product
 
 func (c *productDatabase) EditProduct(ctx context.Context, product domain.Products, id string) error {
-	err := c.DB.Model(&domain.Products{}).Where("id = ?", id).Updates(&product).Error
+	err := c.DB.Model(&domain.Products{}).Where("id = ?", id).UpdateColumns(&product).Error
 	if err != nil {
 		return err
 	}
@@ -105,7 +107,7 @@ func (c *productDatabase) ListProducts(ctx context.Context, pagination utils.Pag
 	var products []utils.ResponseProduct
 	offset := pagination.Offset
 	limit := pagination.Limit
-	query := `select product_name,image,details,price,discount_price from products where deleted_at is null LIMIT $1 OFFSET $2`
+	query := `select id,product_name,image,details,price,discount_price from products where deleted_at is null LIMIT $1 OFFSET $2`
 	err := c.DB.Raw(query, limit, offset).Scan(&products).Error
 	if err != nil {
 		return products, err

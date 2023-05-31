@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jinzhu/copier"
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/auth"
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/support"
@@ -25,26 +26,28 @@ func NewAdminHandler(usecase services.AdminUseCase) *AdminHandler {
 
 // ADMIN SIGN-UP WITH SENDING OTP
 // @Summary API FOR NEW USER SIGN UP
-// @ID SIGNUP-USER
-// @Description CREATE A NEW USER WITH REQUIRED DETAILS
-// @Tags USER
+// @ID SIGNUP-ADMIN
+// @Description CREATE A NEW ADMIN WITH REQUIRED DETAILS
+// @Tags ADMIN
 // @Accept json
 // @Produce json
-// @Param user_details body utils.UsersSignUp true "New user Details"
+// @Param admin_details body utils.AdminSignUp true "New Admin Details"
 // @Success 200 {object} utils.Response
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
 // @Failure 500 {object} utils.Response
-// @Router /user/signup [post]
+// @Router /admin/signup [post]
 func (cr *AdminHandler) AdminSignUp(c *gin.Context) {
-	var signUp_admin domain.Admin
+	var body utils.AdminSignUp
 
 	//Binding
-	if err := c.BindJSON(&signUp_admin); err != nil {
-		response := utils.ErrorResponse(400, "Error: Failed to read json body", err.Error(), signUp_admin)
+	if err := c.BindJSON(&body); err != nil {
+		response := utils.ErrorResponse(400, "Error: Failed to read json body", err.Error(), body)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
+	var signUp_admin domain.Admin
+	copier.Copy(&signUp_admin, &body)
 
 	//Check the email format
 	if err := support.Email_validator(signUp_admin.Email); err != nil {
@@ -80,7 +83,19 @@ func (cr *AdminHandler) AdminSignUp(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// admin login
+// ADMIN LOGIN
+// @Summary API FOR ADMIN LOGIN
+// @ID ADMIN-LOGIN
+// @Description VERIFY THE EMAIL,PASSWORD, HASH THE PASSWORD AND GENERATE A JWT TOKEN AND SET IT TO A COOKIE
+// @Tags ADMIN
+// @Accept json
+// @Produce json
+// @Param login_details body utils.LoginBody true "Enter the email and password"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /admin/login [post]
 func (cr *AdminHandler) AdminLogin(c *gin.Context) {
 	//Checks whether a jwt token already exists
 	_, err := c.Cookie("admin-token")
@@ -123,8 +138,18 @@ func (cr *AdminHandler) AdminLogin(c *gin.Context) {
 	c.JSON(http.StatusOK, response1)
 }
 
-//admin logout
-
+// ADMIN LOGOUT
+// @Summary API FOR ADMIN LOGOUT
+// @ID ADMIN-LOGOUT
+// @Description ADMIN LOGOUT
+// @Tags ADMIN
+// @Accept json
+// @Produce json
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /admin/logout [post]
 func (cr *AdminHandler) Logout(c *gin.Context) {
 	c.SetCookie("admin-token", "", -1, "/", "localhost", false, true)
 	response := utils.SuccessResponse(200, "Success: Logout Successful", nil)
@@ -132,8 +157,18 @@ func (cr *AdminHandler) Logout(c *gin.Context) {
 
 }
 
-//home handler
-
+// ADMIN PROFILE
+// @Summary API FOR ADMIN PROFILE
+// @ID ADMIN-PROFILE
+// @Description DISPLAY ADMIN PROFILE
+// @Tags ADMIN
+// @Accept json
+// @Produce json
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /admin/home [get]
 func (cr *AdminHandler) HomeHandler(c *gin.Context) {
 	email, ok := c.Get(("admin-email"))
 	if !ok {
@@ -152,8 +187,20 @@ func (cr *AdminHandler) HomeHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-//list users
-
+// LIST USERS
+// @Summary API FOR LISTING USERS
+// @ID ADMIN-LIST-USERS
+// @Description LISTING ALL EXISTING USERS
+// @Tags ADMIN
+// @Accept json
+// @Produce json
+// @Param page query int false "Enter the page number to display"
+// @Param limit query int false "Number of items to retrieve per page"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /admin/user [get]
 func (cr *AdminHandler) ListUsers(c *gin.Context) {
 	page, err := strconv.Atoi(c.Query("page"))
 	if err != nil {
@@ -179,12 +226,29 @@ func (cr *AdminHandler) ListUsers(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-//Block and unblock
-
+// ACCESS HANDLER
+// @Summary API FOR BLOCKING/UNBLOCKING USERS
+// @ID ADMIN-ACCESS
+// @Description GRANTING ACCESS FOR INDIVIDUAL USERS.
+// @Tags ADMIN
+// @Accept json
+// @Produce json
+// @Param user_id path string true "Enter the specific user id"
+// @Param access query string false "Enter true/false"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /admin/user/{user_id}/make [patch]
 func (cr *AdminHandler) AccessHandler(c *gin.Context) {
-	id := c.Param("userid")
+	id := c.Param("user_id")
 	str := c.Query("access")
-	access, _ := strconv.ParseBool(str)
+	access, err1 := strconv.ParseBool(str)
+	if err1 != nil {
+		response := utils.ErrorResponse(400, "Failed to parse the access query", err1.Error(), str)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
 	err := cr.adminUseCase.AccessHandler(c.Request.Context(), id, access)
 	if err != nil {
 		response := utils.ErrorResponse(401, "Error: Failed to update the access", err.Error(), nil)

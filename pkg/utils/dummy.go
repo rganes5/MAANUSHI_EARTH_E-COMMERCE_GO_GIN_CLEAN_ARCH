@@ -1,18 +1,5 @@
 package utils
 
-// UserSignup
-// @Summary api for Signup a new user
-// @ID Signup-user
-// @Description Create a new user with the specified details.
-// @Tags Users Signup
-// @Accept json
-// @Produce json
-// @Param user_details body model.NewUserInfo true "New user Details"
-// @Success 200 {object} res.Response
-// @Failure 500 {object} res.Response
-// @Failure 422 {object} res.Response
-// @Router /user/signup [post]
-
 //BLOCK AND UNBLOCK
 //
 // if err := Db.Where("id = ?", input.ID).First(&user).Error; err != nil {

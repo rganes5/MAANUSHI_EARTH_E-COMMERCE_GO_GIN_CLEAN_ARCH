@@ -13,6 +13,14 @@ type UsersSignUp struct {
 	Password  string `json:"password" binding:"required"`
 }
 
+type AdminSignUp struct {
+	FirstName string `json:"firstname" binding:"required"`
+	LastName  string `json:"lastname" binding:"required"`
+	Email     string `json:"email" binding:"required"`
+	PhoneNum  string `json:"Phonenum" binding:"required"`
+	Password  string `json:"password" binding:"required"`
+}
+
 type OtpVerify struct {
 	Otp         string `json:"otp" binding:"required"`
 	OtpID       string `json:"otpid" binding:"required"`
@@ -34,11 +42,15 @@ type OtpLogin struct {
 	PhoneNum string `json:"phonenum"`
 }
 
+type AddCategory struct {
+	CategoryName string `json:"categoryname"`
+}
+
 type Products struct {
-	ProductName   string `json:"productname" binding:"required" gorm:"uniqueIndex;not null"`
-	Image         string `json:"image" gorm:"not null"`
+	ProductName   string `json:"productname"`
+	Image         string `json:"image"`
 	Details       string `json:"details"`
-	Price         uint   `json:"price" gorm:"not null" binding:"required,numeric"`
+	Price         uint   `json:"price"`
 	DiscountPrice uint   `json:"discountprice"`
 	CategoryID    uint   `json:"categoryid"`
 	// Category    Category `gorm:"foreignKey:CategoryID"`

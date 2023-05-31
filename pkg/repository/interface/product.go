@@ -12,7 +12,7 @@ type ProductRepository interface {
 	UpdateCategory(ctx context.Context, categories domain.Category, id string) error
 	DeleteCategory(ctx context.Context, id string) error
 	CheckItemsPresent(ctx context.Context, id string) (domain.Products, error)
-	ListCategories(ctx context.Context) ([]utils.ResponseCategory, error)
+	ListCategories(ctx context.Context, pagination utils.Pagination) ([]utils.ResponseCategory, error)
 	AddProduct(ctx context.Context, product domain.Products) error
 	DeleteProduct(ctx context.Context, id string) error
 	EditProduct(ctx context.Context, product domain.Products, id string) error

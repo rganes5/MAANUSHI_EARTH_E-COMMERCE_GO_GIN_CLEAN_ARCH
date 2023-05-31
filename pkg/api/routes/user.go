@@ -28,6 +28,11 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 		//AuthorizationMiddleware as middleware to perform authorization checks for users accessing the "/user" endpoint.
 		home.Use(middleware.AuthorizationMiddleware("user"))
 		home.POST("/logout", userHandler.LogoutHandler)
+		category := home.Group("/category")
+		{
+			category.GET("/listall", productHandler.ListCategories)
+			// category.GET("/list/categorybased/products", productHandler.ListCategoryBasedProducts)
+		}
 		product := home.Group("/products")
 		{
 			product.GET("/listall", productHandler.ListProducts)
@@ -44,8 +49,8 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 			userprofile.PATCH("/edit/profile", userHandler.UpdateProfile)
 			userprofile.POST("/add/address", userHandler.AddAddress)
 			userprofile.GET("/list/address", userHandler.ListAddress)
-			userprofile.PATCH("/edit/address/:addressid", userHandler.UpdateAddress)
-			userprofile.POST("/delete/address/:addressid", userHandler.DeleteAddress)
+			userprofile.PATCH("/edit/address/:address_id", userHandler.UpdateAddress)
+			userprofile.POST("/delete/address/:address_id", userHandler.DeleteAddress)
 		}
 	}
 

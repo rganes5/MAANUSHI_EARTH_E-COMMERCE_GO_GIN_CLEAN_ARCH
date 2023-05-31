@@ -4,6 +4,7 @@ import "strings"
 
 // struct used to list all users from admins end
 type ResponseUsers struct {
+	ID        uint   `json:"id"`
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`
 	Email     string `json:"email"`
@@ -13,6 +14,7 @@ type ResponseUsers struct {
 
 // struct used to list all users from admins end
 type ResponseUsersDetails struct {
+	ID        uint   `json:"id"`
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`
 	Email     string `json:"email"`
@@ -20,10 +22,14 @@ type ResponseUsersDetails struct {
 }
 
 // struct to list all categories from admins end
-type ResponseCategory string
+type ResponseCategory struct {
+	ID           uint   `json:"id"`
+	CategoryName string `json:"category_name"`
+}
 
 // struct to list all products from admins and users end
 type ResponseProduct struct {
+	ID            string `json:"id"`
 	ProductName   string `json:"productname"`
 	Image         string `json:"image"`
 	Details       string `json:"details"`
@@ -58,16 +64,17 @@ type ResponseProductAndDetails struct {
 // }
 
 type ResponseAddress struct {
-	Name        string `json:"name" gorm:"not null" binding:"required"`
+	ID          uint   `json:"id"`
+	Name        string `json:"name"`
 	PhoneNumber string `json:"phone_number"`
-	House       string `json:"house" gorm:"not null" binding:"required"`
+	House       string `json:"house"`
 	Area        string `json:"area"`
-	LandMark    string `json:"land_mark" gorm:"not null" binding:"required"`
-	City        string `json:"city"  binding:"required"`
-	Pincode     uint   `json:"pincode" gorm:"not null" binding:"required"`
-	State       string `json:"state" binding:"required" gorm:"not null"`
-	Country     string `json:"country" binding:"required" gorm:"not null"`
-	Primary     bool   `json:"primary" gorm:"default:false"`
+	LandMark    string `json:"land_mark"`
+	City        string `json:"city"`
+	Pincode     uint   `json:"pincode"`
+	State       string `json:"state"`
+	Country     string `json:"country"`
+	Primary     bool   `json:"primary"`
 }
 
 // ERROR MANAGEMENT

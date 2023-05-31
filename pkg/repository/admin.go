@@ -39,7 +39,7 @@ func (c *adminDatabase) ListUsers(ctx context.Context, pagination utils.Paginati
 	offset := pagination.Offset
 	limit := pagination.Limit
 	var users []utils.ResponseUsers
-	query := `SELECT first_name,last_name,email,phone_num,block from users LIMIT $1 OFFSET $2`
+	query := `SELECT id,first_name,last_name,email,phone_num,block from users LIMIT $1 OFFSET $2`
 	err := c.DB.Raw(query, limit, offset).Scan(&users).Error
 	if err != nil {
 		return users, errors.New("failed to retrieve all the users")

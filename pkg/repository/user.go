@@ -99,7 +99,7 @@ func (c *userDatabase) UpdateVerify(ctx context.Context, PhoneNum string) error 
 // User home handler
 func (c *userDatabase) HomeHandler(ctx context.Context, id uint) (utils.ResponseUsersDetails, error) {
 	var user utils.ResponseUsersDetails
-	query := `SELECT first_name,last_name,email,phone_num from users where id=?`
+	query := `SELECT id,first_name,last_name,email,phone_num from users where id=?`
 	err := c.DB.Raw(query, id).Scan(&user).Error
 	if err != nil {
 		return user, err
@@ -130,7 +130,7 @@ func (c *userDatabase) ListAddress(ctx context.Context, id uint, pagination util
 	offset := pagination.Offset
 	limit := pagination.Limit
 	var address []utils.ResponseAddress
-	query := `SELECT name, phone_number, house, area, land_mark, city, pincode, state, country, "primary" FROM addresses WHERE deleted_at IS NULL AND user_id = ? LIMIT ? OFFSET ?`
+	query := `SELECT id, name, phone_number, house, area, land_mark, city, pincode, state, country, "primary" FROM addresses WHERE deleted_at IS NULL AND user_id = ? LIMIT ? OFFSET ?`
 	err := c.DB.Raw(query, id, limit, offset).Scan(&address).Error
 	if err != nil {
 		return address, err

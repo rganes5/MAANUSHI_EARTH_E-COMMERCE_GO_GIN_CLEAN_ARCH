@@ -519,9 +519,9 @@ func (cr *UserHandler) ListAddress(c *gin.Context) {
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
 // @Failure 500 {object} utils.Response
-// @Router /user/profile/edit/address/{addressid} [patch]
+// @Router /user/profile/edit/address/{address_id} [patch]
 func (cr *UserHandler) UpdateAddress(c *gin.Context) {
-	id := c.Param("addressid")
+	id := c.Param("address_id")
 	var body utils.UpdateAddress
 	if err := c.BindJSON(&body); err != nil {
 		response := utils.ErrorResponse(400, "Error: Failed to bind Json", err.Error(), nil)
@@ -552,9 +552,9 @@ func (cr *UserHandler) UpdateAddress(c *gin.Context) {
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
 // @Failure 500 {object} utils.Response
-// @Router /user/profile/delete/address/{addressid} [post]
+// @Router /user/profile/delete/address/{address_id} [post]
 func (cr *UserHandler) DeleteAddress(c *gin.Context) {
-	id := c.Param("addressid")
+	id := c.Param("address_id")
 	if err := cr.userUseCase.DeleteAddress(c.Request.Context(), id); err != nil {
 		response := utils.ErrorResponse(500, "Error: Failed to delete the address", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)

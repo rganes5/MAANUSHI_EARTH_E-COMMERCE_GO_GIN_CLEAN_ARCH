@@ -23,26 +23,28 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 		users := home.Group("/user")
 		{
 			users.GET("/", adminHandler.ListUsers)
-			users.PATCH("/:userid/make", adminHandler.AccessHandler)
+			users.PATCH("/:user_id/make", adminHandler.AccessHandler)
 		}
 		category := home.Group("/category")
 		{
 			category.POST("/add", productHandler.AddCategory)
-			category.PATCH("/update/:categoryid", productHandler.UpdateCategory)
-			category.POST("/delete/:categoryid", productHandler.DeleteCategory)
+			category.PATCH("/update/:category_id", productHandler.UpdateCategory)
+			category.POST("/delete/:category_id", productHandler.DeleteCategory)
 			category.GET("/listall", productHandler.ListCategories)
 		}
 		products := home.Group("/products")
 		{
 			products.POST("/add", productHandler.AddProduct)
-			products.POST("/delete/:productid", productHandler.DeleteProduct)
-			products.PATCH("/update/:productid", productHandler.EditProduct)
+			products.POST("/delete/:product_id", productHandler.DeleteProduct)
+			products.PATCH("/update/:product_id", productHandler.EditProduct)
 			products.GET("/listall", productHandler.ListProducts)
 		}
 		productDetails := home.Group("/productsDetails")
 		{
 			productDetails.POST("/add", productHandler.AddProductDetails)
-			productDetails.GET("/findproductdetails/:productid", productHandler.ListProductDetailsById)
+			productDetails.GET("/findproductdetails/:product_id", productHandler.ListProductDetailsById)
+			productDetails.GET("/findproductanddetails/:productid", productHandler.ListProductAndDetailsById)
+
 		}
 
 	}

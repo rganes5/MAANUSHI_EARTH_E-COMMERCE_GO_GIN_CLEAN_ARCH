@@ -11,7 +11,7 @@ type ProductUseCase interface {
 	AddCategory(ctx context.Context, category domain.Category) error
 	UpdateCategory(ctx context.Context, categories domain.Category, id string) error
 	DeleteCategory(ctx context.Context, id string) error
-	ListCategories(ctx context.Context) ([]utils.ResponseCategory, error)
+	ListCategories(ctx context.Context, pagination utils.Pagination) ([]utils.ResponseCategory, error)
 	AddProduct(ctx context.Context, products domain.Products) error
 	DeleteProduct(ctx context.Context, id string) error
 	EditProduct(ctx context.Context, product domain.Products, id string) error
