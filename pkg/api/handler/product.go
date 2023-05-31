@@ -27,7 +27,7 @@ func NewProductHandler(service services.ProductUseCase) *ProductHandler {
 // @Summary API FOR ADDING CATEGORY
 // @ID ADMIN-ADD-CATEGORY
 // @Description ADDING CATEGORY FROM ADMINS END
-// @Tags PRODUCT
+// @Tags PRODUCT CATEGORY
 // @Accept json
 // @Produce json
 // @Param category_details body utils.AddCategory true "Enter the category name"
@@ -59,7 +59,7 @@ func (cr *ProductHandler) AddCategory(c *gin.Context) {
 // @Summary API FOR EDITING CATEGORY
 // @ID ADMIN-EDIT-CATEGORY
 // @Description UPDATING CATEGORY NAME FROM ADMINS END
-// @Tags PRODUCT
+// @Tags PRODUCT CATEGORY
 // @Accept json
 // @Produce json
 // @Param category_id path string true "Enter the category id that you would like to make the change"
@@ -92,7 +92,7 @@ func (cr *ProductHandler) UpdateCategory(c *gin.Context) {
 // @Summary API FOR DELETING A CATEGORY
 // @ID ADMIN-DELETE-CATEGORY
 // @Description DELETING CATEGORY AND ALSO CHECKING WHETHER IT HAS A EXISTING PRODUCT
-// @Tags PRODUCT
+// @Tags PRODUCT CATEGORY
 // @Accept json
 // @Produce json
 // @Param category_id path string true "Enter the category id that you would like to delete"
@@ -115,7 +115,7 @@ func (cr *ProductHandler) DeleteCategory(c *gin.Context) {
 // LIST CATEGORY
 // @Summary API FOR LISTING ALL CATEGORIES
 // @Description LISTING ALL CATEGORIES FROM ADMINS AND USERS END
-// @Tags PRODUCT
+// @Tags PRODUCT CATEGORY
 // @Accept json
 // @Produce json
 // @Param page query int false "Enter the page number to display"
@@ -292,11 +292,52 @@ func (cr *ProductHandler) ListProducts(c *gin.Context) {
 
 }
 
+// LIST PRODUCTS BASED ON CATEGORY
+// @Summary API FOR LISTING ALL PRODUCTS BASED ON CATEGORY
+// @Description LISTING ALL PRODUCTS FROM ADMINS AND USERS END BASED ON CATEGORY
+// @Tags PRODUCT
+// @Accept json
+// @Produce json
+// @Param category_id path string true "Enter the category id"
+// @Param page query int false "Enter the page number to display"
+// @Param limit query int false "Number of items to retrieve per page"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/products/listbasedoncategory/{category_id} [get]
+// @Router /admin/products/listbasedoncategory/{category_id} [get]
+func (cr *ProductHandler) ListProductsBasedOnCategory(c *gin.Context) {
+	id := c.Param("category_id")
+	page, err := strconv.Atoi(c.Query("page"))
+	if err != nil {
+		page = 1 // Default page number is 1 if not provided
+	}
+
+	limit, err := strconv.Atoi(c.Query("limit"))
+	if err != nil || limit <= 0 {
+		limit = 3 // Default limit is 3 items if not provided or if an invalid value is entered
+	}
+	offset := (page - 1) * limit
+	pagination := utils.Pagination{
+		Offset: uint(offset),
+		Limit:  uint(limit),
+	}
+	products, err := cr.productUseCase.ListProductsBasedOnCategory(c.Request.Context(), id, pagination)
+	if err != nil {
+		response := utils.ErrorResponse(500, "Error: failed to retreive products based on the given category", err.Error(), id)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Success: ", products)
+	c.JSON(http.StatusOK, response)
+}
+
 // ADD PRODUCT DETAILS
 // @Summary API FOR ADDING PRODUCT DETAILS
 // @ID ADMIN-ADD-PRODUCT-DETAILS
 // @Description ADDING PRODUCT DETAILS FROM ADMINS END
-// @Tags PRODUCT
+// @Tags PRODUCT DETAILS
 // @Accept json
 // @Produce json
 // @Param product_details body utils.ProductDetails true "Enter the product details"
@@ -326,7 +367,7 @@ func (cr *ProductHandler) AddProductDetails(c *gin.Context) {
 // LIST PRODUCTS DETAILS
 // @Summary API FOR LISTING PRODUCTS DETAILS BY ID
 // @Description LISTING ALL PRODUCTS DETAILS FROM ADMINS AND USERS END
-// @Tags PRODUCT
+// @Tags PRODUCT DETAILS
 // @Accept json
 // @Produce json
 // @Param product_id path string true "Enter the product id that you would like to see the details of"
@@ -334,7 +375,7 @@ func (cr *ProductHandler) AddProductDetails(c *gin.Context) {
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
 // @Failure 500 {object} utils.Response
-// @Router /user/productsDetails/findproductdetails/{product_id} [get]
+// @Router /user/products/findproductdetails/{product_id} [get]
 // @Router /admin/productsDetails/findproductdetails/{product_id} [get]
 func (cr *ProductHandler) ListProductDetailsById(c *gin.Context) {
 	id := c.Param("product_id")
@@ -352,7 +393,7 @@ func (cr *ProductHandler) ListProductDetailsById(c *gin.Context) {
 // LIST PRODUCT AND PRODUCT_DETAILS
 // @Summary API FOR LISTING PRODUCT AND PRODUCT_DETAILS DETAILS BY ID
 // @Description LISTING ALL PRODUCT AND PRODUCT_DETAILS FROM ADMINS AND USERS END
-// @Tags PRODUCT
+// @Tags PRODUCT DETAILS
 // @Accept json
 // @Produce json
 // @Param product_id path string true "Enter the product id that you would like to see the details of"
@@ -360,7 +401,7 @@ func (cr *ProductHandler) ListProductDetailsById(c *gin.Context) {
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
 // @Failure 500 {object} utils.Response
-// @Router /user/productsDetails/findproductanddetails/{product_id} [get]
+// @Router /user/products/findproductanddetails/{product_id} [get]
 // @Router /admin/productsDetails/findproductanddetails/{product_id} [get]
 func (cr *ProductHandler) ListProductAndDetailsById(c *gin.Context) {
 	id := c.Param("product_id")
@@ -375,7 +416,36 @@ func (cr *ProductHandler) ListProductAndDetailsById(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// EDIT product details
-// func (cr *ProductHandler) UpdateProductDetailsbyId(c *gin.Context) {
-// 	id:= c.Param("productdetailsid")
-// }
+// EDIT PRODUCT DETAILS BY ID
+// @Summary API FOR EDITING PRODUCT DETAILS
+// @ID ADMIN-EDIT-PRODUCT-DETAILS
+// @Description UPDATING PRODUCT DETAILS FROM ADMINS END
+// @Tags PRODUCT DETAILS
+// @Accept json
+// @Produce json
+// @Param productDetails_id path string true "Enter the product details id that you would like to make the change"
+// @Param product_details body utils.ProductDetails true "Enter the product details"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /admin/productsDetails/update/{product_id} [patch]
+func (cr *ProductHandler) UpdateProductDetailsbyId(c *gin.Context) {
+	id := c.Param("productDetails_id")
+	var body utils.ProductDetails
+
+	if err := c.BindJSON(&body); err != nil {
+		response := utils.ErrorResponse(400, "Error: Failed to bind json body", err.Error(), body)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	var product_details domain.ProductDetails
+	copier.Copy(&product_details, &body)
+	if err := cr.productUseCase.EditProductDetailsById(c.Request.Context(), product_details, id); err != nil {
+		response := utils.ErrorResponse(500, "Error: Failed to update the details", err.Error(), body)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Success: Successfully edited the product details", body)
+	c.JSON(http.StatusOK, response)
+}

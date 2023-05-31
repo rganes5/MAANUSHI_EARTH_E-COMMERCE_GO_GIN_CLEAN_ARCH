@@ -107,8 +107,52 @@ func (c *productDatabase) ListProducts(ctx context.Context, pagination utils.Pag
 	var products []utils.ResponseProduct
 	offset := pagination.Offset
 	limit := pagination.Limit
-	query := `select id,product_name,image,details,price,discount_price from products where deleted_at is null LIMIT $1 OFFSET $2`
+	query := `SELECT
+    products.id,
+    products.product_name,
+    products.image,
+    products.details,
+	products.price,
+	products.discount_price,
+    products.category_id,
+	categories.category_name
+	FROM
+    products
+	INNER JOIN
+    categories ON products.category_id = categories.id
+	WHERE
+    products.deleted_at IS NULL
+	LIMIT $1 OFFSET $2`
 	err := c.DB.Raw(query, limit, offset).Scan(&products).Error
+	if err != nil {
+		return products, err
+	}
+	return products, nil
+}
+
+// List products based on category
+func (c *productDatabase) ListProductsBasedOnCategory(ctx context.Context, id string, pagination utils.Pagination) ([]utils.ResponseProduct, error) {
+	var products []utils.ResponseProduct
+	offset := pagination.Offset
+	limit := pagination.Limit
+	query := `SELECT
+    products.id,
+    products.product_name,
+    products.image,
+    products.details,
+	products.price,
+	products.discount_price,
+    products.category_id,
+	categories.category_name
+	FROM
+    products
+	INNER JOIN
+    categories ON products.category_id = categories.id
+	WHERE
+    categories.id = $1
+    AND products.deleted_at IS NULL
+	LIMIT $2 OFFSET $3`
+	err := c.DB.Raw(query, id, limit, offset).Scan(&products).Error
 	if err != nil {
 		return products, err
 	}
@@ -124,10 +168,19 @@ func (c *productDatabase) AddProductDetails(ctx context.Context, productDetails 
 	return nil
 }
 
+// Edit product details
+func (c *productDatabase) EditProductDetailsById(ctx context.Context, product_details domain.ProductDetails, id string) error {
+	err := c.DB.Model(&domain.ProductDetails{}).Where("id=?", id).UpdateColumns(&product_details).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // List  product details
 func (c *productDatabase) ListProductDetailsById(ctx context.Context, id string) ([]utils.ResponseProductDetails, error) {
 	var productDetails []utils.ResponseProductDetails
-	query := `SELECT product_details,in_stock FROM product_details WHERE id = ? AND deleted_at IS NULL`
+	query := `SELECT id,product_id,product_details,in_stock FROM product_details WHERE product_id = ? AND deleted_at IS NULL`
 	err := c.DB.Raw(query, id).Scan(&productDetails).Error
 	if err != nil {
 		return productDetails, err
@@ -138,7 +191,9 @@ func (c *productDatabase) ListProductDetailsById(ctx context.Context, id string)
 // List product and details
 func (c *productDatabase) ListProductAndDetailsById(ctx context.Context, id string) ([]utils.ResponseProductAndDetails, error) {
 	var productAndDetails []utils.ResponseProductAndDetails
-	query := `SELECT products.product_name, products.image, products.details, products.price, products.discount_price, product_details.product_details, product_details.in_stock FROM products JOIN product_details ON products.id = product_details.product_id WHERE products.id = ? AND products.deleted_at IS NULL`
+	query := `SELECT product_id,products.product_name, products.image, products.details, products.price, 
+	products.discount_price, product_details.product_details, product_details.in_stock FROM products 
+	JOIN product_details ON products.id = product_details.product_id WHERE products.id = ? AND products.deleted_at IS NULL`
 	err := c.DB.Raw(query, id).Scan(&productAndDetails).Error
 	if err != nil {
 		return productAndDetails, err

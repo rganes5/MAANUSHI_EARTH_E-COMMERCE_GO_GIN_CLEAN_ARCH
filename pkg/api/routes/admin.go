@@ -38,12 +38,15 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 			products.POST("/delete/:product_id", productHandler.DeleteProduct)
 			products.PATCH("/update/:product_id", productHandler.EditProduct)
 			products.GET("/listall", productHandler.ListProducts)
+			products.GET("/listbasedoncategory/:category_id", productHandler.ListProductsBasedOnCategory)
+
 		}
 		productDetails := home.Group("/productsDetails")
 		{
 			productDetails.POST("/add", productHandler.AddProductDetails)
+			productDetails.PATCH("/update/:productDetails_id", productHandler.UpdateProductDetailsbyId)
 			productDetails.GET("/findproductdetails/:product_id", productHandler.ListProductDetailsById)
-			productDetails.GET("/findproductanddetails/:productid", productHandler.ListProductAndDetailsById)
+			productDetails.GET("/findproductanddetails/:product_id", productHandler.ListProductAndDetailsById)
 
 		}
 

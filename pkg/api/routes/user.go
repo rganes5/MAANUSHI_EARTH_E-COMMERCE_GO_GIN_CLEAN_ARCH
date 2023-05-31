@@ -36,12 +36,13 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 		product := home.Group("/products")
 		{
 			product.GET("/listall", productHandler.ListProducts)
-			product.GET("/findproductdetails/:productid", productHandler.ListProductDetailsById)
-			product.GET("/findproductanddetails/:productid", productHandler.ListProductAndDetailsById)
+			product.GET("/listbasedoncategory/:category_id", productHandler.ListProductsBasedOnCategory)
+			product.GET("/findproductdetails/:product_id", productHandler.ListProductDetailsById)
+			product.GET("/findproductanddetails/:product_id", productHandler.ListProductAndDetailsById)
 		}
 		cart := home.Group("cart")
 		{
-			cart.POST("/add/:productid", cartHandler.AddToCart)
+			cart.POST("/add/:product_id", cartHandler.AddToCart)
 		}
 		userprofile := home.Group("/profile")
 		{

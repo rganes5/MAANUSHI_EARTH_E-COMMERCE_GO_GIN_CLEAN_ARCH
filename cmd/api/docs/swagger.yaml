@@ -238,7 +238,7 @@ paths:
             $ref: '#/definitions/utils.Response'
       summary: API FOR ADDING CATEGORY
       tags:
-      - PRODUCT
+      - PRODUCT CATEGORY
   /admin/category/delete/{category_id}:
     post:
       consumes:
@@ -272,7 +272,7 @@ paths:
             $ref: '#/definitions/utils.Response'
       summary: API FOR DELETING A CATEGORY
       tags:
-      - PRODUCT
+      - PRODUCT CATEGORY
   /admin/category/listall:
     get:
       consumes:
@@ -308,7 +308,7 @@ paths:
             $ref: '#/definitions/utils.Response'
       summary: API FOR LISTING ALL CATEGORIES
       tags:
-      - PRODUCT
+      - PRODUCT CATEGORY
   /admin/category/update/{category_id}:
     patch:
       consumes:
@@ -348,7 +348,7 @@ paths:
             $ref: '#/definitions/utils.Response'
       summary: API FOR EDITING CATEGORY
       tags:
-      - PRODUCT
+      - PRODUCT CATEGORY
   /admin/home:
     get:
       consumes:
@@ -546,6 +546,47 @@ paths:
       summary: API FOR LISTING ALL PRODUCTS
       tags:
       - PRODUCT
+  /admin/products/listbasedoncategory/{category_id}:
+    get:
+      consumes:
+      - application/json
+      description: LISTING ALL PRODUCTS FROM ADMINS AND USERS END BASED ON CATEGORY
+      parameters:
+      - description: Enter the category id
+        in: path
+        name: category_id
+        required: true
+        type: string
+      - description: Enter the page number to display
+        in: query
+        name: page
+        type: integer
+      - description: Number of items to retrieve per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR LISTING ALL PRODUCTS BASED ON CATEGORY
+      tags:
+      - PRODUCT
   /admin/products/update/{product_id}:
     patch:
       consumes:
@@ -620,7 +661,7 @@ paths:
             $ref: '#/definitions/utils.Response'
       summary: API FOR ADDING PRODUCT DETAILS
       tags:
-      - PRODUCT
+      - PRODUCT DETAILS
   /admin/productsDetails/findproductanddetails/{product_id}:
     get:
       consumes:
@@ -653,7 +694,7 @@ paths:
             $ref: '#/definitions/utils.Response'
       summary: API FOR LISTING PRODUCT AND PRODUCT_DETAILS DETAILS BY ID
       tags:
-      - PRODUCT
+      - PRODUCT DETAILS
   /admin/productsDetails/findproductdetails/{product_id}:
     get:
       consumes:
@@ -686,7 +727,48 @@ paths:
             $ref: '#/definitions/utils.Response'
       summary: API FOR LISTING PRODUCTS DETAILS BY ID
       tags:
-      - PRODUCT
+      - PRODUCT DETAILS
+  /admin/productsDetails/update/{product_id}:
+    patch:
+      consumes:
+      - application/json
+      description: UPDATING PRODUCT DETAILS FROM ADMINS END
+      operationId: ADMIN-EDIT-PRODUCT-DETAILS
+      parameters:
+      - description: Enter the product details id that you would like to make the
+          change
+        in: path
+        name: productDetails_id
+        required: true
+        type: string
+      - description: Enter the product details
+        in: body
+        name: product_details
+        required: true
+        schema:
+          $ref: '#/definitions/utils.ProductDetails'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR EDITING PRODUCT DETAILS
+      tags:
+      - PRODUCT DETAILS
   /admin/signup:
     post:
       consumes:
@@ -797,6 +879,40 @@ paths:
       summary: API FOR BLOCKING/UNBLOCKING USERS
       tags:
       - ADMIN
+  /user/cart/add/{product_id}:
+    post:
+      consumes:
+      - application/json
+      description: ADDING ITEMS TO CART FROM USERS END
+      operationId: USER-ADD-TO-CART
+      parameters:
+      - description: Enter the product id
+        in: path
+        name: product_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR ADDING PRODUCTS TO CART BY USER
+      tags:
+      - CART
   /user/category/listall:
     get:
       consumes:
@@ -832,7 +948,7 @@ paths:
             $ref: '#/definitions/utils.Response'
       summary: API FOR LISTING ALL CATEGORIES
       tags:
-      - PRODUCT
+      - PRODUCT CATEGORY
   /user/forgot/password:
     post:
       consumes:
@@ -968,6 +1084,72 @@ paths:
       summary: API FOR USER LOGOUT
       tags:
       - USER
+  /user/products/findproductanddetails/{product_id}:
+    get:
+      consumes:
+      - application/json
+      description: LISTING ALL PRODUCT AND PRODUCT_DETAILS FROM ADMINS AND USERS END
+      parameters:
+      - description: Enter the product id that you would like to see the details of
+        in: path
+        name: product_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR LISTING PRODUCT AND PRODUCT_DETAILS DETAILS BY ID
+      tags:
+      - PRODUCT DETAILS
+  /user/products/findproductdetails/{product_id}:
+    get:
+      consumes:
+      - application/json
+      description: LISTING ALL PRODUCTS DETAILS FROM ADMINS AND USERS END
+      parameters:
+      - description: Enter the product id that you would like to see the details of
+        in: path
+        name: product_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR LISTING PRODUCTS DETAILS BY ID
+      tags:
+      - PRODUCT DETAILS
   /user/products/listall:
     get:
       consumes:
@@ -1004,17 +1186,25 @@ paths:
       summary: API FOR LISTING ALL PRODUCTS
       tags:
       - PRODUCT
-  /user/productsDetails/findproductanddetails/{product_id}:
+  /user/products/listbasedoncategory/{category_id}:
     get:
       consumes:
       - application/json
-      description: LISTING ALL PRODUCT AND PRODUCT_DETAILS FROM ADMINS AND USERS END
+      description: LISTING ALL PRODUCTS FROM ADMINS AND USERS END BASED ON CATEGORY
       parameters:
-      - description: Enter the product id that you would like to see the details of
+      - description: Enter the category id
         in: path
-        name: product_id
+        name: category_id
         required: true
         type: string
+      - description: Enter the page number to display
+        in: query
+        name: page
+        type: integer
+      - description: Number of items to retrieve per page
+        in: query
+        name: limit
+        type: integer
       produces:
       - application/json
       responses:
@@ -1034,40 +1224,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.Response'
-      summary: API FOR LISTING PRODUCT AND PRODUCT_DETAILS DETAILS BY ID
-      tags:
-      - PRODUCT
-  /user/productsDetails/findproductdetails/{product_id}:
-    get:
-      consumes:
-      - application/json
-      description: LISTING ALL PRODUCTS DETAILS FROM ADMINS AND USERS END
-      parameters:
-      - description: Enter the product id that you would like to see the details of
-        in: path
-        name: product_id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/utils.Response'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/utils.Response'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/utils.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/utils.Response'
-      summary: API FOR LISTING PRODUCTS DETAILS BY ID
+      summary: API FOR LISTING ALL PRODUCTS BASED ON CATEGORY
       tags:
       - PRODUCT
   /user/profile/add/address:

@@ -26,7 +26,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "PRODUCT"
+                    "PRODUCT CATEGORY"
                 ],
                 "summary": "API FOR ADDING CATEGORY",
                 "operationId": "ADMIN-ADD-CATEGORY",
@@ -79,7 +79,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "PRODUCT"
+                    "PRODUCT CATEGORY"
                 ],
                 "summary": "API FOR DELETING A CATEGORY",
                 "operationId": "ADMIN-DELETE-CATEGORY",
@@ -130,7 +130,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "PRODUCT"
+                    "PRODUCT CATEGORY"
                 ],
                 "summary": "API FOR LISTING ALL CATEGORIES",
                 "parameters": [
@@ -185,7 +185,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "PRODUCT"
+                    "PRODUCT CATEGORY"
                 ],
                 "summary": "API FOR EDITING CATEGORY",
                 "operationId": "ADMIN-EDIT-CATEGORY",
@@ -531,6 +531,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/products/listbasedoncategory/{category_id}": {
+            "get": {
+                "description": "LISTING ALL PRODUCTS FROM ADMINS AND USERS END BASED ON CATEGORY",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PRODUCT"
+                ],
+                "summary": "API FOR LISTING ALL PRODUCTS BASED ON CATEGORY",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Enter the category id",
+                        "name": "category_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Enter the page number to display",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items to retrieve per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/products/update/{product_id}": {
             "patch": {
                 "description": "UPDATING PRODUCT DETAILS FROM ADMINS END",
@@ -601,7 +663,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "PRODUCT"
+                    "PRODUCT DETAILS"
                 ],
                 "summary": "API FOR ADDING PRODUCT DETAILS",
                 "operationId": "ADMIN-ADD-PRODUCT-DETAILS",
@@ -654,7 +716,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "PRODUCT"
+                    "PRODUCT DETAILS"
                 ],
                 "summary": "API FOR LISTING PRODUCT AND PRODUCT_DETAILS DETAILS BY ID",
                 "parameters": [
@@ -704,7 +766,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "PRODUCT"
+                    "PRODUCT DETAILS"
                 ],
                 "summary": "API FOR LISTING PRODUCTS DETAILS BY ID",
                 "parameters": [
@@ -714,6 +776,66 @@ const docTemplate = `{
                         "name": "product_id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/productsDetails/update/{product_id}": {
+            "patch": {
+                "description": "UPDATING PRODUCT DETAILS FROM ADMINS END",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PRODUCT DETAILS"
+                ],
+                "summary": "API FOR EDITING PRODUCT DETAILS",
+                "operationId": "ADMIN-EDIT-PRODUCT-DETAILS",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Enter the product details id that you would like to make the change",
+                        "name": "productDetails_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Enter the product details",
+                        "name": "product_details",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/utils.ProductDetails"
+                        }
                     }
                 ],
                 "responses": {
@@ -910,6 +1032,57 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/cart/add/{product_id}": {
+            "post": {
+                "description": "ADDING ITEMS TO CART FROM USERS END",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CART"
+                ],
+                "summary": "API FOR ADDING PRODUCTS TO CART BY USER",
+                "operationId": "USER-ADD-TO-CART",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Enter the product id",
+                        "name": "product_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/category/listall": {
             "get": {
                 "description": "LISTING ALL CATEGORIES FROM ADMINS AND USERS END",
@@ -920,7 +1093,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "PRODUCT"
+                    "PRODUCT CATEGORY"
                 ],
                 "summary": "API FOR LISTING ALL CATEGORIES",
                 "parameters": [
@@ -1166,6 +1339,106 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/products/findproductanddetails/{product_id}": {
+            "get": {
+                "description": "LISTING ALL PRODUCT AND PRODUCT_DETAILS FROM ADMINS AND USERS END",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PRODUCT DETAILS"
+                ],
+                "summary": "API FOR LISTING PRODUCT AND PRODUCT_DETAILS DETAILS BY ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Enter the product id that you would like to see the details of",
+                        "name": "product_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/products/findproductdetails/{product_id}": {
+            "get": {
+                "description": "LISTING ALL PRODUCTS DETAILS FROM ADMINS AND USERS END",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "PRODUCT DETAILS"
+                ],
+                "summary": "API FOR LISTING PRODUCTS DETAILS BY ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Enter the product id that you would like to see the details of",
+                        "name": "product_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/products/listall": {
             "get": {
                 "description": "LISTING ALL PRODUCTS FROM ADMINS AND USERS END",
@@ -1221,9 +1494,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/productsDetails/findproductanddetails/{product_id}": {
+        "/user/products/listbasedoncategory/{category_id}": {
             "get": {
-                "description": "LISTING ALL PRODUCT AND PRODUCT_DETAILS FROM ADMINS AND USERS END",
+                "description": "LISTING ALL PRODUCTS FROM ADMINS AND USERS END BASED ON CATEGORY",
                 "consumes": [
                     "application/json"
                 ],
@@ -1233,64 +1506,26 @@ const docTemplate = `{
                 "tags": [
                     "PRODUCT"
                 ],
-                "summary": "API FOR LISTING PRODUCT AND PRODUCT_DETAILS DETAILS BY ID",
+                "summary": "API FOR LISTING ALL PRODUCTS BASED ON CATEGORY",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Enter the product id that you would like to see the details of",
-                        "name": "product_id",
+                        "description": "Enter the category id",
+                        "name": "category_id",
                         "in": "path",
                         "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Response"
-                        }
                     },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Response"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/utils.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/productsDetails/findproductdetails/{product_id}": {
-            "get": {
-                "description": "LISTING ALL PRODUCTS DETAILS FROM ADMINS AND USERS END",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "PRODUCT"
-                ],
-                "summary": "API FOR LISTING PRODUCTS DETAILS BY ID",
-                "parameters": [
                     {
-                        "type": "string",
-                        "description": "Enter the product id that you would like to see the details of",
-                        "name": "product_id",
-                        "in": "path",
-                        "required": true
+                        "type": "integer",
+                        "description": "Enter the page number to display",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items to retrieve per page",
+                        "name": "limit",
+                        "in": "query"
                     }
                 ],
                 "responses": {

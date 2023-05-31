@@ -3,9 +3,11 @@ package repository
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 	interfaces "github.com/rganes5/maanushi_earth_e-commerce/pkg/repository/interface"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/utils"
 	"gorm.io/gorm"
 )
 
@@ -25,49 +27,73 @@ func (c *cartDatabase) FindCartById(ctx context.Context, id uint) (domain.Cart, 
 	return cart, nil
 }
 
-//	func (c *cartDatabase) FindProductDetailsById(ctx context.Context, id string) (domain.Products, domain.ProductDetails, error) {
-//		var ProductDetails domain.ProductDetails
-//		var product domain.Products
-//		if err := c.DB.Where("product_id=?", id).Find(&ProductDetails).Error; err != nil {
-//			return products, ProductDetails, err
-//		}
-//		return products, ProductDetails, nil
-//	}
+func (c *cartDatabase) FindProductById(ctx context.Context, productId string) (domain.Products, error) {
+	var product domain.Products
+	// Convert the string productId to a uint
+	pID, err := strconv.ParseUint(productId, 10, 64)
+	if err != nil {
+		return product, err
+	}
+	if err := c.DB.Where("id=?", pID).Find(&product).Error; err != nil {
+		return product, err
+	}
+	return product, nil
+}
 
-// func (c *cartDatabase) FindProductDetailsById(ctx context.Context, id string) (domain.Products, domain.ProductDetails, error) {
-// 	var productDetails domain.ProductDetails
-// 	var product domain.Products
-
-// 	if err := c.DB.Preload("Product").Where("product_id = ?", id).Find(&productDetails).Error; err != nil {
-// 		return product, productDetails, err
-// 	}
-
-// 	return product, productDetails, nil
-// }
-
-func (c *cartDatabase) FindProductDetailsById(ctx context.Context, id string) (domain.ProductDetails, error) {
+func (c *cartDatabase) FindProductDetailsById(ctx context.Context, productId string) (domain.ProductDetails, error) {
 	var productDetails domain.ProductDetails
-	if err := c.DB.Where("product_id = ?", id).Find(&productDetails).Error; err != nil {
+	// Convert the string productId to a uint
+	pDID, err := strconv.ParseUint(productId, 10, 64)
+	if err != nil {
+		return productDetails, err
+	}
+	if err := c.DB.Where("product_id = ?", pDID).Find(&productDetails).Error; err != nil {
 		return productDetails, err
 	}
 
 	return productDetails, nil
 }
 
-func (c *cartDatabase) FindProductById(ctx context.Context, productId string) (domain.Products, error) {
-	var product domain.Products
-	if err := c.DB.Where("id=?", productId).Find(&product).Error; err != nil {
-		return product, err
-	}
-	return product, nil
-}
-
 func (c *cartDatabase) FindDuplicateProduct(ctx context.Context, productId string, cartID uint) (domain.CartItem, error) {
 	var duplicateItem domain.CartItem
-	if err := c.DB.Where("product_id=$1 and id=$2", productId, cartID).Find(&duplicateItem).Error; err != nil {
+	// Convert the string productId to a uint
+	pID, err := strconv.ParseUint(productId, 10, 64)
+	if err != nil {
+		return duplicateItem, err
+	}
+	fmt.Println("this is the productId from the repository of duplicate function", pID)
+	fmt.Println("this is the cartId from the repository of duplicate function", cartID)
+	if err := c.DB.Where("product_id=$1 and cart_id=$2", pID, cartID).Find(&duplicateItem).Error; err != nil {
 		return duplicateItem, err
 	}
 	return duplicateItem, nil
+}
+
+func (c *cartDatabase) ListCart(ctx context.Context, id uint, pagination utils.Pagination) ([]utils.ResponseCart, error) {
+	var cartDetails []utils.ResponseCart
+	offset := pagination.Offset
+	limit := pagination.Limit
+	query := `SELECT
+			 products.product_name,
+			 products.image,
+			 products.details,
+			 categories.category_name,
+			 products.price,
+			 products.discountprice,
+			 cart_items.quantity,
+			 cart_items.total_price, 
+			 FROM
+			 products
+			 INNER JOIN cart_items ON cart_items.product_id=products.id
+			 INNER JOIN categories ON products.category_id=category.id
+			 INNER JOIN carts ON cart_items.cart_id=cart.id
+			 WHERE cart.user_id=?
+			 LIMIT $1 OFFSET $2`
+	err := c.DB.Raw(query, id, limit, offset).Scan(&cartDetails).Error
+	if err != nil {
+		return cartDetails, err
+	}
+	return cartDetails, nil
 }
 
 //result := c.DB.Where("product_detail_id=$1 and cart_id=$2", id, cartid).Find(&exsistitem)
@@ -91,7 +117,7 @@ func (c *cartDatabase) UpdateCartItem(ctx context.Context, existingItem domain.C
 		tx.Rollback()
 		return err
 	}
-
+	fmt.Println("duplicate item updated from update function is", existingItem.ProductId)
 	return nil
 }
 
@@ -114,6 +140,6 @@ func (c *cartDatabase) AddNewItem(ctx context.Context, newItem domain.CartItem) 
 		tx.Rollback()
 		return err
 	}
-	fmt.Println("added item is", newItem)
+	fmt.Println("new item updated from add item is", newItem.ProductId)
 	return nil
 }
