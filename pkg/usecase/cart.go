@@ -122,7 +122,7 @@ func (c *CartUseCase) RemoveFromCart(ctx context.Context, productId string, id u
 				return err
 			}
 		} else if existingItem.Quantity == 1 {
-			err4 := c.CartRepo.DeleteFromCart(ctx, productId, existingItem)
+			err4 := c.CartRepo.DeleteFromCart(ctx, existingItem)
 			if err4 != nil {
 				return err
 			}

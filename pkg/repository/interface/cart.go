@@ -14,6 +14,6 @@ type CartRepository interface {
 	FindProductById(ctc context.Context, productId string) (domain.Products, error)
 	FindDuplicateProduct(ctx context.Context, productId string, cartID uint) (domain.CartItem, error)
 	UpdateCartItem(ctx context.Context, existingItem domain.CartItem) error
-	DeleteFromCart(ctx context.Context, productId string, existingItem domain.CartItem) error
+	DeleteFromCart(ctx context.Context, existingItem domain.CartItem) error
 	AddNewItem(ctx context.Context, newItem domain.CartItem) error
 }

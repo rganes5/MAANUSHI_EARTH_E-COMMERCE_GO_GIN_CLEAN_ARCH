@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strconv"
 
@@ -144,17 +145,18 @@ func (c *cartDatabase) AddNewItem(ctx context.Context, newItem domain.CartItem) 
 	return nil
 }
 
-func (c *cartDatabase) DeleteFromCart(ctx context.Context, productId string, existingItem domain.CartItem) error {
-	var grantTotal int
+func (c *cartDatabase) DeleteFromCart(ctx context.Context, existingItem domain.CartItem) error {
 	tx := c.DB.Begin()
-	if err := c.DB.Where("product_id=?", productId).Delete(&existingItem).Error; err != nil {
+	if err := tx.Model(&domain.CartItem{}).Where("id=?", existingItem.ID).Delete(&existingItem).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
+	var grantTotal sql.NullInt64
 	if err := tx.Model(&domain.CartItem{}).Where("cart_id=?", existingItem.CartID).Select("SUM(total_price)").Scan(&grantTotal).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
+
 	if err := tx.Model(&domain.Cart{}).Where("id=?", existingItem.CartID).UpdateColumn("grand_total", grantTotal).Error; err != nil {
 		tx.Rollback()
 		return err
