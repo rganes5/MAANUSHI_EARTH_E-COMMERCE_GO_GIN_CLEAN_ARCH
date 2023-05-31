@@ -950,6 +950,40 @@ paths:
       summary: API FOR DISPLAYING CART TO USER
       tags:
       - CART
+  /user/cart/remove/{product_id}:
+    post:
+      consumes:
+      - application/json
+      description: REMOVING ITEMS FROM CART FROM USERS END
+      operationId: USER-REMOVE-FROM-CART
+      parameters:
+      - description: Enter the product id
+        in: path
+        name: product_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR REMOVING PRODUCTS TO CART BY USER
+      tags:
+      - CART
   /user/category/listall:
     get:
       consumes:

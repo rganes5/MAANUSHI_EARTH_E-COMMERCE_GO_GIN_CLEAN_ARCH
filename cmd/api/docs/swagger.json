@@ -1131,6 +1131,57 @@
                 }
             }
         },
+        "/user/cart/remove/{product_id}": {
+            "post": {
+                "description": "REMOVING ITEMS FROM CART FROM USERS END",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "CART"
+                ],
+                "summary": "API FOR REMOVING PRODUCTS TO CART BY USER",
+                "operationId": "USER-REMOVE-FROM-CART",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Enter the product id",
+                        "name": "product_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/category/listall": {
             "get": {
                 "description": "LISTING ALL CATEGORIES FROM ADMINS AND USERS END",

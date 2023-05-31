@@ -69,6 +69,14 @@ func (c *cartDatabase) FindDuplicateProduct(ctx context.Context, productId strin
 	return duplicateItem, nil
 }
 
+func (c *cartDatabase) DeleteFromCart(ctx context.Context, productId string, existingItem domain.CartItem) error {
+	err := c.DB.Where("product_id=?", productId).Delete(&existingItem).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (c *cartDatabase) ListCart(ctx context.Context, id uint, pagination utils.Pagination) ([]utils.ResponseCart, error) {
 	var cartDetails []utils.ResponseCart
 	offset := pagination.Offset

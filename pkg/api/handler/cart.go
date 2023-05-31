@@ -51,6 +51,37 @@ func (cr *CartHandler) AddToCart(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// REMOVE ITEMS FROM CART
+// @Summary API FOR REMOVING PRODUCTS TO CART BY USER
+// @ID USER-REMOVE-FROM-CART
+// @Description REMOVING ITEMS FROM CART FROM USERS END
+// @Tags CART
+// @Accept json
+// @Produce json
+// @Param product_id path string true "Enter the product id"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/cart/remove/{product_id} [post]
+func (cr *CartHandler) RemoveFromCart(c *gin.Context) {
+	productId := c.Param("product_id")
+	id, ok := c.Get("user-id")
+	if !ok {
+		response := utils.ErrorResponse(401, "Error: Failed to get the id from the token string", "", nil)
+		c.JSON(http.StatusUnauthorized, response)
+		return
+	}
+	if err := cr.cartUseCase.RemoveFromCart(c.Request.Context(), productId, id.(uint)); err != nil {
+		response := utils.ErrorResponse(500, "Error: Failed to remove the item to cart", err.Error(), productId)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Success: Successfully removed the item to cart", productId)
+	c.JSON(http.StatusOK, response)
+
+}
+
 // LIST CART_DETAILS
 // @Summary API FOR DISPLAYING CART TO USER
 // @ID USER-LIST-CART
