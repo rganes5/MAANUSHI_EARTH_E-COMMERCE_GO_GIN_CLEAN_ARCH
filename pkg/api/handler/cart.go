@@ -96,6 +96,6 @@ func (cr *CartHandler) ListCart(c *gin.Context) {
 		CartItems: viewCart,
 		SubTotal:  grantTotal,
 	}
-	response := utils.SuccessResponse(200, "Success: ", responseCart)
+	response := utils.SuccessResponse(200, "Success: Shopping Cart ", responseCart)
 	c.JSON(http.StatusOK, response)
 }

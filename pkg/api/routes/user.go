@@ -43,6 +43,7 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 		cart := home.Group("cart")
 		{
 			cart.POST("/add/:product_id", cartHandler.AddToCart)
+			cart.GET("/list", cartHandler.ListCart)
 		}
 		userprofile := home.Group("/profile")
 		{

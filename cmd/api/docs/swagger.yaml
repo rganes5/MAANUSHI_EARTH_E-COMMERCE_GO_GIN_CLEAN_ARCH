@@ -913,6 +913,43 @@ paths:
       summary: API FOR ADDING PRODUCTS TO CART BY USER
       tags:
       - CART
+  /user/cart/list:
+    get:
+      consumes:
+      - application/json
+      description: LISTING CART AND ITEMS FROM USERS END
+      operationId: USER-LIST-CART
+      parameters:
+      - description: Enter the page number to display
+        in: query
+        name: page
+        type: integer
+      - description: Number of items to retrieve per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR DISPLAYING CART TO USER
+      tags:
+      - CART
   /user/category/listall:
     get:
       consumes:

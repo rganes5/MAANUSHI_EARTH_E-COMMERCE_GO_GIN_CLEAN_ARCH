@@ -79,16 +79,16 @@ func (c *cartDatabase) ListCart(ctx context.Context, id uint, pagination utils.P
 			 products.details,
 			 categories.category_name,
 			 products.price,
-			 products.discountprice,
+			 products.discount_price,
 			 cart_items.quantity,
-			 cart_items.total_price, 
+			 cart_items.total_price
 			 FROM
 			 products
 			 INNER JOIN cart_items ON cart_items.product_id=products.id
-			 INNER JOIN categories ON products.category_id=category.id
-			 INNER JOIN carts ON cart_items.cart_id=cart.id
-			 WHERE cart.user_id=?
-			 LIMIT $1 OFFSET $2`
+			 INNER JOIN categories ON products.category_id=categories.id
+			 INNER JOIN carts ON cart_items.cart_id=carts.id
+			 WHERE carts.user_id=?
+			 LIMIT $2 OFFSET $3`
 	err := c.DB.Raw(query, id, limit, offset).Scan(&cartDetails).Error
 	if err != nil {
 		return cartDetails, err
