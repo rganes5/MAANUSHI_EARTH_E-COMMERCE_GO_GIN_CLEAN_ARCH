@@ -126,3 +126,11 @@ type ResponseFullCart struct {
 	SubTotal int `json:"subtotal"`
 	// DiscountAmount  uint `json:"discount_amount"`
 }
+
+// type CartItem struct {
+// 	ID         uint `json:"id"`
+// 	CartID     uint `json:"cartid"`
+// 	ProductId  uint `json:"productid"`
+// 	Quantity   uint `json:"quantity"`
+// 	TotalPrice uint `json:"totalprice"`
+// }

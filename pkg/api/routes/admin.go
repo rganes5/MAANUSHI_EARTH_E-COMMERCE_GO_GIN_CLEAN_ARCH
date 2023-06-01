@@ -6,7 +6,7 @@ import (
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/api/middleware"
 )
 
-func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, productHandler *handler.ProductHandler) {
+func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, productHandler *handler.ProductHandler, orderHandler *handler.OrderHandler) {
 	signup := api.Group("/admin")
 	{
 		signup.POST("/signup", adminHandler.AdminSignUp)
