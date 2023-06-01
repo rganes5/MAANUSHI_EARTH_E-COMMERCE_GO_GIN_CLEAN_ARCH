@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strconv"
 
 	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
@@ -20,9 +21,12 @@ func NewOrderRepository(DB *gorm.DB) interfaces.OrderRepository {
 
 // finding eacg cart items rows for each user and storing in a slice
 func (c *orderDatabase) FindCartItems(ctx context.Context, cartID uint) ([]domain.CartItem, error) {
+	fmt.Println("Entered into find cart items function from repository with cartid", cartID)
 	var cartItems []domain.CartItem
-	err := c.DB.Where("cart_id=?", cartID).Find(cartItems).Error
+	err := c.DB.Where("cart_id=?", cartID).Find(&cartItems).Error
+	fmt.Println("cartitems found from the find cart items function from order repository is", cartItems)
 	if err != nil {
+		fmt.Println("err", err)
 		return cartItems, err
 	}
 	return cartItems, nil
@@ -53,7 +57,7 @@ func (c *orderDatabase) SubmitOrder(ctx context.Context, order domain.Order, car
 			return err
 		}
 		//getting the stock details of each item in cart details table
-		if err := tx.Model(&domain.ProductDetails{}).Where("product_id=?", value.ProductId).Select("qty_in_stock").Scan(&stock).Error; err != nil {
+		if err := tx.Model(&domain.ProductDetails{}).Where("product_id=?", value.ProductId).Select("in_stock").Scan(&stock).Error; err != nil {
 			tx.Rollback()
 			return err
 		}
@@ -65,7 +69,7 @@ func (c *orderDatabase) SubmitOrder(ctx context.Context, order domain.Order, car
 		}
 		//updating the remaining stock after placing order from the product details table
 		updatedStock := stock - value.Quantity
-		if err := tx.Model(&domain.ProductDetails{}).Where("product_id=?", value.ProductId).UpdateColumn("qty_in_stock", updatedStock).Error; err != nil {
+		if err := tx.Model(&domain.ProductDetails{}).Where("product_id=?", value.ProductId).UpdateColumn("in_stock", updatedStock).Error; err != nil {
 			tx.Rollback()
 			return err
 		}

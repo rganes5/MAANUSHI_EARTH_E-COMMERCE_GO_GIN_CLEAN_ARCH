@@ -35,8 +35,8 @@ func NewOrderHandler(service services.OrderUseCase) *OrderHandler {
 // @Failure 500 {object} utils.Response
 // @Router /user/checkout/placeorder [post]
 func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
-	addressId, _ := strconv.Atoi(c.Query("address_id"))
 	paymentId, _ := strconv.Atoi(c.Query("payment_id"))
+	addressId, _ := strconv.Atoi(c.Query("address_id"))
 	userId, ok := c.Get("user-id")
 	if !ok {
 		response := utils.ErrorResponse(401, "Error: Failed to get the id from the token string", "", nil)
@@ -45,14 +45,21 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 	}
 	if paymentId == 1 {
 		fmt.Println("COD")
+		fmt.Println("the address id and user id, payment id and user id is from handler are", uint(addressId), uint(paymentId), userId.(uint))
 		if err := cr.orderUseCase.PlaceNewOrder(c.Request.Context(), uint(addressId), uint(paymentId), userId.(uint)); err != nil {
 			response := utils.ErrorResponse(500, "Error: Failed to add to place order", err.Error(), nil)
 			c.JSON(http.StatusInternalServerError, response)
 			return
 		}
-	}
-	if paymentId == 2 {
+	} else if paymentId == 2 {
 		fmt.Println("Razorpay not added yet")
+		response := utils.ErrorResponse(400, "Error: Razorpay payment method is not yet available", "", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	} else {
+		fmt.Println("Please select correct payment method")
+		response := utils.ErrorResponse(400, "Error: Please select correct payment method", "", nil)
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 	response := utils.SuccessResponse(200, "Success: Successfully placed the order", nil)

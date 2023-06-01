@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
@@ -23,11 +24,15 @@ func NewOrderUseCase(repo interfaces.OrderRepository, CartRepo interfaces.CartRe
 
 func (c *OrderUseCase) PlaceNewOrder(ctx context.Context, addressId uint, paymentId uint, userId uint) error {
 	cart, err := c.CartRepo.FindCartById(ctx, userId)
+	fmt.Println("user id passed from to find cart by id from place new order function from use case is", userId)
+	fmt.Println("Cart found from the find cart by id from place new order function from use case is", cart)
 	if err != nil {
 		return err
 	}
+	fmt.Println("1 cartid which is used to find the cartitems table from the use case is", cart.ID)
 
 	cartItems, err1 := c.OrderRepo.FindCartItems(ctx, cart.ID)
+	fmt.Println("2 cartid which is used to find the cartitems table from the use case is", cart.ID)
 	if err1 != nil {
 		return err
 	}
@@ -39,7 +44,7 @@ func (c *OrderUseCase) PlaceNewOrder(ctx context.Context, addressId uint, paymen
 		PaymentID:  paymentId,
 		GrandTotal: uint(cart.GrandTotal),
 	}
-
+	fmt.Println("New order is", Neworder)
 	if err := c.OrderRepo.SubmitOrder(ctx, Neworder, cartItems); err != nil {
 		return err
 	}

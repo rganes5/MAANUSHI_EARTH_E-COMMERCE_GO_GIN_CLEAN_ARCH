@@ -1020,6 +1020,45 @@ paths:
       summary: API FOR LISTING ALL CATEGORIES
       tags:
       - PRODUCT CATEGORY
+  /user/checkout/placeorder:
+    post:
+      consumes:
+      - application/json
+      description: Users can place a new order with the cart items.
+      operationId: USER-PROCEED-ORDER
+      parameters:
+      - description: Enter the payment id
+        in: query
+        name: payment_id
+        required: true
+        type: string
+      - description: Enter the address id
+        in: query
+        name: address_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR PLACING A NEW ORDER
+      tags:
+      - ORDER
   /user/forgot/password:
     post:
       consumes:

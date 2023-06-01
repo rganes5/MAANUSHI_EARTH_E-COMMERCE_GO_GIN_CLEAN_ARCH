@@ -77,21 +77,21 @@ type Address struct {
 	State       string `json:"state" binding:"required" gorm:"not null"`
 	Country     string `json:"country" binding:"required" gorm:"not null"`
 	Primary     bool   `json:"primary" gorm:"default:false"`
-	UserID      uint   `json:"userid"`
+	// UserID      uint   `json:"userid"`
 }
 
 type UpdateAddress struct {
-	Name        string `json:"name" gorm:"not null" binding:"required"`
+	Name        string `json:"name"`
 	PhoneNumber string `json:"phone_number"`
-	House       string `json:"house" gorm:"not null" binding:"required"`
+	House       string `json:"house"`
 	Area        string `json:"area"`
-	LandMark    string `json:"land_mark" gorm:"not null" binding:"required"`
-	City        string `json:"city"  binding:"required"`
-	Pincode     uint   `json:"pincode" gorm:"not null" binding:"required"`
-	State       string `json:"state" binding:"required" gorm:"not null"`
-	Country     string `json:"country" binding:"required" gorm:"not null"`
-	Primary     bool   `json:"primary" gorm:"default:false"`
-	UserID      uint   `json:"userid"`
+	LandMark    string `json:"land_mark"`
+	City        string `json:"city"`
+	Pincode     uint   `json:"pincode"`
+	State       string `json:"state"`
+	Country     string `json:"country"`
+	Primary     bool   `json:"primary"`
+	// UserID      uint   `json:"userid"`
 }
 
 type UpdateProfile struct {

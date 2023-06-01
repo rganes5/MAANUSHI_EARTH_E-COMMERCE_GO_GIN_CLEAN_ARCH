@@ -447,9 +447,9 @@ func (cr *UserHandler) AddAddress(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	body.UserID = id.(uint)
 	var address domain.Address
 	copier.Copy(&address, &body)
+	address.UserID = id.(uint)
 	if err := cr.userUseCase.AddAddress(c.Request.Context(), address); err != nil {
 		response := utils.ErrorResponse(500, "Error: Failed to add address", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)
@@ -522,6 +522,12 @@ func (cr *UserHandler) ListAddress(c *gin.Context) {
 // @Router /user/profile/edit/address/{address_id} [patch]
 func (cr *UserHandler) UpdateAddress(c *gin.Context) {
 	id := c.Param("address_id")
+	userId, ok := c.Get("user-id")
+	if !ok {
+		response := utils.ErrorResponse(401, "Error: Failed to get the id from the token string", "", nil)
+		c.JSON(http.StatusUnauthorized, response)
+		return
+	}
 	var body utils.UpdateAddress
 	if err := c.BindJSON(&body); err != nil {
 		response := utils.ErrorResponse(400, "Error: Failed to bind Json", err.Error(), nil)
@@ -531,6 +537,7 @@ func (cr *UserHandler) UpdateAddress(c *gin.Context) {
 	// body.UserID = id.(uint)
 	var updateAddress domain.Address
 	copier.Copy(&updateAddress, &body)
+	updateAddress.UserID = userId.(uint)
 	if err := cr.userUseCase.UpdateAddress(c.Request.Context(), updateAddress, id); err != nil {
 		response := utils.ErrorResponse(500, "Error: Failed to update the address", err.Error(), updateAddress)
 		c.JSON(http.StatusInternalServerError, response)
