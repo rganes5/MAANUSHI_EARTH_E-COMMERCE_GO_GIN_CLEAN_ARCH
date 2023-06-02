@@ -1,6 +1,9 @@
 package utils
 
-import "strings"
+import (
+	"strings"
+	"time"
+)
 
 // ERROR MANAGEMENT
 
@@ -127,10 +130,20 @@ type ResponseFullCart struct {
 	// DiscountAmount  uint `json:"discount_amount"`
 }
 
-// type CartItem struct {
-// 	ID         uint `json:"id"`
-// 	CartID     uint `json:"cartid"`
-// 	ProductId  uint `json:"productid"`
-// 	Quantity   uint `json:"quantity"`
-// 	TotalPrice uint `json:"totalprice"`
-// }
+// struct used to view orders
+type ResponseOrders struct {
+	ID          uint      `json:"id"`
+	PlacedDate  time.Time `json:"placeddate"`
+	Name        string    `json:"name"`
+	PhoneNumber string    `json:"phonenumber"`
+	House       string    `json:"house"`
+	Area        string    `json:"area"`
+	LandMark    string    `json:"landmark"`
+	City        string    `json:"city"`
+	State       string    `json:"state"`
+	Country     string    `json:"country"`
+	Pincode     string    `json:"pincode"`
+	Mode        string    `json:"mode"`
+	Status      string    `json:"status"`
+	GrandTotal  uint      `json:"grandtotal"`
+}

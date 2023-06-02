@@ -50,6 +50,10 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 		{
 			checkout.POST("/placeorder", orderHandler.PlaceNewOrder)
 		}
+		orders := home.Group("/orders")
+		{
+			orders.GET("/list", orderHandler.ListOrders)
+		}
 		userprofile := home.Group("/profile")
 		{
 			userprofile.GET("/home", userHandler.HomeHandler)

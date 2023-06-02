@@ -27,3 +27,8 @@ type OrderStatus struct {
 	ID     uint   `json:"id" gorm:"primarykey;auto_increment"`
 	Status string `json:"status" gorm:"not null"`
 }
+
+type PaymentModes struct {
+	ID   uint   `json:"id" gorm:"primarykey;auto_increment"`
+	Mode string `json:"mode" gorm:"not null"`
+}

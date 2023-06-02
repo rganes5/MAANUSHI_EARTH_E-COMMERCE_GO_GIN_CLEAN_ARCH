@@ -8,6 +8,7 @@ import (
 
 	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 	interfaces "github.com/rganes5/maanushi_earth_e-commerce/pkg/repository/interface"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/utils"
 	"gorm.io/gorm"
 )
 
@@ -30,6 +31,30 @@ func (c *orderDatabase) FindCartItems(ctx context.Context, cartID uint) ([]domai
 		return cartItems, err
 	}
 	return cartItems, nil
+}
+
+// List Orders
+func (c *orderDatabase) ListOrders(ctx context.Context, id uint, pagination utils.Pagination) ([]utils.ResponseOrders, error) {
+	fmt.Println("Entered into list orders")
+	var listUsers []utils.ResponseOrders
+	offset := pagination.Offset
+	limit := pagination.Limit
+	query := `SELECT orders.id,orders.placed_date,orders.grand_total,addresses.name,
+	addresses.phone_number,addresses.house,addresses.area,addresses.land_mark,
+	addresses.city,addresses.state,addresses.country,addresses.pincode,payment_modes.mode,
+	order_statuses.status FROM orders
+	INNER JOIN addresses ON orders.address_id = addresses.id
+	INNER JOIN order_details ON order_details.order_id = orders.id
+	INNER JOIN order_statuses ON order_details.order_status_id = order_statuses.id
+	INNER JOIN orders ON orders.payment_id=payment_modes.id
+	WHERE
+	orders.user_id = $1;
+	LIMIT $2 OFFSET $3`
+	err := c.DB.Raw(query, id, limit, offset).Scan(&listUsers).Error
+	if err != nil {
+		return listUsers, err
+	}
+	return listUsers, nil
 }
 
 // create a order table with address,payment mode and also creating a order details table , checking and updating stock and also deleting the cart details tables too.

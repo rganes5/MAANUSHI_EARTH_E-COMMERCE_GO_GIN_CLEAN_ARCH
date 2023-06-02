@@ -65,3 +65,50 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 	response := utils.SuccessResponse(200, "Success: Successfully placed the order", nil)
 	c.JSON(http.StatusOK, response)
 }
+
+// VIEW ORDERS
+// @Summary API FOR VIEWING ORDERS
+// @ID USER-VIEW-ORDER
+// @Description Users can view all orders.
+// @Tags ORDER
+// @Accept json
+// @Produce json
+// @Param page query int false "Enter the page number to display"
+// @Param limit query int false "Number of items to retrieve per page"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/orders/list [get]
+func (cr *OrderHandler) ListOrders(c *gin.Context) {
+	id, ok := c.Get("user-id")
+	if !ok {
+		response := utils.ErrorResponse(401, "Error: Failed to get the id from the token string", "", nil)
+		c.JSON(http.StatusUnauthorized, response)
+		return
+	}
+	page, err := strconv.Atoi(c.Query("page"))
+	if err != nil {
+		page = 1 // Default page number is 1 if not provided
+	}
+
+	limit, err := strconv.Atoi(c.Query("limit"))
+	if err != nil || limit <= 0 {
+		limit = 3 // Default limit is 3 items if not provided or if an invalid value is entered
+	}
+
+	offset := (page - 1) * limit
+	pagination := utils.Pagination{
+		Offset: uint(offset),
+		Limit:  uint(limit),
+	}
+	orderList, err := cr.orderUseCase.ListOrders(c.Request.Context(), id.(uint), pagination)
+	if err != nil {
+		response := utils.ErrorResponse(500, "Error: Failed to list order list", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Success: Order list", orderList)
+	c.JSON(http.StatusOK, response)
+
+}

@@ -26,8 +26,6 @@ definitions:
         type: boolean
       state:
         type: string
-      userid:
-        type: integer
     required:
     - city
     - country
@@ -150,16 +148,6 @@ definitions:
         type: boolean
       state:
         type: string
-      userid:
-        type: integer
-    required:
-    - city
-    - country
-    - house
-    - land_mark
-    - name
-    - pincode
-    - state
     type: object
   utils.UpdateCategory:
     properties:
@@ -1194,6 +1182,43 @@ paths:
       summary: API FOR USER LOGOUT
       tags:
       - USER
+  /user/orders/list:
+    get:
+      consumes:
+      - application/json
+      description: Users can view all orders.
+      operationId: USER-VIEW-ORDER
+      parameters:
+      - description: Enter the page number to display
+        in: query
+        name: page
+        type: integer
+      - description: Number of items to retrieve per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR VIEWING ORDERS
+      tags:
+      - ORDER
   /user/products/findproductanddetails/{product_id}:
     get:
       consumes:

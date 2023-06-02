@@ -8,6 +8,7 @@ import (
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 	interfaces "github.com/rganes5/maanushi_earth_e-commerce/pkg/repository/interface"
 	services "github.com/rganes5/maanushi_earth_e-commerce/pkg/usecase/interface"
+	utils "github.com/rganes5/maanushi_earth_e-commerce/pkg/utils"
 )
 
 type OrderUseCase struct {
@@ -49,4 +50,9 @@ func (c *OrderUseCase) PlaceNewOrder(ctx context.Context, addressId uint, paymen
 		return err
 	}
 	return nil
+}
+
+func (c *OrderUseCase) ListOrders(ctx context.Context, id uint, pagination utils.Pagination) ([]utils.ResponseOrders, error) {
+	listUsers, err := c.OrderRepo.ListOrders(ctx, id, pagination)
+	return listUsers, err
 }
