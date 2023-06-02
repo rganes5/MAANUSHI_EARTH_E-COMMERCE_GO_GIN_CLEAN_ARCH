@@ -150,7 +150,7 @@ type ResponseOrders struct {
 
 // struct used to view the order_details
 type ResponseOrderDetails struct {
-	ID               uint       `json:"id"`
+	ID               uint       `json:"id "`
 	ProductName      string     `json:"productname"`
 	Details          string     `json:"details"`
 	Image            string     `json:"image"`

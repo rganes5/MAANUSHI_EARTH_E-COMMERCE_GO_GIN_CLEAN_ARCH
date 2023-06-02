@@ -1182,7 +1182,7 @@ paths:
       summary: API FOR USER LOGOUT
       tags:
       - USER
-  /user/orders/list:
+  /user/orders/list/all:
     get:
       consumes:
       - application/json
@@ -1219,7 +1219,7 @@ paths:
       summary: API FOR VIEWING ORDERS
       tags:
       - ORDER
-  /user/orders/orderdetails/list{order_id}:
+  /user/orders/list/details/{order_id}:
     get:
       consumes:
       - application/json

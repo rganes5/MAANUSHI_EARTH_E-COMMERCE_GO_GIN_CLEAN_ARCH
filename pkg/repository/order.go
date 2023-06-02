@@ -75,30 +75,32 @@ WHERE
 // List order details
 func (c *orderDatabase) ListOrderDetails(ctx context.Context, orderId uint, pagination utils.Pagination) ([]utils.ResponseOrderDetails, error) {
 	var responseOrderDetails []utils.ResponseOrderDetails
+	fmt.Println("order id from the repo is", orderId)
 	offset := pagination.Offset
 	limit := pagination.Limit
 	query := `SELECT
-	order_detail.id,
-	order_detail.quantity,
-	order_details.total_price,
-	order_details.delivered_date,
-	order_details.cancelled_date,
-	order_details.return_submit_date,
-	order_statuses.status,
-	products.product_name,
-	products.image,
-	products.details,
-	products.price,
-	products.discount_price,
-	categories.category_name,
-	FROM
-	order_details
-	INNER JOIN order_details ON order_details.order_id= orders.id
-	INNER JOIN order_statuses ON orders.order_status_id= order_statuses.id
-	INNER JOIN products ON product_details.product_id= products.id
-	INNER JOIN categories ON products.category_id= category.id
-	WHERE 
-	order_details.order_id =$1;
+    order_details.id,
+    order_details.quantity,
+    order_details.total_price,
+    order_details.delivered_date,
+    order_details.cancelled_date,
+    order_details.return_submit_date,
+    order_statuses.status,
+    products.product_name,
+    products.image,
+    products.details,
+    products.price,
+    products.discount_price,
+    categories.category_name
+FROM
+    order_details
+    INNER JOIN orders ON order_details.order_id = orders.id
+    INNER JOIN order_statuses ON order_details.order_status_id = order_statuses.id
+    INNER JOIN product_details ON order_details.product_detail_id = product_details.id
+    INNER JOIN products ON product_details.product_id = products.id
+    INNER JOIN categories ON products.category_id = categories.id
+WHERE
+    order_details.order_id = $1
 	LIMIT $2 OFFSET $3`
 	err := c.DB.Raw(query, orderId, limit, offset).Scan(&responseOrderDetails).Error
 	if err != nil {

@@ -1504,7 +1504,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/orders/list": {
+        "/user/orders/list/all": {
             "get": {
                 "description": "Users can view all orders.",
                 "consumes": [
@@ -1560,7 +1560,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/orders/orderdetails/list{order_id}": {
+        "/user/orders/list/details/{order_id}": {
             "get": {
                 "description": "Users can the selected order details.",
                 "consumes": [

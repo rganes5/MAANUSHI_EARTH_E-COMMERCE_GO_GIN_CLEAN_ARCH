@@ -79,7 +79,7 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
 // @Failure 500 {object} utils.Response
-// @Router /user/orders/list [get]
+// @Router /user/orders/list/all [get]
 func (cr *OrderHandler) ListOrders(c *gin.Context) {
 	id, ok := c.Get("user-id")
 	if !ok {
@@ -127,9 +127,12 @@ func (cr *OrderHandler) ListOrders(c *gin.Context) {
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
 // @Failure 500 {object} utils.Response
-// @Router /user/orders/list/details{order_id} [get]
+// @Router /user/orders/list/details/{order_id} [get]
 func (cr *OrderHandler) ListOrderDetails(c *gin.Context) {
+	fmt.Println("1")
 	orderId, err := strconv.Atoi(c.Query("order_id"))
+	fmt.Println("order id is", orderId)
+
 	if err != nil {
 		response := utils.ErrorResponse(400, "Error: Failed to convert id", err.Error(), nil)
 		c.JSON(http.StatusBadRequest, response)
