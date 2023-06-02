@@ -3,7 +3,7 @@ package domain
 import "time"
 
 type Order struct {
-	ID         uint32    `json:"id" gorm:"primarykey;auto_increment"`
+	ID         uint      `json:"id" gorm:"primarykey;auto_increment"`
 	UserID     uint      `json:"userid" gorm:"not null"`
 	PlacedDate time.Time `json:"placeddate" gorm:"not null"`
 	AddressID  uint      `json:"addressid" gorm:"not null"`
@@ -13,14 +13,15 @@ type Order struct {
 }
 
 type OrderDetails struct {
-	ID            uint       `json:"id" gorm:"primarykey;auto_increment"`
-	OrderID       uint32     `json:"orderid" gorm:"not null"`
-	OrderStatusID uint       `json:"orderstatusid" gorm:"not null"`
-	DeliveredDate *time.Time `json:"delivereddate"`
-	CancelledDate *time.Time `json:"cancelleddate"`
-	// ReturnSubmitDate *time.Time `json:"returnsubmitdate"`
-	ProductDetailID uint `json:"productdetailsid"`
-	Quantity        uint `json:"quantity" gorm:"not null"`
+	ID               uint       `json:"id" gorm:"primarykey;auto_increment"`
+	OrderID          uint       `json:"orderid" gorm:"not null"`
+	OrderStatusID    uint       `json:"orderstatusid" gorm:"not null"`
+	DeliveredDate    *time.Time `json:"delivereddate"`
+	CancelledDate    *time.Time `json:"cancelleddate"`
+	ReturnSubmitDate *time.Time `json:"returnsubmitdate"`
+	ProductDetailID  uint       `json:"productdetailsid"`
+	Quantity         uint       `json:"quantity" gorm:"not null"`
+	TotalPrice       uint       `json:"totalprice" gorm:"not null"`
 }
 
 type OrderStatus struct {

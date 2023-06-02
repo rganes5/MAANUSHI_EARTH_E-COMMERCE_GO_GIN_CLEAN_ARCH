@@ -53,6 +53,11 @@ func (c *OrderUseCase) PlaceNewOrder(ctx context.Context, addressId uint, paymen
 }
 
 func (c *OrderUseCase) ListOrders(ctx context.Context, id uint, pagination utils.Pagination) ([]utils.ResponseOrders, error) {
-	listUsers, err := c.OrderRepo.ListOrders(ctx, id, pagination)
-	return listUsers, err
+	listOrders, err := c.OrderRepo.ListOrders(ctx, id, pagination)
+	return listOrders, err
+}
+
+func (c *OrderUseCase) ListOrderDetails(ctx context.Context, orderId uint, pagination utils.Pagination) ([]utils.ResponseOrderDetails, error) {
+	listOrderDetails, err := c.OrderRepo.ListOrderDetails(ctx, orderId, pagination)
+	return listOrderDetails, err
 }

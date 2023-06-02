@@ -9,4 +9,5 @@ import (
 type OrderUseCase interface {
 	PlaceNewOrder(ctx context.Context, addressId uint, paymentId uint, userId uint) error
 	ListOrders(ctx context.Context, id uint, pagination utils.Pagination) ([]utils.ResponseOrders, error)
+	ListOrderDetails(ctx context.Context, orderId uint, pagination utils.Pagination) ([]utils.ResponseOrderDetails, error)
 }

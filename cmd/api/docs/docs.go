@@ -1560,6 +1560,69 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/orders/orderdetails/list{order_id}": {
+            "get": {
+                "description": "Users can the selected order details.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ORDER"
+                ],
+                "summary": "API FOR VIEWING ORDERS DETAILS",
+                "operationId": "USER-VIEW-ORDER-DETAILS",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Enter the order id",
+                        "name": "order_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Enter the page number to display",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items to retrieve per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/products/findproductanddetails/{product_id}": {
             "get": {
                 "description": "LISTING ALL PRODUCT AND PRODUCT_DETAILS FROM ADMINS AND USERS END",

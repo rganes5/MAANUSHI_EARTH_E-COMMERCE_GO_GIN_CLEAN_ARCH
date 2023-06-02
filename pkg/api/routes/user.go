@@ -52,7 +52,8 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 		}
 		orders := home.Group("/orders")
 		{
-			orders.GET("/list", orderHandler.ListOrders)
+			orders.GET("/list/all", orderHandler.ListOrders)
+			orders.GET("/list/details/:order_id")
 		}
 		userprofile := home.Group("/profile")
 		{

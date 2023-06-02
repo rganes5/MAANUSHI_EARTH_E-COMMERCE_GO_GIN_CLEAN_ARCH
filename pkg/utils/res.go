@@ -147,3 +147,21 @@ type ResponseOrders struct {
 	Status      string    `json:"status"`
 	GrandTotal  uint      `json:"grandtotal"`
 }
+
+// struct used to view the order_details
+type ResponseOrderDetails struct {
+	ID               uint       `json:"id"`
+	ProductName      string     `json:"productname"`
+	Details          string     `json:"details"`
+	Image            string     `json:"image"`
+	CategoryName     string     `json:"categoryname"`
+	Price            uint       `json:"price"`
+	DiscountPrice    uint       `json:"discountprice"`
+	Quantity         uint       `json:"quantity"`
+	TotalPrice       uint       `json:"totalprice"`
+	Status           string     `json:"status"`
+	DeliveredDate    *time.Time `json:"delivereddate"`
+	CancelledDate    *time.Time `json:"cancelleddate"`
+	ReturnSubmitDate *time.Time `json:"returnsubmitdate"`
+	// Percentage    int        `json:"discountpercentage"`
+}
