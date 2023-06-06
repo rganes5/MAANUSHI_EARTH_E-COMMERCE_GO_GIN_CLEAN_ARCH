@@ -132,20 +132,21 @@ type ResponseFullCart struct {
 
 // struct used to view orders
 type ResponseOrders struct {
-	ID          uint      `json:"id"`
-	PlacedDate  time.Time `json:"placeddate"`
-	Name        string    `json:"name"`
-	PhoneNumber string    `json:"phonenumber"`
-	House       string    `json:"house"`
-	Area        string    `json:"area"`
-	LandMark    string    `json:"landmark"`
-	City        string    `json:"city"`
-	State       string    `json:"state"`
-	Country     string    `json:"country"`
-	Pincode     string    `json:"pincode"`
-	Mode        string    `json:"mode"`
-	Status      string    `json:"status"`
-	GrandTotal  uint      `json:"grandtotal"`
+	ID            uint      `json:"id"`
+	PlacedDate    time.Time `json:"placeddate"`
+	Name          string    `json:"name"`
+	PhoneNumber   string    `json:"phonenumber"`
+	House         string    `json:"house"`
+	Area          string    `json:"area"`
+	LandMark      string    `json:"landmark"`
+	City          string    `json:"city"`
+	State         string    `json:"state"`
+	Country       string    `json:"country"`
+	Pincode       string    `json:"pincode"`
+	Mode          string    `json:"mode"`
+	OrderStatus   string    `json:"orderstatus"`
+	PaymentStatus string    `json:"paymentstatus"`
+	GrandTotal    uint      `json:"grandtotal"`
 }
 
 // struct used to view the order_details
@@ -164,4 +165,25 @@ type ResponseOrderDetails struct {
 	CancelledDate    *time.Time `json:"cancelleddate"`
 	ReturnSubmitDate *time.Time `json:"returnsubmitdate"`
 	// Percentage    int        `json:"discountpercentage"`
+}
+
+// struct used to view orders
+type ResponseOrdersAdmin struct {
+	ID                     uint      `json:"id"`
+	PlacedDate             time.Time `json:"placeddate"`
+	PrimaryUserName        string    `json:"primaryusername"`
+	PrimaryUserPhoneNumber string    `json:"primaryuserphonenumber"`
+	Name                   string    `json:"name"`
+	PhoneNumber            string    `json:"phonenumber"`
+	House                  string    `json:"house"`
+	Area                   string    `json:"area"`
+	LandMark               string    `json:"landmark"`
+	City                   string    `json:"city"`
+	State                  string    `json:"state"`
+	Country                string    `json:"country"`
+	Pincode                string    `json:"pincode"`
+	Mode                   string    `json:"mode"`
+	OrderStatus            string    `json:"orderstatus"`
+	PaymentStatus          string    `json:"paymentstatus"`
+	GrandTotal             uint      `json:"grandtotal"`
 }

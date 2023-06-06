@@ -372,6 +372,123 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/orders/list/all": {
+            "get": {
+                "description": "Admin can view all orders.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ORDER"
+                ],
+                "summary": "API FOR VIEWING ORDERS",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Enter the page number to display",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items to retrieve per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/orders/list/details/{order_id}": {
+            "get": {
+                "description": "Users can the selected order details.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ORDER"
+                ],
+                "summary": "API FOR VIEWING ORDERS DETAILS",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Enter the order id",
+                        "name": "order_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Enter the page number to display",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items to retrieve per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/products/add": {
             "post": {
                 "description": "ADDING PRODUCT FROM ADMINS END",
@@ -1504,6 +1621,68 @@ const docTemplate = `{
                 }
             }
         },
+        "/user/orders/cancel/{order_id}": {
+            "post": {
+                "description": "Users can cancel orders",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ORDER"
+                ],
+                "summary": "API FOR CANCELLING A ORDER",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Enter the order id",
+                        "name": "order_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Enter the page number to display",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items to retrieve per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/user/orders/list/all": {
             "get": {
                 "description": "Users can view all orders.",
@@ -1517,7 +1696,6 @@ const docTemplate = `{
                     "ORDER"
                 ],
                 "summary": "API FOR VIEWING ORDERS",
-                "operationId": "USER-VIEW-ORDER",
                 "parameters": [
                     {
                         "type": "integer",
@@ -1573,7 +1751,6 @@ const docTemplate = `{
                     "ORDER"
                 ],
                 "summary": "API FOR VIEWING ORDERS DETAILS",
-                "operationId": "USER-VIEW-ORDER-DETAILS",
                 "parameters": [
                     {
                         "type": "integer",

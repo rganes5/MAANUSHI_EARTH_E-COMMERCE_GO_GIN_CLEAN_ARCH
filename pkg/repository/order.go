@@ -43,7 +43,7 @@ func (c *orderDatabase) ListOrders(ctx context.Context, id uint, pagination util
     orders.id,
     orders.placed_date,
     orders.grand_total,
-	payment_modes.mode,
+    payment_modes.mode,
     addresses.name,
     addresses.phone_number,
     addresses.house,
@@ -53,10 +53,12 @@ func (c *orderDatabase) ListOrders(ctx context.Context, id uint, pagination util
     addresses.state,
     addresses.country,
     addresses.pincode,
-    order_statuses.status
+    order_statuses.status AS order_status,
+    payment_statuses.status AS payment_status
 FROM
     orders
 INNER JOIN addresses ON orders.address_id = addresses.id
+INNER JOIN payment_statuses ON orders.payment_status_id = payment_statuses.id
 INNER JOIN order_details ON order_details.order_id = orders.id
 INNER JOIN order_statuses ON order_details.order_status_id = order_statuses.id
 INNER JOIN payment_modes ON orders.payment_id = payment_modes.id
@@ -64,7 +66,7 @@ INNER JOIN product_details ON order_details.product_detail_id = product_details.
 INNER JOIN products ON product_details.product_id = products.id
 WHERE
     orders.user_id = $1
-	LIMIT $2 OFFSET $3`
+LIMIT $2 OFFSET $3`
 	err := c.DB.Raw(query, id, limit, offset).Scan(&listUsers).Error
 	if err != nil {
 		return listUsers, err
@@ -171,4 +173,47 @@ func (c *orderDatabase) SubmitOrder(ctx context.Context, order domain.Order, car
 	}
 
 	return nil
+}
+
+// admins end
+//
+// List Orders
+func (c *orderDatabase) AdminListOrders(ctx context.Context, pagination utils.Pagination) ([]utils.ResponseOrdersAdmin, error) {
+	fmt.Println("Entered into list orders")
+	var listUsers []utils.ResponseOrdersAdmin
+	offset := pagination.Offset
+	limit := pagination.Limit
+	query := `SELECT DISTINCT ON (orders.id)
+    orders.id,
+    orders.placed_date,
+    orders.grand_total,
+	payment_modes.mode,
+	users.first_name AS primary_user_name,
+	users.phone_num AS primary_user_phone_number,
+    addresses.name,
+    addresses.phone_number,
+    addresses.house,
+    addresses.area,
+    addresses.land_mark,
+    addresses.city,
+    addresses.state,
+    addresses.country,
+    addresses.pincode,
+	order_statuses.status AS order_status,
+    payment_statuses.status AS payment_status	FROM
+		orders
+	INNER JOIN addresses ON orders.address_id = addresses.id
+	INNER JOIN users ON orders.user_id=users.id
+	INNER JOIN payment_statuses ON orders.payment_status_id = payment_statuses.id
+INNER JOIN order_details ON order_details.order_id = orders.id
+INNER JOIN order_statuses ON order_details.order_status_id = order_statuses.id
+INNER JOIN payment_modes ON orders.payment_id = payment_modes.id
+INNER JOIN product_details ON order_details.product_detail_id = product_details.id
+INNER JOIN products ON product_details.product_id = products.id
+	LIMIT $1 OFFSET $2`
+	err := c.DB.Raw(query, limit, offset).Scan(&listUsers).Error
+	if err != nil {
+		return listUsers, err
+	}
+	return listUsers, nil
 }

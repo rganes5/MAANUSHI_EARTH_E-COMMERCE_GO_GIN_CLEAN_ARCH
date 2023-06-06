@@ -49,6 +49,11 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 			productDetails.GET("/findproductanddetails/:product_id", productHandler.ListProductAndDetailsById)
 
 		}
+		orders := home.Group("/orders")
+		{
+			orders.GET("/list/all", orderHandler.AdminListOrders)
+			orders.GET("/list/details/:order_id", orderHandler.ListOrderDetails)
+		}
 
 	}
 }

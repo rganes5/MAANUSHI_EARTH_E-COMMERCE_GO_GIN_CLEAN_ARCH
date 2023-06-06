@@ -429,6 +429,83 @@ paths:
       summary: API FOR ADMIN LOGOUT
       tags:
       - ADMIN
+  /admin/orders/list/all:
+    get:
+      consumes:
+      - application/json
+      description: Admin can view all orders.
+      parameters:
+      - description: Enter the page number to display
+        in: query
+        name: page
+        type: integer
+      - description: Number of items to retrieve per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR VIEWING ORDERS
+      tags:
+      - ORDER
+  /admin/orders/list/details/{order_id}:
+    get:
+      consumes:
+      - application/json
+      description: Users can the selected order details.
+      parameters:
+      - description: Enter the order id
+        in: query
+        name: order_id
+        required: true
+        type: integer
+      - description: Enter the page number to display
+        in: query
+        name: page
+        type: integer
+      - description: Number of items to retrieve per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR VIEWING ORDERS DETAILS
+      tags:
+      - ORDER
   /admin/products/add:
     post:
       consumes:
@@ -1182,12 +1259,52 @@ paths:
       summary: API FOR USER LOGOUT
       tags:
       - USER
+  /user/orders/cancel/{order_id}:
+    post:
+      consumes:
+      - application/json
+      description: Users can cancel orders
+      parameters:
+      - description: Enter the order id
+        in: query
+        name: order_id
+        required: true
+        type: integer
+      - description: Enter the page number to display
+        in: query
+        name: page
+        type: integer
+      - description: Number of items to retrieve per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR CANCELLING A ORDER
+      tags:
+      - ORDER
   /user/orders/list/all:
     get:
       consumes:
       - application/json
       description: Users can view all orders.
-      operationId: USER-VIEW-ORDER
       parameters:
       - description: Enter the page number to display
         in: query
@@ -1224,7 +1341,6 @@ paths:
       consumes:
       - application/json
       description: Users can the selected order details.
-      operationId: USER-VIEW-ORDER-DETAILS
       parameters:
       - description: Enter the order id
         in: query

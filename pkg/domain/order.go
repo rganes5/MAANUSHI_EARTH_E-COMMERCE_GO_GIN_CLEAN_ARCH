@@ -9,7 +9,7 @@ type Order struct {
 	AddressID       uint      `json:"addressid" gorm:"not null"`
 	Address         Address   `gorm:"foreignkey:AddressID"`
 	PaymentID       uint      `json:"paymentid" gorm:"not null"`
-	PaymentStatusID uint      `json:"paymentstatus" gorm:"not null"`
+	PaymentStatusID uint      `json:"paymentstatusid" gorm:"not null"`
 	GrandTotal      uint      `json:"grandtotal" gorm:"not null"`
 }
 

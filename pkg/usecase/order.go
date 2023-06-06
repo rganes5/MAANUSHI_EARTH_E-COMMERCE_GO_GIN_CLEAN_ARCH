@@ -23,6 +23,7 @@ func NewOrderUseCase(repo interfaces.OrderRepository, CartRepo interfaces.CartRe
 	}
 }
 
+// Users end
 func (c *OrderUseCase) PlaceNewOrder(ctx context.Context, addressId uint, paymentId uint, userId uint) error {
 	cart, err := c.CartRepo.FindCartById(ctx, userId)
 	fmt.Println("user id passed from to find cart by id from place new order function from use case is", userId)
@@ -61,4 +62,10 @@ func (c *OrderUseCase) ListOrders(ctx context.Context, id uint, pagination utils
 func (c *OrderUseCase) ListOrderDetails(ctx context.Context, orderId uint, pagination utils.Pagination) ([]utils.ResponseOrderDetails, error) {
 	listOrderDetails, err := c.OrderRepo.ListOrderDetails(ctx, orderId, pagination)
 	return listOrderDetails, err
+}
+
+// Admins End
+func (c *OrderUseCase) AdminListOrders(ctx context.Context, pagination utils.Pagination) ([]utils.ResponseOrdersAdmin, error) {
+	listOrders, err := c.OrderRepo.AdminListOrders(ctx, pagination)
+	return listOrders, err
 }
