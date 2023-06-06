@@ -39,11 +39,12 @@ func (c *OrderUseCase) PlaceNewOrder(ctx context.Context, addressId uint, paymen
 	}
 
 	Neworder := domain.Order{
-		UserID:     cart.UserID,
-		PlacedDate: time.Now(),
-		AddressID:  addressId,
-		PaymentID:  paymentId,
-		GrandTotal: uint(cart.GrandTotal),
+		UserID:          cart.UserID,
+		PlacedDate:      time.Now(),
+		AddressID:       addressId,
+		PaymentID:       paymentId,
+		PaymentStatusID: 1,
+		GrandTotal:      uint(cart.GrandTotal),
 	}
 	fmt.Println("New order is", Neworder)
 	if err := c.OrderRepo.SubmitOrder(ctx, Neworder, cartItems); err != nil {
