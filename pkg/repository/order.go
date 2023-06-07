@@ -124,14 +124,17 @@ func (c *orderDatabase) SubmitOrder(ctx context.Context, order domain.Order, car
 	}
 	//Checking wheather the order is placed using wallet
 	if order.PaymentID == 3 {
-		if err := tx.Model(&domain.Wallet{}).Select("sum(amount)").Where("user-id=?", order.UserID).Scan(&walletBalance).Error; err != nil {
+		err := tx.Model(&domain.Wallet{}).Select("COALESCE(sum(amount), 0)").Where("user_id = ?", order.UserID).Scan(&walletBalance).Error
+		if err != nil {
 			tx.Rollback()
 			return err
 		}
+
 		if walletBalance < int(order.GrandTotal) {
 			tx.Rollback()
-			return errors.New("insufficient balance in wallet,choose different payment option")
+			return errors.New("insufficient balance in wallet, choose a different payment option")
 		}
+
 		current := time.Now()
 		wallet := domain.Wallet{
 			UserID:       order.UserID,
@@ -144,6 +147,7 @@ func (c *orderDatabase) SubmitOrder(ctx context.Context, order domain.Order, car
 			return err
 		}
 	}
+
 	//adding each item one by one to order details table from products and cart items table
 	for _, value := range cartItems {
 		orderDetails := domain.OrderDetails{
@@ -236,20 +240,20 @@ func (c *orderDatabase) CancelOrder(ctx context.Context, userId uint, orderItems
 	//to find the stock and product id
 	if err := tx.Model(&domain.ProductDetails{}).
 		Where("id=?", orderItems.ProductDetailID).
-		Select("qty_in_stock,product_id").
+		Select("in_stock,product_id").
 		Scan(&TempProductDetails).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
 	//to find the price of selected item from product table
-	if err := tx.Model(&domain.Products{}).
-		Where("id=?", TempProductDetails.ProductID).Select("discounted_price").
-		// Joins("JOIN product_details ON products.product_id = product_details.product_id").Where("product_details.id = ?", orderItems.ProductDetailID).
-		// Select("products.discounted_price").
-		Scan(&TempProductDetails).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
+	// if err := tx.Model(&domain.Products{}).
+	// 	Where("id=?", TempProductDetails.ProductID).Select("discount_price").
+	// 	// Joins("JOIN product_details ON products.product_id = product_details.product_id").Where("product_details.id = ?", orderItems.ProductDetailID).
+	// 	// Select("products.discounted_price").
+	// 	Scan(&TempProductDetails).Error; err != nil {
+	// 	tx.Rollback()
+	// 	return err
+	// }
 	//we can retrive the payment id so that in case if it was not orderered by cash on delivery, we can refund the amount to wallet
 	if err := tx.Model(&domain.Order{}).Where("id=?", orderItems.OrderID).Select("payment_id").Scan(&TempProductDetails.PaymentMode).Error; err != nil {
 		tx.Rollback()
@@ -268,7 +272,7 @@ func (c *orderDatabase) CancelOrder(ctx context.Context, userId uint, orderItems
 		return err
 	}
 	//we can upate the stock on actual product since the item is now cancelled
-	if err := tx.Model(&domain.ProductDetails{}).Where("id=?", orderItems.ProductDetailID).UpdateColumn("qty_in_stock", (TempProductDetails.QtyInStock + orderItems.Quantity)).Error; err != nil {
+	if err := tx.Model(&domain.ProductDetails{}).Where("id=?", orderItems.ProductDetailID).UpdateColumn("in_stock", (TempProductDetails.QtyInStock + orderItems.Quantity)).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
