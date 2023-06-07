@@ -54,6 +54,7 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 		{
 			orders.GET("/list/all", orderHandler.ListOrders)
 			orders.GET("/list/details/:order_id", orderHandler.ListOrderDetails)
+			orders.POST("/cancel/:order_details_id", orderHandler.CancelOrder)
 		}
 		userprofile := home.Group("/profile")
 		{

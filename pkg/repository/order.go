@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"time"
 
 	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 	interfaces "github.com/rganes5/maanushi_earth_e-commerce/pkg/repository/interface"
@@ -114,11 +115,34 @@ WHERE
 // create a order table with address,payment mode and also creating a order details table , checking and updating stock and also deleting the cart details tables too.
 func (c *orderDatabase) SubmitOrder(ctx context.Context, order domain.Order, cartItems []domain.CartItem) error {
 	var stock uint
+	var walletBalance int
 	tx := c.DB.Begin()
 	//creating a new order table
 	if err := tx.Create(&order).Error; err != nil {
 		tx.Rollback()
 		return err
+	}
+	//Checking wheather the order is placed using wallet
+	if order.PaymentID == 3 {
+		if err := tx.Model(&domain.Wallet{}).Select("sum(amount)").Where("user-id=?", order.UserID).Scan(&walletBalance).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+		if walletBalance < int(order.GrandTotal) {
+			tx.Rollback()
+			return errors.New("insufficient balance in wallet,choose different payment option")
+		}
+		current := time.Now()
+		wallet := domain.Wallet{
+			UserID:       order.UserID,
+			CreditedDate: nil,
+			DebitedDate:  &current,
+			Amount:       -1 * int(order.GrandTotal),
+		}
+		if err := tx.Create(&wallet).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
 	}
 	//adding each item one by one to order details table from products and cart items table
 	for _, value := range cartItems {
@@ -172,6 +196,105 @@ func (c *orderDatabase) SubmitOrder(ctx context.Context, order domain.Order, car
 		return err
 	}
 
+	return nil
+}
+
+// Finding the orderItems by passing the order details id
+func (c *orderDatabase) FindOrderItemsbyId(ctx context.Context, orderDetailsId uint) (domain.OrderDetails, time.Time, error) {
+	var order domain.Order
+	var orderItems domain.OrderDetails
+	var date time.Time
+	// if err := c.DB.Where("id=?", orderId).Find(&order).Error; err != nil {
+	// 	return order, orderItems, date, err
+	// }
+	if err := c.DB.Where("id=?", orderDetailsId).Find(&orderItems).Error; err != nil {
+		return orderItems, date, err
+	}
+	if err := c.DB.Model(&order).Select("placed_date").Where("id=?", orderItems.OrderID).Scan(&date).Error; err != nil {
+		return orderItems, date, err
+	}
+	return orderItems, date, nil
+}
+
+// Order cancellation
+func (c *orderDatabase) CancelOrder(ctx context.Context, userId uint, orderItems domain.OrderDetails) error {
+	TempProductDetails := struct {
+		DiscountedPrice uint
+		QtyInStock      uint
+		PaymentMode     int
+		ProductID       int
+	}{
+		DiscountedPrice: 0,
+		QtyInStock:      0,
+		PaymentMode:     0,
+		ProductID:       0,
+	}
+	var grandTotal int
+	tx := c.DB.Begin()
+
+	//Retrivals
+	//to find the stock and product id
+	if err := tx.Model(&domain.ProductDetails{}).
+		Where("id=?", orderItems.ProductDetailID).
+		Select("qty_in_stock,product_id").
+		Scan(&TempProductDetails).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	//to find the price of selected item from product table
+	if err := tx.Model(&domain.Products{}).
+		Where("id=?", TempProductDetails.ProductID).Select("discounted_price").
+		// Joins("JOIN product_details ON products.product_id = product_details.product_id").Where("product_details.id = ?", orderItems.ProductDetailID).
+		// Select("products.discounted_price").
+		Scan(&TempProductDetails).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	//we can retrive the payment id so that in case if it was not orderered by cash on delivery, we can refund the amount to wallet
+	if err := tx.Model(&domain.Order{}).Where("id=?", orderItems.OrderID).Select("payment_id").Scan(&TempProductDetails.PaymentMode).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	//we can retreive the actual grand total and store it in a temporary variable so that we can use it.
+	if err := tx.Model(&domain.Order{}).Where("id=?", orderItems.OrderID).Select("grand_total").Scan(&grandTotal).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	//Updations
+	//to update the order details fields as cancelled and date and time of cancellation.
+	if err := tx.Model(&domain.OrderDetails{}).Where("id=?", orderItems.ID).UpdateColumns(&orderItems).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	//we can upate the stock on actual product since the item is now cancelled
+	if err := tx.Model(&domain.ProductDetails{}).Where("id=?", orderItems.ProductDetailID).UpdateColumn("qty_in_stock", (TempProductDetails.QtyInStock + orderItems.Quantity)).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	//Calculate the total price of cancelled item and reduce the price from the grand total of the order.
+	totalPrice := grandTotal - int(orderItems.TotalPrice)
+	if err := tx.Model(&domain.Order{}).Where("id=?", orderItems.OrderID).UpdateColumn("grand_total", totalPrice).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if TempProductDetails.PaymentMode != 1 {
+		current := time.Now()
+		wallet := domain.Wallet{
+			UserID:       userId,
+			CreditedDate: &current,
+			DebitedDate:  nil,
+			Amount:       int(orderItems.TotalPrice),
+		}
+		if err := tx.Create(&wallet).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+	}
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return err
+	}
 	return nil
 }
 

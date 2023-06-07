@@ -1621,7 +1621,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/user/orders/cancel/{order_id}": {
+        "/user/orders/cancel/{order_details_id}": {
             "post": {
                 "description": "Users can cancel orders",
                 "consumes": [
@@ -1637,8 +1637,8 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Enter the order id",
-                        "name": "order_id",
+                        "description": "Enter the order details id",
+                        "name": "order_details_id",
                         "in": "query",
                         "required": true
                     },

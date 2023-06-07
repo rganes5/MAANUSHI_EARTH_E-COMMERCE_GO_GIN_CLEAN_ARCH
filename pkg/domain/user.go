@@ -1,6 +1,10 @@
 package domain
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type Users struct {
 	gorm.Model
@@ -27,4 +31,12 @@ type Address struct {
 	Primary     bool   `json:"primary" gorm:"default:false"`
 	UserID      uint   `json:"userid"`
 	// User      User   `gorm:"foreignkey:UserID"`
+}
+
+type Wallet struct {
+	ID           uint       `json:"id" gorm:"primarykey;auto_increment"`
+	UserID       uint       `json:"userid" gorm:"not null"`
+	CreditedDate *time.Time `json:"crediteddate"`
+	DebitedDate  *time.Time `json:"debiteddate"`
+	Amount       int        `json:"amount" gorm:"not null"`
 }

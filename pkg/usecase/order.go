@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -25,6 +26,7 @@ func NewOrderUseCase(repo interfaces.OrderRepository, CartRepo interfaces.CartRe
 
 // Users end
 func (c *OrderUseCase) PlaceNewOrder(ctx context.Context, addressId uint, paymentId uint, userId uint) error {
+	var psId uint
 	cart, err := c.CartRepo.FindCartById(ctx, userId)
 	fmt.Println("user id passed from to find cart by id from place new order function from use case is", userId)
 	fmt.Println("Cart found from the find cart by id from place new order function from use case is", cart)
@@ -38,17 +40,49 @@ func (c *OrderUseCase) PlaceNewOrder(ctx context.Context, addressId uint, paymen
 	if err1 != nil {
 		return err
 	}
-
+	switch paymentId {
+	case 1:
+		psId = 1
+	case 2:
+		psId = 3
+	case 3:
+		psId = 4
+	}
 	Neworder := domain.Order{
 		UserID:          cart.UserID,
 		PlacedDate:      time.Now(),
 		AddressID:       addressId,
 		PaymentID:       paymentId,
-		PaymentStatusID: 1,
+		PaymentStatusID: psId,
 		GrandTotal:      uint(cart.GrandTotal),
 	}
 	fmt.Println("New order is", Neworder)
 	if err := c.OrderRepo.SubmitOrder(ctx, Neworder, cartItems); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *OrderUseCase) CancelOrder(ctx context.Context, userId uint, orderDetailsId uint) error {
+	//Find the corresponding order item from the order.
+	orderItem, date, err := c.OrderRepo.FindOrderItemsbyId(ctx, orderDetailsId)
+	if err != nil {
+		return err
+	}
+	fmt.Println("This is the order", orderItem)
+	if orderItem.DeliveredDate != nil {
+		return errors.New("order is already delivered, Please submit a return request. If not delivered, please contact customer support")
+	}
+	if orderItem.CancelledDate != nil {
+		return errors.New("order is already cancelled")
+	}
+	if time.Now().After(date.Add(24 * time.Hour)) {
+		return errors.New("sorry unable to cancel the order since the order is placed 24 hours ago. Cancellation time exceeded! Please return the order once delivered")
+	}
+	current := time.Now()
+	orderItem.CancelledDate = &current
+	orderItem.OrderStatusID = 9
+	if err := c.OrderRepo.CancelOrder(ctx, userId, orderItem); err != nil {
 		return err
 	}
 	return nil

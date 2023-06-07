@@ -1259,15 +1259,15 @@ paths:
       summary: API FOR USER LOGOUT
       tags:
       - USER
-  /user/orders/cancel/{order_id}:
+  /user/orders/cancel/{order_details_id}:
     post:
       consumes:
       - application/json
       description: Users can cancel orders
       parameters:
-      - description: Enter the order id
+      - description: Enter the order details id
         in: query
-        name: order_id
+        name: order_details_id
         required: true
         type: integer
       - description: Enter the page number to display

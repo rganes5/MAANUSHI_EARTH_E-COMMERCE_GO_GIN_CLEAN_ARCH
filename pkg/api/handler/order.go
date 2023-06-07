@@ -45,25 +45,23 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
-	if paymentId == 1 {
-		fmt.Println("COD")
-		fmt.Println("the address id and user id, payment id and user id is from handler are", uint(addressId), uint(paymentId), userId.(uint))
-		if err := cr.orderUseCase.PlaceNewOrder(c.Request.Context(), uint(addressId), uint(paymentId), userId.(uint)); err != nil {
-			response := utils.ErrorResponse(500, "Error: Failed to add to place order", err.Error(), nil)
-			c.JSON(http.StatusInternalServerError, response)
-			return
-		}
-	} else if paymentId == 2 {
-		fmt.Println("Razorpay not added yet")
-		response := utils.ErrorResponse(400, "Error: Razorpay payment method is not yet available", "", nil)
-		c.JSON(http.StatusBadRequest, response)
-		return
-	} else {
-		fmt.Println("Please select correct payment method")
-		response := utils.ErrorResponse(400, "Error: Please select correct payment method", "", nil)
-		c.JSON(http.StatusBadRequest, response)
+	fmt.Println("the address id and user id, payment id and user id is from handler are", uint(addressId), uint(paymentId), userId.(uint))
+	if err := cr.orderUseCase.PlaceNewOrder(c.Request.Context(), uint(addressId), uint(paymentId), userId.(uint)); err != nil {
+		response := utils.ErrorResponse(500, "Error: Failed to add to place order", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
+	// } else if paymentId == 2 {
+	// 	fmt.Println("Razorpay not added yet")
+	// 	response := utils.ErrorResponse(400, "Error: Razorpay payment method is not yet available", "", nil)
+	// 	c.JSON(http.StatusBadRequest, response)
+	// 	return
+	// } else {
+	// 	fmt.Println("Please select correct payment method")
+	// 	response := utils.ErrorResponse(400, "Error: Please select correct payment method", "", nil)
+	// 	c.JSON(http.StatusBadRequest, response)
+	// 	return
+	// }
 	response := utils.SuccessResponse(200, "Success: Successfully placed the order", nil)
 	c.JSON(http.StatusOK, response)
 }
@@ -170,22 +168,36 @@ func (cr *OrderHandler) ListOrderDetails(c *gin.Context) {
 // @Tags ORDER
 // @Accept json
 // @Produce json
-// @Param order_id query uint true "Enter the order id"
+// @Param order_details_id query uint true "Enter the order details id"
 // @Param page query int false "Enter the page number to display"
 // @Param limit query int false "Number of items to retrieve per page"
 // @Success 200 {object} utils.Response
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
 // @Failure 500 {object} utils.Response
-// @Router /user/orders/cancel/{order_id} [post]
+// @Router /user/orders/cancel/{order_details_id} [post]
 func (cr *OrderHandler) CancelOrder(c *gin.Context) {
-	id, ok := c.Get("user-id")
+	userId, ok := c.Get("user-id")
 	if !ok {
 		response := utils.ErrorResponse(401, "Error: Failed to get the id from the token string", "", nil)
 		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
-	fmt.Println("id is", id)
+	fmt.Println("id is", userId)
+	orderDetailsId, err := strconv.Atoi(c.Query("order_details_id"))
+	fmt.Println("order id is", orderDetailsId)
+	if err != nil {
+		response := utils.ErrorResponse(400, "Error: Failed to convert id", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	if err := cr.orderUseCase.CancelOrder(c.Request.Context(), userId.(uint), uint(orderDetailsId)); err != nil {
+		response := utils.ErrorResponse(500, "Error: Failed to cancel the order with order id", err.Error(), orderDetailsId)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Success: Successfully cancelled the order with order id", orderDetailsId)
+	c.JSON(http.StatusOK, response)
 }
 
 // ADMINS END
