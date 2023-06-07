@@ -489,6 +489,63 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/orders/update/{order_details_id}": {
+            "post": {
+                "description": "Admin can change the ststus of orders",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ORDER"
+                ],
+                "summary": "API FOR CHANGING THE STATUS OF A ORDER",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Enter the order details id",
+                        "name": "order_details_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Enter the order details id",
+                        "name": "status_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/products/add": {
             "post": {
                 "description": "ADDING PRODUCT FROM ADMINS END",
@@ -1641,18 +1698,6 @@ const docTemplate = `{
                         "name": "order_details_id",
                         "in": "query",
                         "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Enter the page number to display",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Number of items to retrieve per page",
-                        "name": "limit",
-                        "in": "query"
                     }
                 ],
                 "responses": {

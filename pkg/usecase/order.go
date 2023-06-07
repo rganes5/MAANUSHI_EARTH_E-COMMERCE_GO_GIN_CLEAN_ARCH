@@ -103,3 +103,56 @@ func (c *OrderUseCase) AdminListOrders(ctx context.Context, pagination utils.Pag
 	listOrders, err := c.OrderRepo.AdminListOrders(ctx, pagination)
 	return listOrders, err
 }
+
+func (c *OrderUseCase) UpdateStatus(ctx context.Context, orderDetailsId uint, statusId uint) error {
+	//Find the corresponding order item from the order.
+	orderItem, _, err := c.OrderRepo.FindOrderItemsbyId(ctx, orderDetailsId)
+	if err != nil {
+		return err
+	}
+	if orderItem.CancelledDate != nil {
+		return errors.New("order is already cancelled")
+	}
+	if statusId == 3 {
+		orderItem.OrderStatusID = statusId
+		if err := c.OrderRepo.UpdateStatus(ctx, orderItem); err != nil {
+			return err
+		}
+	} else if statusId == 4 {
+		orderItem.OrderStatusID = statusId
+		if err := c.OrderRepo.UpdateStatus(ctx, orderItem); err != nil {
+			return err
+		}
+	} else if statusId == 5 {
+		orderItem.OrderStatusID = statusId
+		if err := c.OrderRepo.UpdateStatus(ctx, orderItem); err != nil {
+			return err
+		}
+	} else if statusId == 6 {
+		if orderItem.DeliveredDate != nil {
+			return errors.New("order is already delivered")
+		}
+		current := time.Now()
+		orderItem.DeliveredDate = &current
+		orderItem.OrderStatusID = statusId
+		if err := c.OrderRepo.UpdateStatus(ctx, orderItem); err != nil {
+			return err
+		}
+	} else if statusId == 8 {
+		if orderItem.ReturnSubmitDate != nil {
+			return errors.New("User has not requested a return for this particular item")
+		}
+		orderItem.OrderStatusID = statusId
+		if err := c.OrderRepo.UpdateStatus(ctx, orderItem); err != nil {
+			return err
+		}
+	} else if statusId == 10 {
+		current := time.Now()
+		orderItem.CancelledDate = &current
+		orderItem.OrderStatusID = statusId
+		if err := c.OrderRepo.UpdateStatus(ctx, orderItem); err != nil {
+			return err
+		}
+	}
+	return nil
+}

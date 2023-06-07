@@ -344,3 +344,84 @@ INNER JOIN products ON product_details.product_id = products.id
 	}
 	return listUsers, nil
 }
+
+func (c *orderDatabase) UpdateStatus(ctx context.Context, orderItem domain.OrderDetails) error {
+	TempProductDetails := struct {
+		DiscountedPrice uint
+		QtyInStock      uint
+		PaymentMode     int
+		ProductID       int
+	}{
+		DiscountedPrice: 0,
+		QtyInStock:      0,
+		PaymentMode:     0,
+		ProductID:       0,
+	}
+	var grandTotal int
+	var userId uint
+	tx := c.DB.Begin()
+	//Updations
+	//to update the order details fields as confirmed, shipped, out for delivery, cancelled, returned and date and time of delivery.
+	if err := tx.Model(&domain.OrderDetails{}).Where("id=?", orderItem.ID).UpdateColumns(&orderItem).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if orderItem.OrderStatusID == 8 || orderItem.OrderStatusID == 10 {
+		//Retrivals
+		//To find the user id so that it can be used to update the wallet
+		if err := tx.Model(&domain.Order{}).Where("id=?", orderItem.OrderID).Select("user_id").Scan(&userId).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+		//to find the stock and product id
+		if err := tx.Model(&domain.ProductDetails{}).
+			Where("id=?", orderItem.ProductDetailID).
+			Select("in_stock,product_id").
+			Scan(&TempProductDetails).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+		//we can retrive the payment id so that in case if it was not orderered by cash on delivery, we can refund the amount to wallet
+		if err := tx.Model(&domain.Order{}).Where("id=?", orderItem.OrderID).Select("payment_id").Scan(&TempProductDetails.PaymentMode).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+		//we can retreive the actual grand total and store it in a temporary variable so that we can use it.
+		if err := tx.Model(&domain.Order{}).Where("id=?", orderItem.OrderID).Select("grand_total").Scan(&grandTotal).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+
+		//Updations
+		//we can upate the stock on actual product since the item is now cancelled
+		if err := tx.Model(&domain.ProductDetails{}).Where("id=?", orderItem.ProductDetailID).UpdateColumn("in_stock", (TempProductDetails.QtyInStock + orderItem.Quantity)).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+		//Calculate the total price of cancelled item and reduce the price from the grand total of the order.
+		totalPrice := grandTotal - int(orderItem.TotalPrice)
+		if err := tx.Model(&domain.Order{}).Where("id=?", orderItem.OrderID).UpdateColumn("grand_total", totalPrice).Error; err != nil {
+			tx.Rollback()
+			return err
+		}
+		if TempProductDetails.PaymentMode != 1 {
+			current := time.Now()
+			wallet := domain.Wallet{
+				UserID:       userId,
+				CreditedDate: &current,
+				DebitedDate:  nil,
+				Amount:       int(orderItem.TotalPrice),
+			}
+			if err := tx.Create(&wallet).Error; err != nil {
+				tx.Rollback()
+				return err
+			}
+		}
+	}
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return nil
+}
