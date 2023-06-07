@@ -337,6 +337,34 @@ paths:
       summary: API FOR EDITING CATEGORY
       tags:
       - PRODUCT CATEGORY
+  /admin/dashboard:
+    get:
+      consumes:
+      - application/json
+      description: ADMIN DASHBOARD AND LISTING WIDGETS FOR ADMIN
+      operationId: ADMIN-LIST-WIDGETS
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR LISTING WIDGETS
+      tags:
+      - ADMIN
   /admin/home:
     get:
       consumes:
@@ -1405,6 +1433,44 @@ paths:
           schema:
             $ref: '#/definitions/utils.Response'
       summary: API FOR VIEWING ORDERS DETAILS
+      tags:
+      - ORDER
+  /user/orders/return/{order_details_id}:
+    post:
+      consumes:
+      - application/json
+      description: Users can return orders
+      parameters:
+      - description: Enter the order details id
+        in: query
+        name: order_details_id
+        required: true
+        type: integer
+      - description: Enter the order details id
+        in: query
+        name: status_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR RETURNING A ORDER
       tags:
       - ORDER
   /user/products/findproductanddetails/{product_id}:

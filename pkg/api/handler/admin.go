@@ -251,13 +251,36 @@ func (cr *AdminHandler) AccessHandler(c *gin.Context) {
 	}
 	err := cr.adminUseCase.AccessHandler(c.Request.Context(), id, access)
 	if err != nil {
-		response := utils.ErrorResponse(401, "Error: Failed to update the access", err.Error(), nil)
+		response := utils.ErrorResponse(500, "Error: Failed to update the access", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 	response := utils.SuccessResponse(200, "Success: User access updated", access)
 	c.JSON(http.StatusOK, response)
 
+}
+
+// ADMIN WIDGETS
+// @Summary API FOR LISTING WIDGETS
+// @ID ADMIN-LIST-WIDGETS
+// @Description ADMIN DASHBOARD AND LISTING WIDGETS FOR ADMIN
+// @Tags ADMIN
+// @Accept json
+// @Produce json
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /admin/dashboard [get]
+func (cr *AdminHandler) Dashboard(c *gin.Context) {
+	responseWidgets, err := cr.adminUseCase.Dashboard(c.Request.Context())
+	if err != nil {
+		response := utils.ErrorResponse(500, "Error: Failed to fetch the data", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Success: Here are the widgets", responseWidgets)
+	c.JSON(http.StatusOK, response)
 }
 
 // // CATEGORY MANAGEMENT

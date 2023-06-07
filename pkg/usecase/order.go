@@ -140,19 +140,49 @@ func (c *OrderUseCase) UpdateStatus(ctx context.Context, orderDetailsId uint, st
 		}
 	} else if statusId == 8 {
 		if orderItem.ReturnSubmitDate != nil {
-			return errors.New("User has not requested a return for this particular item")
+			return errors.New("user has not requested a return for this particular item")
 		}
 		orderItem.OrderStatusID = statusId
 		if err := c.OrderRepo.UpdateStatus(ctx, orderItem); err != nil {
 			return err
 		}
 	} else if statusId == 10 {
+		if orderItem.DeliveredDate != nil {
+			return errors.New("order is already delivered. So cannot be cancelled")
+		}
 		current := time.Now()
 		orderItem.CancelledDate = &current
 		orderItem.OrderStatusID = statusId
 		if err := c.OrderRepo.UpdateStatus(ctx, orderItem); err != nil {
 			return err
 		}
+	}
+	return nil
+}
+
+func (c *OrderUseCase) ReturnOrder(ctx context.Context, orderDetailsId uint, statusId uint) error {
+	// Find the corresponding order item from the order.
+	orderItem, _, err := c.OrderRepo.FindOrderItemsbyId(ctx, orderDetailsId)
+	if err != nil {
+		return err
+	}
+	if orderItem.CancelledDate != nil {
+		return errors.New("order is already cancelled")
+	}
+	if orderItem.DeliveredDate == nil {
+		return errors.New("order is not delivered yet")
+	}
+	if orderItem.ReturnSubmitDate != nil {
+		return errors.New("return is already submitted for this order. Please contact customer support")
+	}
+	if time.Now().After(orderItem.DeliveredDate.Add(120 * time.Hour)) {
+		return errors.New("returning time exceeds")
+	}
+	current := time.Now()
+	orderItem.OrderStatusID = statusId
+	orderItem.ReturnSubmitDate = &current
+	if err := c.OrderRepo.ReturnOrder(ctx, orderItem); err != nil {
+		return err
 	}
 	return nil
 }

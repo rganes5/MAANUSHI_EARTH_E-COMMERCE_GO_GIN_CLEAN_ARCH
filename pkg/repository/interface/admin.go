@@ -13,6 +13,7 @@ type AdminRepository interface {
 	SignUpAdmin(ctx context.Context, admin domain.Admin) error
 	ListUsers(ctx context.Context, pagination utils.Pagination) ([]utils.ResponseUsers, error)
 	AccessHandler(ctx context.Context, id string, access bool) error
+	Dashboard(ctx context.Context) (utils.ResponseWidgets, error)
 
 	// FindByID(ctx context.Context, id uint) (domain.Users, error)
 	// Save(ctx context.Context, user domain.Users) (domain.Users, error)

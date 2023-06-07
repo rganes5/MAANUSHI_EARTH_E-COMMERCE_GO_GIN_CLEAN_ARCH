@@ -38,3 +38,8 @@ func (c *adminUseCase) AccessHandler(ctx context.Context, id string, email bool)
 	err := c.adminRepo.AccessHandler(ctx, id, email)
 	return err
 }
+
+func (c *adminUseCase) Dashboard(ctx context.Context) (utils.ResponseWidgets, error) {
+	responseWidgets, err := c.adminRepo.Dashboard(ctx)
+	return responseWidgets, err
+}

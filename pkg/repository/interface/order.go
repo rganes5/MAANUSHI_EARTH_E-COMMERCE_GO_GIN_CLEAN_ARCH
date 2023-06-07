@@ -14,6 +14,7 @@ type OrderRepository interface {
 	SubmitOrder(ctx context.Context, order domain.Order, cartItems []domain.CartItem) error
 	CancelOrder(ctx context.Context, userId uint, orderItems domain.OrderDetails) error
 	UpdateStatus(ctx context.Context, orderItem domain.OrderDetails) error
+	ReturnOrder(ctx context.Context, orderItem domain.OrderDetails) error
 	ListOrders(ctx context.Context, id uint, pagination utils.Pagination) ([]utils.ResponseOrders, error)
 	AdminListOrders(ctx context.Context, pagination utils.Pagination) ([]utils.ResponseOrdersAdmin, error)
 	ListOrderDetails(ctx context.Context, orderId uint, pagination utils.Pagination) ([]utils.ResponseOrderDetails, error)

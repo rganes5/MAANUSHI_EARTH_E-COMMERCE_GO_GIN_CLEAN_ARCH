@@ -187,3 +187,12 @@ type ResponseOrdersAdmin struct {
 	PaymentStatus          string    `json:"paymentstatus"`
 	GrandTotal             uint      `json:"grandtotal"`
 }
+
+// struct for admin to view the widgets
+type ResponseWidgets struct {
+	ActiveUsers    int `json:"activeusers"`
+	BlockedUsers   int `json:"blockedusers"`
+	Products       int `json:"products"`
+	Pendingorders  int `json:"pendingorders"`
+	ReturnRequests int `json:"returnrequests"`
+}

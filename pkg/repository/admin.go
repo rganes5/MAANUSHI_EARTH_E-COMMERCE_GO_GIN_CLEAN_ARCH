@@ -50,9 +50,30 @@ func (c *adminDatabase) ListUsers(ctx context.Context, pagination utils.Paginati
 // Manage the access of users
 
 func (c *adminDatabase) AccessHandler(ctx context.Context, id string, access bool) error {
-	err := c.DB.Model(domain.Users{}).Where("id=?", id).UpdateColumn("block", access).Error
+	err := c.DB.Model(&domain.Users{}).Where("id=?", id).UpdateColumn("block", access).Error
 	if err != nil {
 		return errors.New("failed to update")
 	}
 	return nil
+}
+
+func (c *adminDatabase) Dashboard(ctx context.Context) (utils.ResponseWidgets, error) {
+	var responseWidgets utils.ResponseWidgets
+	if err := c.DB.Model(&domain.Users{}).Select("count(users)").Where("block='f'").Scan(&responseWidgets.ActiveUsers).Error; err != nil {
+		return responseWidgets, err
+	}
+	if err := c.DB.Model(&domain.Users{}).Select("count(users)").Where("block='t'").Scan(&responseWidgets.BlockedUsers).Error; err != nil {
+		return responseWidgets, err
+	}
+	if err := c.DB.Model(&domain.Products{}).Select("count(products)").Where("deleted_at is null").Scan(&responseWidgets.Products).Error; err != nil {
+		return responseWidgets, err
+	}
+	if err := c.DB.Model(&domain.OrderDetails{}).Select("count(order_details)").Where("order_status_id=?", 1).Scan(&responseWidgets.Pendingorders).Error; err != nil {
+		return responseWidgets, err
+	}
+	if err := c.DB.Model(&domain.OrderDetails{}).Select("count(order_details)").Where("order_status_id=?", 7).Scan(&responseWidgets.ReturnRequests).Error; err != nil {
+		return responseWidgets, err
+	}
+
+	return responseWidgets, nil
 }

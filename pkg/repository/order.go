@@ -425,3 +425,10 @@ func (c *orderDatabase) UpdateStatus(ctx context.Context, orderItem domain.Order
 
 	return nil
 }
+
+func (c *orderDatabase) ReturnOrder(ctx context.Context, orderItem domain.OrderDetails) error {
+	if err := c.DB.Model(&domain.OrderDetails{}).Where("id=?", orderItem.ID).UpdateColumns(&orderItem).Error; err != nil {
+		return err
+	}
+	return nil
+}

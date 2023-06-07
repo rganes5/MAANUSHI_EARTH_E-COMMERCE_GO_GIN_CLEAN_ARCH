@@ -199,6 +199,38 @@ func (cr *OrderHandler) CancelOrder(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// RETURN ORDER
+// @Summary API FOR RETURNING A ORDER
+// @Description Users can return orders
+// @Tags ORDER
+// @Accept json
+// @Produce json
+// @Param order_details_id query uint true "Enter the order details id"
+// @Param status_id query uint true "Enter the order details id"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/orders/return/{order_details_id} [post]
+func (cr *OrderHandler) ReturnOrder(c *gin.Context) {
+	orderDetailsId, err1 := strconv.Atoi(c.Query("order_details_id"))
+	statusId, err2 := strconv.Atoi(c.Query("status_id"))
+	err := errors.Join(err1, err2)
+	if err != nil {
+		response := utils.ErrorResponse(400, "Error: Failed to convert id'ss", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	if err := cr.orderUseCase.ReturnOrder(c.Request.Context(), uint(orderDetailsId), uint(statusId)); err != nil {
+		response := utils.ErrorResponse(500, "Error: Failed to submit the return request", err.Error(), orderDetailsId)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Success: Successfully requested a return", orderDetailsId)
+	c.JSON(http.StatusOK, response)
+
+}
+
 // ADMINS END
 //
 // VIEW ORDERS
@@ -265,11 +297,11 @@ func (cr *OrderHandler) UpdateStatus(c *gin.Context) {
 		return
 	}
 	if err := cr.orderUseCase.UpdateStatus(c.Request.Context(), uint(orderDetailsId), uint(statusId)); err != nil {
-		response := utils.ErrorResponse(500, "Failed to update the status of order id", err.Error(), orderDetailsId)
+		response := utils.ErrorResponse(500, "Error: Failed to update the status of order id", err.Error(), orderDetailsId)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	response := utils.SuccessResponse(200, "Successfully updated the status of the order with order id", orderDetailsId)
+	response := utils.SuccessResponse(200, "Success: Successfully updated the status of the order with order id", orderDetailsId)
 	c.JSON(http.StatusOK, response)
 
 }
