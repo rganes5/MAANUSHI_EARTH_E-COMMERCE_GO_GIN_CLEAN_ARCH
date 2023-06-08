@@ -293,9 +293,9 @@ func (cr *AdminHandler) Dashboard(c *gin.Context) {
 // @Tags ADMIN
 // @Accept json
 // @Produce json
+// @Param frequency query string false "Enter frequency"
 // @Param month query int false "Enter the month"
 // @Param year query int false "Enter the year"
-// @Param frequency query int false "Enter frequency"
 // @Param page query int false "Enter the page number to display"
 // @Param limit query int false "Number of items to retrieve per page"
 // @Success 200 {object} utils.Response
@@ -309,7 +309,12 @@ func (cr *AdminHandler) SalesReport(c *gin.Context) {
 	month := time.Month(monthInt)
 	year, err2 := strconv.Atoi(c.Query("year"))
 	frequency := c.Query("frequency")
-
+	err := errors.Join(err1, err2)
+	if err != nil {
+		response := utils.ErrorResponse(400, "Failed to parse the month and year", err1.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
 	page, err3 := strconv.Atoi(c.Query("page"))
 	if err3 != nil {
 		page = 1 // Default page number is 1 if not provided
@@ -319,13 +324,7 @@ func (cr *AdminHandler) SalesReport(c *gin.Context) {
 	if err4 != nil || limit <= 0 {
 		limit = 3 // Default limit is 3 items if not provided or if an invalid value is entered
 	}
-	err := errors.Join(err1, err2, err3, err4)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
+
 	offset := (page - 1) * limit
 	reqData := utils.SalesReport{
 		Month:     month,
@@ -345,11 +344,11 @@ func (cr *AdminHandler) SalesReport(c *gin.Context) {
 	}
 	if salesreport == nil {
 		c.JSON(http.StatusOK, gin.H{
-			"message": "there is no sales report on this period",
+			"message": "there is no sales report for this selected period",
 		})
 	} else {
 		c.Header("Content-Type", "text/csv")
-		c.Header("Content-Disposition", "attachment;filename=ecommercesalesreport.csv")
+		c.Header("Content-Disposition", "attachment;filename=maanushi_earth_e-commerce_salesreport.csv")
 
 		csvWriter := csv.NewWriter(c.Writer)
 		headers := []string{
@@ -368,6 +367,7 @@ func (cr *AdminHandler) SalesReport(c *gin.Context) {
 		grandtotal := 0
 		for _, sales := range salesreport {
 			total := sales.Quantity * sales.DiscountPrice
+			fmt.Println("This is the total", total)
 			row := []string{
 				fmt.Sprintf("%v", sales.UserID),
 				sales.FirstName,
@@ -390,8 +390,12 @@ func (cr *AdminHandler) SalesReport(c *gin.Context) {
 				})
 				return
 			}
-			if sales.PaymentMode == "Wallet" || (sales.PaymentMode == "Cash on Delivery" && sales.OrderStatus == "Delivered") {
+			fmt.Println("sales payment mode is", sales.PaymentMode)
+			fmt.Println("sales status  is", sales.OrderStatus)
+
+			if sales.PaymentMode == "Razorpay" || sales.PaymentMode == "Wallet" || (sales.PaymentMode == "cash on delivery" && sales.OrderStatus == "delivered") {
 				grandtotal += int(total)
+				fmt.Println("This is the grandtotal", grandtotal)
 			}
 		}
 		rowtotal := []string{

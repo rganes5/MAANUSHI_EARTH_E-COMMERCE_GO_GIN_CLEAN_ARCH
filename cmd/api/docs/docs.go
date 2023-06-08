@@ -277,6 +277,80 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/dashboard/salesreport": {
+            "get": {
+                "description": "ADMIN SALES REPORT, VIA MONTHLY AND YEARLY",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ADMIN"
+                ],
+                "summary": "API FOR GETTING SALES REPORT",
+                "operationId": "ADMIN-SALES-REPORT",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Enter frequency",
+                        "name": "frequency",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Enter the month",
+                        "name": "month",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Enter the year",
+                        "name": "year",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Enter the page number to display",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items to retrieve per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/home": {
             "get": {
                 "description": "DISPLAY ADMIN PROFILE",
@@ -2725,11 +2799,11 @@ const docTemplate = `{
         "utils.ProductDetails": {
             "type": "object",
             "properties": {
+                "product_id": {
+                    "type": "integer"
+                },
                 "productdetails": {
                     "type": "string"
-                },
-                "productid": {
-                    "type": "integer"
                 },
                 "qty_in_stock": {
                     "type": "integer"

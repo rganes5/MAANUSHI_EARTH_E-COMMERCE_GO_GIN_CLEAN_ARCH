@@ -59,7 +59,7 @@ type Products struct {
 }
 
 type ProductDetails struct {
-	ProductID      uint   `json:"productid"`
+	ProductID      uint   `json:"product_id"`
 	ProductDetails string `json:"productdetails"`
 	InStock        uint   `json:"qty_in_stock"`
 }

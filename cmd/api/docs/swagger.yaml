@@ -95,10 +95,10 @@ definitions:
     type: object
   utils.ProductDetails:
     properties:
+      product_id:
+        type: integer
       productdetails:
         type: string
-      productid:
-        type: integer
       qty_in_stock:
         type: integer
     type: object
@@ -363,6 +363,55 @@ paths:
           schema:
             $ref: '#/definitions/utils.Response'
       summary: API FOR LISTING WIDGETS
+      tags:
+      - ADMIN
+  /admin/dashboard/salesreport:
+    get:
+      consumes:
+      - application/json
+      description: ADMIN SALES REPORT, VIA MONTHLY AND YEARLY
+      operationId: ADMIN-SALES-REPORT
+      parameters:
+      - description: Enter frequency
+        in: query
+        name: frequency
+        type: string
+      - description: Enter the month
+        in: query
+        name: month
+        type: integer
+      - description: Enter the year
+        in: query
+        name: year
+        type: integer
+      - description: Enter the page number to display
+        in: query
+        name: page
+        type: integer
+      - description: Number of items to retrieve per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR GETTING SALES REPORT
       tags:
       - ADMIN
   /admin/home:

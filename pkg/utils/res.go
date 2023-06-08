@@ -205,7 +205,7 @@ type ResponseSalesReport struct {
 	ProductDetailID uint      `json:"productdetailid" gorm:"column:productdetailid"`
 	ProductName     string    `json:"productname" gorm:"column:productname"`
 	Price           uint      `json:"price"`
-	DiscountPrice   uint      `json:"discountprice" gorm:"column:discountpercentage"`
+	DiscountPrice   uint      `json:"discountprice" gorm:"column:discountprice"`
 	Quantity        uint      `json:"quantity"`
 	OrderID         uint      `json:"orderid" gorm:"column:orderid"`
 	PlacedDate      time.Time `json:"placeddate"`
