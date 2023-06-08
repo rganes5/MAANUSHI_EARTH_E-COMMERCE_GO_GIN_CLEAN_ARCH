@@ -14,7 +14,7 @@ type AdminRepository interface {
 	ListUsers(ctx context.Context, pagination utils.Pagination) ([]utils.ResponseUsers, error)
 	AccessHandler(ctx context.Context, id string, access bool) error
 	Dashboard(ctx context.Context) (utils.ResponseWidgets, error)
-
+	SalesReport(utils.SalesReport) ([]utils.ResponseSalesReport, error)
 	// FindByID(ctx context.Context, id uint) (domain.Users, error)
 	// Save(ctx context.Context, user domain.Users) (domain.Users, error)
 	// Delete(ctx context.Context, user domain.Users) error

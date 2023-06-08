@@ -1,5 +1,7 @@
 package utils
 
+import "time"
+
 type Pagination struct {
 	Offset uint `json:"offset"`
 	Limit  uint `json:"limit"`
@@ -112,4 +114,12 @@ type ReqCartItem struct {
 	ProductId  uint `json:"productid"`
 	Quantity   uint `json:"quantity"`
 	TotalPrice uint `json:"totalprice"`
+}
+
+type SalesReport struct {
+	Month     time.Month `json:"startdate"`
+	Year      int        `json:"year"`
+	Frequency string     `json:"frequency"`
+	EndDate   time.Time  `json:"enddate"`
+	Pagination
 }

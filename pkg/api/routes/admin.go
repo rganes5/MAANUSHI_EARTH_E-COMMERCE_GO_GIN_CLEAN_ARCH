@@ -52,6 +52,7 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 		dashboard := home.Group("/dashboard")
 		{
 			dashboard.GET("/", adminHandler.Dashboard)
+			dashboard.GET("/salesreport", adminHandler.SalesReport)
 		}
 		orders := home.Group("/orders")
 		{

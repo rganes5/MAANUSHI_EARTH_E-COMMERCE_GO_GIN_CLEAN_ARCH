@@ -196,3 +196,19 @@ type ResponseWidgets struct {
 	Pendingorders  int `json:"pendingorders"`
 	ReturnRequests int `json:"returnrequests"`
 }
+
+// salesreport
+type ResponseSalesReport struct {
+	UserID          uint      `json:"userid" gorm:"column:userid"`
+	FirstName       string    `json:"firstname"`
+	Email           string    `json:"email"`
+	ProductDetailID uint      `json:"productdetailid" gorm:"column:productdetailid"`
+	ProductName     string    `json:"productname" gorm:"column:productname"`
+	Price           uint      `json:"price"`
+	DiscountPrice   uint      `json:"discountprice" gorm:"column:discountpercentage"`
+	Quantity        uint      `json:"quantity"`
+	OrderID         uint      `json:"orderid" gorm:"column:orderid"`
+	PlacedDate      time.Time `json:"placeddate"`
+	PaymentMode     string    `json:"paymentmode" gorm:"column:paymentmode"`
+	OrderStatus     string    `json:"orderstatus" gorm:"column:orderstatus"`
+}

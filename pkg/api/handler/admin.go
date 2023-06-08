@@ -1,6 +1,9 @@
 package handler
 
 import (
+	"encoding/csv"
+	"errors"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -260,7 +263,7 @@ func (cr *AdminHandler) AccessHandler(c *gin.Context) {
 
 }
 
-// ADMIN WIDGETS
+// ADMIN DASHBOARD WITH WIDGETS
 // @Summary API FOR LISTING WIDGETS
 // @ID ADMIN-LIST-WIDGETS
 // @Description ADMIN DASHBOARD AND LISTING WIDGETS FOR ADMIN
@@ -283,51 +286,123 @@ func (cr *AdminHandler) Dashboard(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// // CATEGORY MANAGEMENT
+// ADMIN SALES REPORT
+// @Summary API FOR GETTING SALES REPORT
+// @ID ADMIN-SALES-REPORT
+// @Description ADMIN SALES REPORT, VIA MONTHLY AND YEARLY
+// @Tags ADMIN
+// @Accept json
+// @Produce json
+// @Param month query int false "Enter the month"
+// @Param year query int false "Enter the year"
+// @Param frequency query int false "Enter frequency"
+// @Param page query int false "Enter the page number to display"
+// @Param limit query int false "Number of items to retrieve per page"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /admin/dashboard/salesreport [get]
+func (cr *AdminHandler) SalesReport(c *gin.Context) {
+	// time
+	monthInt, err1 := strconv.Atoi(c.DefaultQuery("month", "1"))
+	month := time.Month(monthInt)
+	year, err2 := strconv.Atoi(c.Query("year"))
+	frequency := c.Query("frequency")
 
-// // ADD
-// func (cr *AdminHandler) AddCategory(c *gin.Context) {
-// 	var category domain.Category
-// 	if err := c.BindJSON(&category); err != nil {
-// 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-// 			"error": "error while binding json",
-// 		})
-// 		return
-// 	}
-// 	if err := cr.adminUseCase.AddCategory(c.Request.Context(), category); err != nil {
-// 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-// 			"error": err.Error(),
-// 		})
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, gin.H{
-// 		"Category": "Successfully added",
-// 	})
-// }
+	page, err3 := strconv.Atoi(c.Query("page"))
+	if err3 != nil {
+		page = 1 // Default page number is 1 if not provided
+	}
 
-// // DELETE
-// func (cr *AdminHandler) DeleteCategory(c *gin.Context) {
-// 	id := c.Param("categoryid")
-// 	if err := cr.adminUseCase.DeleteCategory(c.Request.Context(), id); err != nil {
-// 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-// 			"error": err.Error(),
-// 		})
-// 	}
-// 	c.JSON(http.StatusOK, gin.H{
-// 		"category": "Deleted successfully",
-// 	})
-// }
+	limit, err4 := strconv.Atoi(c.Query("limit"))
+	if err4 != nil || limit <= 0 {
+		limit = 3 // Default limit is 3 items if not provided or if an invalid value is entered
+	}
+	err := errors.Join(err1, err2, err3, err4)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	offset := (page - 1) * limit
+	reqData := utils.SalesReport{
+		Month:     month,
+		Year:      year,
+		Frequency: frequency,
+		Pagination: utils.Pagination{
+			Offset: uint(offset),
+			Limit:  uint(limit),
+		},
+	}
+	salesreport, err5 := cr.adminUseCase.SalesReport(reqData)
+	if err5 != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err5.Error(),
+		})
+		return
+	}
+	if salesreport == nil {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "there is no sales report on this period",
+		})
+	} else {
+		c.Header("Content-Type", "text/csv")
+		c.Header("Content-Disposition", "attachment;filename=ecommercesalesreport.csv")
 
-// // LIST
-// func (cr *AdminHandler) ListCategories(c *gin.Context) {
-// 	categories, err := cr.adminUseCase.ListCategories(c.Request.Context())
-// 	if err != nil {
-// 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
-// 			"error": err.Error(),
-// 		})
-// 		return
-// 	}
-// 	c.JSON(http.StatusOK, gin.H{
-// 		"categories": categories,
-// 	})
-// }
+		csvWriter := csv.NewWriter(c.Writer)
+		headers := []string{
+			"UserID", "FirstName", "Email",
+			"ProductDetailID", "ProductName", "Price",
+			"DiscountPrice", "Quantity", "OrderID",
+			"PlacedDate", "PaymentMode", "OrderStatus", "Total",
+		}
+
+		if err := csvWriter.Write(headers); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		grandtotal := 0
+		for _, sales := range salesreport {
+			total := sales.Quantity * sales.DiscountPrice
+			row := []string{
+				fmt.Sprintf("%v", sales.UserID),
+				sales.FirstName,
+				sales.Email,
+				fmt.Sprintf("%v", sales.ProductDetailID),
+				sales.ProductName,
+				fmt.Sprintf("%v", sales.Price),
+				fmt.Sprintf("%v", sales.DiscountPrice),
+				fmt.Sprintf("%v", sales.Quantity),
+				fmt.Sprintf("%v", sales.OrderID),
+				sales.PlacedDate.Format("2006-01-02 15:04:05"),
+				sales.PaymentMode,
+				sales.OrderStatus,
+				fmt.Sprintf("%v", total),
+			}
+
+			if err := csvWriter.Write(row); err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{
+					"error": err.Error(),
+				})
+				return
+			}
+			if sales.PaymentMode == "Wallet" || (sales.PaymentMode == "Cash on Delivery" && sales.OrderStatus == "Delivered") {
+				grandtotal += int(total)
+			}
+		}
+		rowtotal := []string{
+			fmt.Sprintf("Grand Total=%v", grandtotal),
+		}
+		if err := csvWriter.Write(rowtotal); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		csvWriter.Flush()
+	}
+}

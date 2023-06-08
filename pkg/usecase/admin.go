@@ -43,3 +43,7 @@ func (c *adminUseCase) Dashboard(ctx context.Context) (utils.ResponseWidgets, er
 	responseWidgets, err := c.adminRepo.Dashboard(ctx)
 	return responseWidgets, err
 }
+
+func (c *adminUseCase) SalesReport(reqData utils.SalesReport) ([]utils.ResponseSalesReport, error) {
+	return c.adminRepo.SalesReport(reqData)
+}

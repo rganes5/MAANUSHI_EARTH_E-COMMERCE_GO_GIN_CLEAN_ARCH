@@ -77,3 +77,38 @@ func (c *adminDatabase) Dashboard(ctx context.Context) (utils.ResponseWidgets, e
 
 	return responseWidgets, nil
 }
+
+func (c *adminDatabase) SalesReport(reqData utils.SalesReport) ([]utils.ResponseSalesReport, error) {
+	var salesreport []utils.ResponseSalesReport
+	if reqData.Frequency == "MONTHLY" {
+		result := c.DB.Model(&domain.Order{}).Where("EXTRACT(YEAR FROM orders.placed_date) = ? AND EXTRACT(MONTH FROM orders.placed_date) = ?", reqData.Year, reqData.Month).
+			Joins("JOIN order_details od on orders.id=od.order_id").
+			Joins("JOIN product_details pd on pd.id=od.product_detail_id").
+			Joins("JOIN products p on p.id=pd.product_id").
+			Joins("JOIN payment_modes pm on pm.id=orders.payment_id").
+			Joins("JOIN users u on orders.user_id=u.id").
+			Joins("JOIN order_statuses os on os.id=od.order_status_id").
+			// Joins("JOIN discounts d on d.id=pd.discount_id").
+			Select("u.id as userid,u.first_name,u.email,od.product_detail_id as productdetailid,p.product_name as productname,od.quantity,orders.id as orderid,orders.placed_date,pm.mode as paymentmode,p.discount_price as discountprice,os.status as orderstatus").
+			Order("orders.placed_date DESC").Scan(&salesreport)
+		if result.Error != nil {
+			return salesreport, result.Error
+		}
+	}
+	if reqData.Frequency == "YEARLY" {
+		result := c.DB.Model(&domain.Order{}).Where("EXTRACT(YEAR FROM orders.placed_date) = ?", reqData.Year).
+			Joins("JOIN order_details od on orders.id=od.order_id").
+			Joins("JOIN product_details pd on pd.id=od.product_detail_id").
+			Joins("JOIN products p on p.id=pd.product_id").
+			Joins("JOIN payment_modes pm on pm.id=orders.payment_id").
+			Joins("JOIN users u on orders.user_id=u.id").
+			Joins("JOIN order_statuses os on os.id=od.order_status_id").
+			// Joins("JOIN discounts d on d.id=pd.discount_id").
+			Select("u.id as userid,u.first_name,u.email,od.product_detail_id as productdetailid,p.model_name as productname,od.quantity,orders.id as orderid,orders.placed_date,pm.mode as paymentmode,pd.price,p.discount_price as discountprice,os.status as orderstatus").
+			Order("orders.placed_date DESC").Scan(&salesreport)
+		if result.Error != nil {
+			return salesreport, result.Error
+		}
+	}
+	return salesreport, nil
+}
