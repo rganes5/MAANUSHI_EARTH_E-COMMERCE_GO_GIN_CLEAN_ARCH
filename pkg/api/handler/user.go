@@ -571,6 +571,22 @@ func (cr *UserHandler) DeleteAddress(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+// USER WALLER
+// @Summary API FOR USER WALLET BALANCE
+// @ID USER-WALLET
+// @Description DISPLAY USER WALLET
+// @Tags USER
+// @Accept json
+// @Produce json
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/profile/home [get]
+func (cr *UserHandler) ViewWallet(c *gin.Context) {
+
+}
+
 //
 //
 //
