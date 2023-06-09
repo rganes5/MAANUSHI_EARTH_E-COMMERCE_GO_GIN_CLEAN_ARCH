@@ -175,7 +175,7 @@ func (c *OrderUseCase) ReturnOrder(ctx context.Context, orderDetailsId uint, sta
 	if orderItem.ReturnSubmitDate != nil {
 		return errors.New("return is already submitted for this order. Please contact customer support")
 	}
-	if time.Now().After(orderItem.DeliveredDate.Add(120 * time.Hour)) {
+	if time.Now().After(orderItem.DeliveredDate.Add(168 * time.Hour)) {
 		return errors.New("returning time exceeds")
 	}
 	current := time.Now()
