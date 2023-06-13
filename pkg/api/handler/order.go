@@ -47,22 +47,28 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 		return
 	}
 	fmt.Println("the address id and user id, payment id and user id is from handler are", uint(addressId), uint(paymentId), userId.(uint))
-	if err := cr.orderUseCase.PlaceNewOrder(c.Request.Context(), uint(addressId), uint(paymentId), userId.(uint)); err != nil {
-		response := utils.ErrorResponse(500, "Error: Failed to place order", err.Error(), nil)
-		c.JSON(http.StatusInternalServerError, response)
+	//Checks the payment modes
+	if paymentId == 1 || paymentId == 3 {
+		if err := cr.orderUseCase.PlaceNewOrder(c.Request.Context(), uint(addressId), uint(paymentId), userId.(uint)); err != nil {
+			response := utils.ErrorResponse(500, "Error: Failed to place order", err.Error(), nil)
+			c.JSON(http.StatusInternalServerError, response)
+			return
+		}
+	} else if paymentId == 2 {
+		body, err := cr.orderUseCase.RazorPayOrder(c.Request.Context(), userId.(uint))
+		fmt.Println("body from the razorpay new order is", body)
+		if err != nil {
+			response := utils.ErrorResponse(400, "Error: Razorpay payment method is not yet available", "", nil)
+			c.JSON(http.StatusBadRequest, response)
+			return
+		}
+
+	} else if paymentId == 5 {
+		fmt.Println("Paypal not added yet")
+		response := utils.ErrorResponse(400, "Error: Paypal not added yet", "", nil)
+		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	// } else if paymentId == 2 {
-	// 	fmt.Println("Razorpay not added yet")
-	// 	response := utils.ErrorResponse(400, "Error: Razorpay payment method is not yet available", "", nil)
-	// 	c.JSON(http.StatusBadRequest, response)
-	// 	return
-	// } else {
-	// 	fmt.Println("Please select correct payment method")
-	// 	response := utils.ErrorResponse(400, "Error: Please select correct payment method", "", nil)
-	// 	c.JSON(http.StatusBadRequest, response)
-	// 	return
-	// }
 	response := utils.SuccessResponse(200, "Success: Successfully placed the order", nil)
 	c.JSON(http.StatusOK, response)
 }

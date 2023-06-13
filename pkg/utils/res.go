@@ -212,3 +212,12 @@ type ResponseSalesReport struct {
 	PaymentMode     string    `json:"paymentmode" gorm:"column:paymentmode"`
 	OrderStatus     string    `json:"orderstatus" gorm:"column:orderstatus"`
 }
+
+// razorpay
+type RazorpayOrder struct {
+	RazorpayKey     string `json:"razorpaykey"`
+	AmountToPay     uint   `json:"amounttopay"`
+	RazorpayAmount  int    `json:"razorpayamount"`
+	RazorpayOrderID string `json:"razorpayorderid"`
+	UserID          uint   `json:"userid"`
+}

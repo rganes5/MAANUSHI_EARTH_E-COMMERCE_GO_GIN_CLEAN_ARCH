@@ -7,6 +7,7 @@ require (
 	github.com/go-playground/validator/v10 v10.14.0
 	github.com/google/wire v0.5.0
 	github.com/jinzhu/copier v0.3.5
+	github.com/razorpay/razorpay-go v0.0.0-20230410044935-943abe07d4c1
 	github.com/spf13/viper v1.15.0
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0

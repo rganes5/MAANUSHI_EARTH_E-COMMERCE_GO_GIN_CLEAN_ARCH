@@ -3,11 +3,12 @@ package usecase
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/config"
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 	interfaces "github.com/rganes5/maanushi_earth_e-commerce/pkg/repository/interface"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/support"
 	services "github.com/rganes5/maanushi_earth_e-commerce/pkg/usecase/interface"
 	utils "github.com/rganes5/maanushi_earth_e-commerce/pkg/utils"
 )
@@ -28,15 +29,15 @@ func NewOrderUseCase(repo interfaces.OrderRepository, CartRepo interfaces.CartRe
 func (c *OrderUseCase) PlaceNewOrder(ctx context.Context, addressId uint, paymentId uint, userId uint) error {
 	var psId uint
 	cart, err := c.CartRepo.FindCartById(ctx, userId)
-	fmt.Println("user id passed from to find cart by id from place new order function from use case is", userId)
-	fmt.Println("Cart found from the find cart by id from place new order function from use case is", cart)
+	//fmt.Println("user id passed from to find cart by id from place new order function from use case is", userId)
+	//fmt.Println("Cart found from the find cart by id from place new order function from use case is", cart)
 	if err != nil {
 		return err
 	}
-	fmt.Println("1 cartid which is used to find the cartitems table from the use case is", cart.ID)
+	//fmt.Println("1 cartid which is used to find the cartitems table from the use case is", cart.ID)
 
 	cartItems, err1 := c.OrderRepo.FindCartItems(ctx, cart.ID)
-	fmt.Println("2 cartid which is used to find the cartitems table from the use case is", cart.ID)
+	//fmt.Println("2 cartid which is used to find the cartitems table from the use case is", cart.ID)
 	if err1 != nil {
 		return err
 	}
@@ -44,7 +45,7 @@ func (c *OrderUseCase) PlaceNewOrder(ctx context.Context, addressId uint, paymen
 	case 1:
 		psId = 1
 	case 2:
-		psId = 3
+		psId = 2
 	case 3:
 		psId = 4
 	}
@@ -56,11 +57,37 @@ func (c *OrderUseCase) PlaceNewOrder(ctx context.Context, addressId uint, paymen
 		PaymentStatusID: psId,
 		GrandTotal:      uint(cart.GrandTotal),
 	}
-	fmt.Println("New order is", Neworder)
+	//fmt.Println("New order is", Neworder)
 	if err := c.OrderRepo.SubmitOrder(ctx, Neworder, cartItems); err != nil {
 		return err
 	}
 	return nil
+}
+
+func (c *OrderUseCase) RazorPayOrder(ctx context.Context, userId uint) (utils.RazorpayOrder, error) {
+	var razorPayOrder utils.RazorpayOrder
+	cart, err := c.CartRepo.FindCartById(ctx, userId)
+	//fmt.Println("user id passed from to find cart by id from place new order function from use case is", userId)
+	//fmt.Println("Cart found from the find cart by id from place new order function from use case is", cart)
+	if err != nil {
+		return razorPayOrder, err
+	}
+	// Generate new razorpay order
+	// Razorpay amount is calculated on paisa for india so convert the actual price into paisa
+	razorPayAmount := cart.GrandTotal * 100
+	razorPayReceipt := "test receipt"
+	razorPayOrderId, err := support.GenerateNewRazorPayOrder(razorPayAmount, razorPayReceipt)
+	if err != nil {
+		return razorPayOrder, err
+	}
+	// set all details on razopay order
+	razorPayOrder.AmountToPay = uint(cart.GrandTotal)
+	razorPayOrder.RazorpayAmount = razorPayAmount
+	razorPayOrder.RazorpayKey = config.GetCofig().RAZORPAYKEY
+	razorPayOrder.RazorpayOrderID = razorPayOrderId
+	razorPayOrder.UserID = userId
+
+	return razorPayOrder, err
 }
 
 func (c *OrderUseCase) CancelOrder(ctx context.Context, userId uint, orderDetailsId uint) error {
@@ -69,7 +96,7 @@ func (c *OrderUseCase) CancelOrder(ctx context.Context, userId uint, orderDetail
 	if err != nil {
 		return err
 	}
-	fmt.Println("This is the order", orderItem)
+	//fmt.Println("This is the order", orderItem)
 	if orderItem.DeliveredDate != nil {
 		return errors.New("order is already delivered, Please submit a return request. If not delivered, please contact customer support")
 	}
