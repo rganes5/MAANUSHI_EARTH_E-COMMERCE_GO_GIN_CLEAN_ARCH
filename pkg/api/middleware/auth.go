@@ -20,7 +20,7 @@ func AuthorizationMiddleware(role string) gin.HandlerFunc {
 		claims, err1 := auth.ValidateToken(tokenString)
 		if err1 != nil {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": err1,
+				"error": err1.Error(),
 			})
 			return
 		}

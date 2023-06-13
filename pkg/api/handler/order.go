@@ -80,6 +80,7 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
+/*
 // Razorpay success verification handler
 //
 // @Summary API FOR VERIFYING THE RAZORPAY STATUS
@@ -98,6 +99,7 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 // @Failure 400 {object} utils.Response
 // @Failure 500 {object} utils.Response
 // @Router /user/checkout/placeorder [post]
+*/
 func (cr *OrderHandler) RazorPaySuccess(c *gin.Context) {
 	paymentId, err1 := strconv.Atoi(c.Query("payment_id"))
 	addressId, err2 := strconv.Atoi(c.Query("address_id"))

@@ -1201,7 +1201,7 @@ paths:
       tags:
       - PRODUCT CATEGORY
   /user/checkout/placeorder:
-    post:
+    get:
       consumes:
       - application/json
       description: Users can place a new order with the cart items.
@@ -1813,8 +1813,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: DISPLAY USER PROFILE
-      operationId: USER-PROFILE
+      description: DISPLAY USER WALLET
+      operationId: USER-WALLET
       produces:
       - application/json
       responses:
@@ -1834,7 +1834,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.Response'
-      summary: API FOR USER PROFILE
+      summary: API FOR USER WALLET BALANCE
       tags:
       - USER
   /user/profile/list/address:

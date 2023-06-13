@@ -44,12 +44,12 @@ func ValidateToken(tokenString string) (Claims, error) {
 			return []byte(config.GetJWTCofig()), nil
 		},
 	)
-	if err != nil || !token.Valid {
-		return claims, errors.New("not valid token")
-	}
 	//checking the expiry of the token
 	if time.Now().Unix() > claims.ExpiresAt.Unix() {
 		return claims, errors.New("token expired re-login")
+	}
+	if err != nil || !token.Valid {
+		return claims, errors.New("not valid token")
 	}
 	return claims, nil
 }

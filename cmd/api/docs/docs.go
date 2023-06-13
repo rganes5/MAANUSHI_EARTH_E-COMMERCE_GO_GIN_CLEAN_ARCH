@@ -1536,7 +1536,7 @@ const docTemplate = `{
             }
         },
         "/user/checkout/placeorder": {
-            "post": {
+            "get": {
                 "description": "Users can place a new order with the cart items.",
                 "consumes": [
                     "application/json"
@@ -2454,7 +2454,7 @@ const docTemplate = `{
         },
         "/user/profile/home": {
             "get": {
-                "description": "DISPLAY USER PROFILE",
+                "description": "DISPLAY USER WALLET",
                 "consumes": [
                     "application/json"
                 ],
@@ -2464,8 +2464,8 @@ const docTemplate = `{
                 "tags": [
                     "USER"
                 ],
-                "summary": "API FOR USER PROFILE",
-                "operationId": "USER-PROFILE",
+                "summary": "API FOR USER WALLET BALANCE",
+                "operationId": "USER-WALLET",
                 "responses": {
                     "200": {
                         "description": "OK",
