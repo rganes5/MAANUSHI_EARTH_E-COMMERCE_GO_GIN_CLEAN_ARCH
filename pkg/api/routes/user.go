@@ -48,8 +48,8 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 		}
 		checkout := home.Group("/checkout")
 		{
-			checkout.POST("/placeorder", orderHandler.PlaceNewOrder)
-			// checkout.POST("/success",orderHandler.success)
+			checkout.GET("/placeorder", orderHandler.PlaceNewOrder)
+			checkout.GET("/success", orderHandler.RazorPaySuccess)
 		}
 		orders := home.Group("/orders")
 		{

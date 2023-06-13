@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rganes5/maanushi_earth_e-commerce/pkg/support"
 	services "github.com/rganes5/maanushi_earth_e-commerce/pkg/usecase/interface"
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/utils"
 )
@@ -36,7 +37,7 @@ func NewOrderHandler(service services.OrderUseCase) *OrderHandler {
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
 // @Failure 500 {object} utils.Response
-// @Router /user/checkout/placeorder [post]
+// @Router /user/checkout/placeorder [get]
 func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 	paymentId, _ := strconv.Atoi(c.Query("payment_id"))
 	addressId, _ := strconv.Atoi(c.Query("address_id"))
@@ -79,7 +80,55 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-// func(cr *OrderHandler)RazorPaySuccess
+// Razorpay success verification handler
+//
+// @Summary API FOR VERIFYING THE RAZORPAY STATUS
+// @Description For checking and verifying the payment
+// @Tags ORDER
+// @Accept json
+// @Produce json
+// @Param payment_id query string true "Enter the payment id"
+// @Param address_id query string true "Enter the address id"
+// @Param user_id query string true "Enter the user id"
+// @Param razorpay_payment_id query string true "Enter the razorpay_payment_id"
+// @Param razorpay_order_id query string true "Enter the razorpay_order_id"
+// @Param razorpay_signature query string true "Enter the razorpay_signature"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /user/checkout/placeorder [post]
+func (cr *OrderHandler) RazorPaySuccess(c *gin.Context) {
+	paymentId, err1 := strconv.Atoi(c.Query("payment_id"))
+	addressId, err2 := strconv.Atoi(c.Query("address_id"))
+	userId, err3 := strconv.Atoi(c.Query("user_id"))
+	razorpay_payment_id := c.Query("razorpay_payment_id")
+	razorpay_order_id := c.Query("razorpay_order_id")
+	razorpay_signature := c.Query("razorpay_signature")
+	response := gin.H{
+		"data":    false,
+		"message": "Payment failed",
+	}
+	err := errors.Join(err1, err2, err3)
+	if err != nil {
+		response := utils.ErrorResponse(400, "Error: Failed to get the id's", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	if err := support.VerifyRazorPayment(razorpay_payment_id, razorpay_order_id, razorpay_signature); err != nil {
+		response := utils.ErrorResponse(500, "Error: Failed to verify the payment", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	if err := cr.orderUseCase.PlaceNewOrder(c.Request.Context(), uint(addressId), uint(paymentId), uint(userId)); err != nil {
+		response := utils.ErrorResponse(500, "Error: Failed to place order", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response["data"] = true
+	response["message"] = "Payment Success."
+	c.JSON(http.StatusOK, response)
+}
 
 // VIEW ORDERS
 // @Summary API FOR VIEWING ORDERS

@@ -9,6 +9,7 @@
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 </head>
 <body>
+    <!---- code taken from https://razorpay.com/docs/payments/server-integration/go/payment-gateway/build-integration/#api-sample-code -->
 <div class="container">
     <div class="row mt-5">
         <div class="col-md-12">
@@ -30,7 +31,8 @@
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
 <script>
-    // Get the current URL
+
+// Get the current URL
 var url = new URL(window.location.href);
 
 // Get the query parameters from the URL
@@ -45,7 +47,7 @@ var param2 = queryParams.get('paymentid');
     var orderid = document.getElementById("orderid").innerHTML;
     var total = document.getElementById("total").innerHTML;
     var options = {
-        "key": "rzp_test_FEuLW2kScY4K9K", // Enter the Key ID generated from the Dashboard
+        "key": "rzp_test_WkJqay1OWGSWW2", // Enter the Key ID generated from the Dashboard
         "amount": total, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
         "currency": "INR",
         "name": "Maanushi Earth Test",
