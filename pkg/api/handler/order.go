@@ -58,10 +58,15 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 		body, err := cr.orderUseCase.RazorPayOrder(c.Request.Context(), userId.(uint))
 		fmt.Println("body from the razorpay new order is", body)
 		if err != nil {
-			response := utils.ErrorResponse(400, "Error: Razorpay payment method is not yet available", "", nil)
-			c.JSON(http.StatusBadRequest, response)
+			response := utils.ErrorResponse(500, "Error: Failed to load a razorpay payment", "", nil)
+			c.JSON(http.StatusInternalServerError, response)
 			return
 		}
+		c.HTML(200, "app.html", gin.H{
+			"UserID":      body.UserID,
+			"Orderid":     body.RazorpayOrderID,
+			"Total_price": body.AmountToPay,
+		})
 
 	} else if paymentId == 5 {
 		fmt.Println("Paypal not added yet")
@@ -69,9 +74,12 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
+
 	response := utils.SuccessResponse(200, "Success: Successfully placed the order", nil)
 	c.JSON(http.StatusOK, response)
 }
+
+// func(cr *OrderHandler)RazorPaySuccess
 
 // VIEW ORDERS
 // @Summary API FOR VIEWING ORDERS
