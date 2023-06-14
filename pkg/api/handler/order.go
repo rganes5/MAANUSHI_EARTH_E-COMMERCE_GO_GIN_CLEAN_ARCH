@@ -59,7 +59,7 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 		body, err := cr.orderUseCase.RazorPayOrder(c.Request.Context(), userId.(uint))
 		fmt.Println("body from the razorpay new order is", body)
 		if err != nil {
-			response := utils.ErrorResponse(500, "Error: Failed to load a razorpay payment", "", nil)
+			response := utils.ErrorResponse(500, "Error: Failed to load a razorpay payment", err.Error(), nil)
 			c.JSON(http.StatusInternalServerError, response)
 			return
 		}
@@ -98,15 +98,15 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
 // @Failure 500 {object} utils.Response
-// @Router /user/checkout/placeorder [get]
+// @Router /user/checkout/success [get]
 */
 func (cr *OrderHandler) RazorPaySuccess(c *gin.Context) {
-	paymentId, err1 := strconv.Atoi(c.Query("payment_id"))
-	addressId, err2 := strconv.Atoi(c.Query("address_id"))
+	razorpay_order_id := c.Query("order_id")
 	userId, err3 := strconv.Atoi(c.Query("user_id"))
-	razorpay_payment_id := c.Query("razorpay_payment_id")
-	razorpay_order_id := c.Query("razorpay_order_id")
-	razorpay_signature := c.Query("razorpay_signature")
+	addressId, err2 := strconv.Atoi(c.Query("address_id"))
+	paymentId, err1 := strconv.Atoi(c.Query("payment_id"))
+	razorpay_payment_id := c.Query("payment_ref")
+	razorpay_signature := c.Query("signature")
 	response := gin.H{
 		"data":    false,
 		"message": "Payment failed",
@@ -128,7 +128,7 @@ func (cr *OrderHandler) RazorPaySuccess(c *gin.Context) {
 		return
 	}
 	response["data"] = true
-	response["message"] = "Payment Success."
+	response["message"] = "Payment verified and order placed successfully."
 	c.JSON(http.StatusOK, response)
 }
 
@@ -271,7 +271,7 @@ func (cr *OrderHandler) CancelOrder(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param order_details_id query uint true "Enter the order details id"
-// @Param status_id query uint true "Enter the order details id"
+// @Param status_id query uint true "Enter the order status id"
 // @Success 200 {object} utils.Response
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
@@ -346,7 +346,7 @@ func (cr *OrderHandler) AdminListOrders(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param order_details_id query uint true "Enter the order details id"
-// @Param status_id query uint true "Enter the order details id"
+// @Param status_id query uint true "Enter the order status id"
 // @Success 200 {object} utils.Response
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response

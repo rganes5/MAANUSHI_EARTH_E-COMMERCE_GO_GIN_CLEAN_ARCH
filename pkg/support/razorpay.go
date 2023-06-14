@@ -16,10 +16,11 @@ func GenerateNewRazorPayOrder(razorPayAmount int, razorPayReceipt string) (razor
 	// get razor pay key and secret
 	razorPayKey := config.GetCofig().RAZORPAYKEY
 	razorPaySecret := config.GetCofig().RAZORPAYSECRET
-
+	fmt.Println(razorPayKey)
+	fmt.Println(razorPaySecret)
 	//create a razorpay client
 	client := razorpay.NewClient(razorPayKey, razorPaySecret)
-
+	fmt.Println("razorpayamount", razorPayAmount)
 	data := map[string]interface{}{
 		"amount":   razorPayAmount,
 		"currency": "INR",

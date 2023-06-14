@@ -16,14 +16,15 @@ type Claims struct {
 
 func GenerateJWT(email string, ID uint) (string, error) {
 
-	expireTime := time.Now().Add(60 * time.Minute)
+	// expireTime := time.Now().Add(60 * time.Minute)
+	expiryTime := time.Now().Add(10 * time.Minute)
 
 	// create token with expire time and claims id as user id
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &Claims{
 		Email: email,
 		ID:    ID,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(expireTime),
+			ExpiresAt: jwt.NewNumericDate(expiryTime),
 		},
 	})
 
@@ -37,6 +38,23 @@ func GenerateJWT(email string, ID uint) (string, error) {
 	return tokenString, nil
 }
 
+// func ValidateToken(tokenString string) (Claims, error) {
+// 	claims := Claims{}
+// 	token, err := jwt.ParseWithClaims(tokenString, &claims,
+// 		func(token *jwt.Token) (interface{}, error) {
+// 			return []byte(config.GetJWTCofig()), nil
+// 		},
+// 	)
+// 	//checking the expiry of the token
+// 	if time.Now().Unix() > claims.ExpiresAt.Unix() {
+// 		return claims, errors.New("token expired re-login")
+// 	}
+// 	if err != nil || !token.Valid {
+// 		return claims, errors.New("not valid token")
+// 	}
+// 	return claims, nil
+// }
+
 func ValidateToken(tokenString string) (Claims, error) {
 	claims := Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, &claims,
@@ -44,10 +62,6 @@ func ValidateToken(tokenString string) (Claims, error) {
 			return []byte(config.GetJWTCofig()), nil
 		},
 	)
-	//checking the expiry of the token
-	if time.Now().Unix() > claims.ExpiresAt.Unix() {
-		return claims, errors.New("token expired re-login")
-	}
 	if err != nil || !token.Valid {
 		return claims, errors.New("not valid token")
 	}

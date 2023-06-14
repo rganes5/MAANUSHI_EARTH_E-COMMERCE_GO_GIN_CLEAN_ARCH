@@ -628,7 +628,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Enter the order details id",
+                        "description": "Enter the order status id",
                         "name": "status_id",
                         "in": "query",
                         "required": true
@@ -1984,7 +1984,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "Enter the order details id",
+                        "description": "Enter the order status id",
                         "name": "status_id",
                         "in": "query",
                         "required": true

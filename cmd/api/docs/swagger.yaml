@@ -594,7 +594,7 @@ paths:
         name: order_details_id
         required: true
         type: integer
-      - description: Enter the order details id
+      - description: Enter the order status id
         in: query
         name: status_id
         required: true
@@ -1495,7 +1495,7 @@ paths:
         name: order_details_id
         required: true
         type: integer
-      - description: Enter the order details id
+      - description: Enter the order status id
         in: query
         name: status_id
         required: true

@@ -39,15 +39,15 @@ var url = new URL(window.location.href);
 var queryParams = new URLSearchParams(url.search);
 
 // Accessing specific query parameters
-var param1 = queryParams.get('addressid');
-var param2 = queryParams.get('paymentid');
+var param1 = queryParams.get('address_id');
+var param2 = queryParams.get('payment_id');
 // var param3 = queryParams.get('code');
 
     var userid = document.getElementById("userid").innerHTML;
     var orderid = document.getElementById("orderid").innerHTML;
     var total = document.getElementById("total").innerHTML;
     var options = {
-        "key": "rzp_test_WkJqay1OWGSWW2", // Enter the Key ID generated from the Dashboard
+        "key": "rzp_test_JctuvaRXpOHGb6", // Enter the Key ID generated from the Dashboard
         "amount": total, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
         "currency": "INR",
         "name": "Maanushi Earth Test",
@@ -87,15 +87,15 @@ var param2 = queryParams.get('paymentid');
         $.ajax({
 
             //passes details as url params
-            url: `user/checko/ut/success`,
+            url: `success`,
             method: 'GET',
             data:{
                 user_id:userid,
                 payment_ref:res.razorpay_payment_id,
                 order_id:orderid,
                 signature:res.razorpay_signature,
-                addressid:param1,
-                paymentid:param2,
+                address_id:param1,
+                payment_id:param2,
                 // code:param3,
             },
             success: (response) => {

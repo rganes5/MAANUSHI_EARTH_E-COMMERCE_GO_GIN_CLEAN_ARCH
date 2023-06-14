@@ -46,7 +46,7 @@ func (c *OrderUseCase) PlaceNewOrder(ctx context.Context, addressId uint, paymen
 	case 1:
 		psId = 1
 	case 2:
-		psId = 2
+		psId = 3
 	case 3:
 		psId = 4
 	}
@@ -169,7 +169,7 @@ func (c *OrderUseCase) UpdateStatus(ctx context.Context, orderDetailsId uint, st
 			return err
 		}
 	} else if statusId == 8 {
-		if orderItem.ReturnSubmitDate != nil {
+		if orderItem.ReturnSubmitDate == nil {
 			return errors.New("user has not requested a return for this particular item")
 		}
 		orderItem.OrderStatusID = statusId
