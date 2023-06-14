@@ -582,9 +582,26 @@ func (cr *UserHandler) DeleteAddress(c *gin.Context) {
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
 // @Failure 500 {object} utils.Response
-// @Router /user/profile/home [get]
+// @Router /user/profile/wallet [get]
 func (cr *UserHandler) ViewWallet(c *gin.Context) {
+	userId, ok := c.Get("user-id")
+	if !ok {
+		response := utils.ErrorResponse(401, "Error: Failed to get the id from the token string", "", nil)
+		c.JSON(http.StatusUnauthorized, response)
+		return
+	}
 
+	wallet, totalBalance, err := cr.userUseCase.ViewWallet(c.Request.Context(), userId.(uint))
+	if err != nil {
+		response := utils.ErrorResponse(500, "Error: Failed to list the wallet balance", err.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	response := gin.H{
+		"Wallet history":          wallet,
+		"Total balance in wallet": totalBalance,
+	}
+	c.JSON(http.StatusOK, response)
 }
 
 //

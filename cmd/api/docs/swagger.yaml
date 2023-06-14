@@ -1813,8 +1813,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: DISPLAY USER WALLET
-      operationId: USER-WALLET
+      description: DISPLAY USER PROFILE
+      operationId: USER-PROFILE
       produces:
       - application/json
       responses:
@@ -1834,7 +1834,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/utils.Response'
-      summary: API FOR USER WALLET BALANCE
+      summary: API FOR USER PROFILE
       tags:
       - USER
   /user/profile/list/address:
@@ -1872,6 +1872,34 @@ paths:
           schema:
             $ref: '#/definitions/utils.Response'
       summary: API FOR LISTING ADDRESSES
+      tags:
+      - USER
+  /user/profile/wallet:
+    get:
+      consumes:
+      - application/json
+      description: DISPLAY USER WALLET
+      operationId: USER-WALLET
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR USER WALLET BALANCE
       tags:
       - USER
   /user/signup:

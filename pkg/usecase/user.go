@@ -82,6 +82,11 @@ func (c userUseCase) ChangePassword(ctx context.Context, NewHashedPassword strin
 	return err
 }
 
+func (c userUseCase) ViewWallet(ctx context.Context, userId uint) ([]utils.Wallet, int, error) {
+	wallet, totalBalance, err := c.userRepo.ViewWallet(ctx, userId)
+	return wallet, totalBalance, err
+}
+
 // func (c *userUseCase) FindByID(ctx context.Context, id uint) (domain.Users, error) {
 // 	user, err := c.userRepo.FindByID(ctx, id)
 // 	return user, err

@@ -167,6 +167,20 @@ func (c *userDatabase) ChangePassword(ctx context.Context, NewHashedPassword str
 	return nil
 }
 
+// List the wallet
+func (c *userDatabase) ViewWallet(ctx context.Context, userId uint) ([]utils.Wallet, int, error) {
+	var wallet []utils.Wallet
+	var totalBalance int
+	if err := c.DB.Model(&domain.Wallet{}).Where("user_id=?", userId).Scan(&wallet).Error; err != nil {
+		return wallet, totalBalance, err
+	}
+	if err := c.DB.Model(&domain.Wallet{}).Select("sum(amount) as balance").Where("user_id=?", userId).Scan(&totalBalance).Error; err != nil {
+		return wallet, totalBalance, err
+	}
+
+	return wallet, totalBalance, nil
+}
+
 // func (c *userDatabase) FindByID(ctx context.Context, id uint) (domain.Users, error) {
 // 	var user domain.Users
 // 	err := c.DB.First(&user, id).Error

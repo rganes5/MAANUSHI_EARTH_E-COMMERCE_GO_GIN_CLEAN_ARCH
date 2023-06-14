@@ -222,3 +222,11 @@ type RazorpayOrder struct {
 	RazorpayOrderID string `json:"razorpayorderid"`
 	UserID          uint   `json:"userid"`
 }
+
+// Wallet
+type Wallet struct {
+	ID           uint       `json:"id"`
+	CreditedDate *time.Time `json:"crediteddate"`
+	DebitedDate  *time.Time `json:"debiteddate"`
+	Amount       int        `json:"amount"`
+}

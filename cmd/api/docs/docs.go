@@ -2454,7 +2454,7 @@ const docTemplate = `{
         },
         "/user/profile/home": {
             "get": {
-                "description": "DISPLAY USER WALLET",
+                "description": "DISPLAY USER PROFILE",
                 "consumes": [
                     "application/json"
                 ],
@@ -2464,8 +2464,8 @@ const docTemplate = `{
                 "tags": [
                     "USER"
                 ],
-                "summary": "API FOR USER WALLET BALANCE",
-                "operationId": "USER-WALLET",
+                "summary": "API FOR USER PROFILE",
+                "operationId": "USER-PROFILE",
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -2522,6 +2522,48 @@ const docTemplate = `{
                         "in": "query"
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/profile/wallet": {
+            "get": {
+                "description": "DISPLAY USER WALLET",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "USER"
+                ],
+                "summary": "API FOR USER WALLET BALANCE",
+                "operationId": "USER-WALLET",
                 "responses": {
                     "200": {
                         "description": "OK",

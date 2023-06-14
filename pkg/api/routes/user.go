@@ -60,6 +60,7 @@ func UserRoutes(api *gin.RouterGroup, userHandler *handler.UserHandler, productH
 		}
 		userprofile := home.Group("/profile")
 		{
+			userprofile.GET("/wallet", userHandler.ViewWallet)
 			userprofile.GET("/home", userHandler.HomeHandler)
 			userprofile.PATCH("/edit/profile", userHandler.UpdateProfile)
 			userprofile.POST("/add/address", userHandler.AddAddress)

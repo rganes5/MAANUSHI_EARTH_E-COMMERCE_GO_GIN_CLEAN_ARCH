@@ -21,6 +21,7 @@ type UserUseCase interface {
 	HomeHandler(ctx context.Context, id uint) (utils.ResponseUsersDetails, error)
 	UpdateProfile(ctx context.Context, updateProfile domain.Users, id uint) error
 	ChangePassword(ctx context.Context, NewHashedPassword string, PhoneNum string) error
+	ViewWallet(ctx context.Context, userId uint) ([]utils.Wallet, int, error)
 	// FindByID(ctx context.Context, id uint) (domain.Users, error)
 	// Save(ctx context.Context, user domain.Users) (domain.Users, error)
 	// Delete(ctx context.Context, user domain.Users) error
