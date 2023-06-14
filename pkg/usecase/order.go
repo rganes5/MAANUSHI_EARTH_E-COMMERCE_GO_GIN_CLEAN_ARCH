@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/config"
@@ -75,6 +76,7 @@ func (c *OrderUseCase) RazorPayOrder(ctx context.Context, userId uint) (utils.Ra
 	// Generate new razorpay order
 	// Razorpay amount is calculated on paisa for india so convert the actual price into paisa
 	razorPayAmount := cart.GrandTotal * 100
+	fmt.Println("The razorpay amount from the usecase after convertion is ", razorPayAmount)
 	razorPayReceipt := "test receipt"
 	razorPayOrderId, err := support.GenerateNewRazorPayOrder(razorPayAmount, razorPayReceipt)
 	if err != nil {
@@ -83,6 +85,7 @@ func (c *OrderUseCase) RazorPayOrder(ctx context.Context, userId uint) (utils.Ra
 	// set all details on razopay order
 	razorPayOrder.AmountToPay = uint(cart.GrandTotal)
 	razorPayOrder.RazorpayAmount = razorPayAmount
+	fmt.Println("razorpayamount", razorPayAmount)
 	razorPayOrder.RazorpayKey = config.GetCofig().RAZORPAYKEY
 	razorPayOrder.RazorpayOrderID = razorPayOrderId
 	razorPayOrder.UserID = userId

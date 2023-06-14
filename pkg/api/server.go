@@ -22,6 +22,9 @@ func NewServerHTTP(userHandler *handler.UserHandler, adminHandler *handler.Admin
 	// Use logger from Gin
 	engine.Use(gin.Logger())
 
+	// Enable CORS middleware
+	// engine.Use(cors.Default())
+
 	// Swagger docs
 	engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
@@ -41,5 +44,8 @@ func NewServerHTTP(userHandler *handler.UserHandler, adminHandler *handler.Admin
 }
 
 func (sh *ServerHTTP) Start() {
-	sh.engine.Run(":3000")
+	sh.engine.LoadHTMLGlob("static/*.html")
+	if err := sh.engine.Run(":3000"); err != nil {
+		return
+	}
 }

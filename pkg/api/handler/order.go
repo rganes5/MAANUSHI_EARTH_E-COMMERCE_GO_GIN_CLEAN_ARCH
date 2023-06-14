@@ -47,7 +47,7 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
-	fmt.Println("the address id and user id, payment id and user id is from handler are", uint(addressId), uint(paymentId), userId.(uint))
+	fmt.Println("the address id and user id, payment id are from handler are", uint(addressId), uint(paymentId), userId.(uint))
 	//Checks the payment modes
 	if paymentId == 1 || paymentId == 3 {
 		if err := cr.orderUseCase.PlaceNewOrder(c.Request.Context(), uint(addressId), uint(paymentId), userId.(uint)); err != nil {
@@ -63,12 +63,12 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, response)
 			return
 		}
+		fmt.Println("loads to here", body.RazorpayOrderID, body.UserID, body.AmountToPay)
 		c.HTML(200, "app.html", gin.H{
 			"UserID":      body.UserID,
 			"Orderid":     body.RazorpayOrderID,
 			"Total_price": body.AmountToPay,
 		})
-
 	} else if paymentId == 5 {
 		fmt.Println("Paypal not added yet")
 		response := utils.ErrorResponse(400, "Error: Paypal not added yet", "", nil)
@@ -76,8 +76,8 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 		return
 	}
 
-	response := utils.SuccessResponse(200, "Success: Successfully placed the order", nil)
-	c.JSON(http.StatusOK, response)
+	// response := utils.SuccessResponse(200, "Success: Successfully placed the order", nil)
+	// c.JSON(http.StatusOK, response)
 }
 
 /*
@@ -98,7 +98,7 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
 // @Failure 500 {object} utils.Response
-// @Router /user/checkout/placeorder [post]
+// @Router /user/checkout/placeorder [get]
 */
 func (cr *OrderHandler) RazorPaySuccess(c *gin.Context) {
 	paymentId, err1 := strconv.Atoi(c.Query("payment_id"))
