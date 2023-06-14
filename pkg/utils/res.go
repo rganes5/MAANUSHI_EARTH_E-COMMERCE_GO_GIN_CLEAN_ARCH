@@ -113,6 +113,7 @@ type ResponseAddress struct {
 }
 
 type ResponseCart struct {
+	ID            uint   `json:"productid"`
 	ProductName   string `json:"productname"`
 	CategoryName  string `json:"categoryname"`
 	Image         string `json:"image"`

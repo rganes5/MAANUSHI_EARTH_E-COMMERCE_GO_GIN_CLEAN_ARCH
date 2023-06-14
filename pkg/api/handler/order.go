@@ -55,6 +55,10 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, response)
 			return
 		}
+
+		response := utils.SuccessResponse(200, "Success: Successfully placed the order", nil)
+		c.JSON(http.StatusOK, response)
+
 	} else if paymentId == 2 {
 		body, err := cr.orderUseCase.RazorPayOrder(c.Request.Context(), userId.(uint))
 		fmt.Println("body from the razorpay new order is", body)
@@ -76,8 +80,6 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 		return
 	}
 
-	// response := utils.SuccessResponse(200, "Success: Successfully placed the order", nil)
-	// c.JSON(http.StatusOK, response)
 }
 
 /*

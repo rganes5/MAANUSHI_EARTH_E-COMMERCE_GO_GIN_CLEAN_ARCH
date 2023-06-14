@@ -37,7 +37,7 @@ func AuthorizationMiddleware(role string) gin.HandlerFunc {
 		tokenString, err := c.Cookie(role + "-token")
 		if err != nil || tokenString == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"error": "Needs to login",
+				"error": "Please login first",
 			})
 			return
 		}

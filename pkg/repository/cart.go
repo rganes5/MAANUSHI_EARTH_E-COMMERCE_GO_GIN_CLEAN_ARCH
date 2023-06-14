@@ -75,6 +75,7 @@ func (c *cartDatabase) ListCart(ctx context.Context, id uint, pagination utils.P
 	offset := pagination.Offset
 	limit := pagination.Limit
 	query := `SELECT
+			 products.id,
 			 products.product_name,
 			 products.image,
 			 products.details,
