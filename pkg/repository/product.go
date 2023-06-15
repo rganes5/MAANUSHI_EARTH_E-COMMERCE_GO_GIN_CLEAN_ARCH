@@ -170,7 +170,7 @@ func (c *productDatabase) AddProductDetails(ctx context.Context, productDetails 
 
 // Edit product details
 func (c *productDatabase) EditProductDetailsById(ctx context.Context, product_details domain.ProductDetails, id string) error {
-	err := c.DB.Model(&domain.ProductDetails{}).Where("id=?", id).UpdateColumns(&product_details).Error
+	err := c.DB.Model(&domain.ProductDetails{}).Where("id = ?", id).UpdateColumns(&product_details).Error
 	if err != nil {
 		return err
 	}

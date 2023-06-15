@@ -54,6 +54,31 @@ definitions:
     - lastname
     - password
     type: object
+  utils.BodyAddCoupon:
+    properties:
+      categoryid:
+        type: integer
+      code:
+        type: string
+      discount:
+        type: integer
+      expdate:
+        type: string
+      minorderamount:
+        type: integer
+      productid:
+        type: integer
+      type:
+        type: integer
+      usagelimit:
+        type: integer
+    required:
+    - code
+    - discount
+    - expdate
+    - type
+    - usagelimit
+    type: object
   utils.LoginBody:
     properties:
       email:
@@ -337,6 +362,41 @@ paths:
       summary: API FOR EDITING CATEGORY
       tags:
       - PRODUCT CATEGORY
+  /admin/coupon/add:
+    post:
+      consumes:
+      - application/json
+      description: ADDING COUPON FROM ADMINS END
+      operationId: ADMIN-ADD-COUPON
+      parameters:
+      - description: Enter the coupon details
+        in: body
+        name: couponBody
+        required: true
+        schema:
+          $ref: '#/definitions/utils.BodyAddCoupon'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR ADDING COUPON
+      tags:
+      - COUPON
   /admin/dashboard:
     get:
       consumes:
@@ -908,7 +968,7 @@ paths:
       summary: API FOR LISTING PRODUCTS DETAILS BY ID
       tags:
       - PRODUCT DETAILS
-  /admin/productsDetails/update/{product_id}:
+  /admin/productsDetails/update/{productDetails_id}:
     patch:
       consumes:
       - application/json

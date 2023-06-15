@@ -429,7 +429,7 @@ func (cr *ProductHandler) ListProductAndDetailsById(c *gin.Context) {
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
 // @Failure 500 {object} utils.Response
-// @Router /admin/productsDetails/update/{product_id} [patch]
+// @Router /admin/productsDetails/update/{productDetails_id} [patch]
 func (cr *ProductHandler) UpdateProductDetailsbyId(c *gin.Context) {
 	id := c.Param("productDetails_id")
 	var body utils.ProductDetails

@@ -60,6 +60,10 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 			orders.GET("/list/details/:order_id", orderHandler.ListOrderDetails)
 			orders.POST("/update/:order_details_id", orderHandler.UpdateStatus)
 		}
+		coupon := home.Group("/coupon")
+		{
+			coupon.POST("/add", adminHandler.AddCoupon)
+		}
 
 	}
 }

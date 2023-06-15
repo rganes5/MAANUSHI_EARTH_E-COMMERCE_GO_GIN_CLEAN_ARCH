@@ -227,6 +227,59 @@
                 }
             }
         },
+        "/admin/coupon/add": {
+            "post": {
+                "description": "ADDING COUPON FROM ADMINS END",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "COUPON"
+                ],
+                "summary": "API FOR ADDING COUPON",
+                "operationId": "ADMIN-ADD-COUPON",
+                "parameters": [
+                    {
+                        "description": "Enter the coupon details",
+                        "name": "couponBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/utils.BodyAddCoupon"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/dashboard": {
             "get": {
                 "description": "ADMIN DASHBOARD AND LISTING WIDGETS FOR ADMIN",
@@ -1088,7 +1141,7 @@
                 }
             }
         },
-        "/admin/productsDetails/update/{product_id}": {
+        "/admin/productsDetails/update/{productDetails_id}": {
             "patch": {
                 "description": "UPDATING PRODUCT DETAILS FROM ADMINS END",
                 "consumes": [
@@ -2768,6 +2821,42 @@
                 },
                 "password": {
                     "type": "string"
+                }
+            }
+        },
+        "utils.BodyAddCoupon": {
+            "type": "object",
+            "required": [
+                "code",
+                "discount",
+                "expdate",
+                "type",
+                "usagelimit"
+            ],
+            "properties": {
+                "categoryid": {
+                    "type": "integer"
+                },
+                "code": {
+                    "type": "string"
+                },
+                "discount": {
+                    "type": "integer"
+                },
+                "expdate": {
+                    "type": "string"
+                },
+                "minorderamount": {
+                    "type": "integer"
+                },
+                "productid": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "integer"
+                },
+                "usagelimit": {
+                    "type": "integer"
                 }
             }
         },
