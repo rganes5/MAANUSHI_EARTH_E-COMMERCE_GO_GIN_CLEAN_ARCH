@@ -123,3 +123,14 @@ type SalesReport struct {
 	EndDate   time.Time  `json:"enddate"`
 	Pagination
 }
+
+type BodyAddCoupon struct {
+	Code           string `json:"code" binding:"required"`
+	Type           uint   `json:"type" binding:"required"`
+	Discount       uint   `json:"discount" binding:"required"`
+	UsageLimit     uint   `json:"usagelimit" binding:"required"`
+	ExpirationDate string `json:"expdate" binding:"required"`
+	MinOrderAmount *uint  `json:"minorderamount"`
+	ProductID      *int   `json:"productid"`
+	CategoryID     *int   `json:"categoryid"`
+}

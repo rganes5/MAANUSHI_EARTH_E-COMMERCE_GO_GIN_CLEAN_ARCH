@@ -112,3 +112,10 @@ func (c *adminDatabase) SalesReport(reqData utils.SalesReport) ([]utils.Response
 	}
 	return salesreport, nil
 }
+
+func (c *adminDatabase) AddCoupon(ctx context.Context, coupon domain.Coupon) error {
+	if err := c.DB.Create(&coupon).Error; err != nil {
+		return err
+	}
+	return nil
+}

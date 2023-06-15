@@ -15,6 +15,7 @@ type AdminUseCase interface {
 	AccessHandler(ctx context.Context, id string, access bool) error
 	Dashboard(ctx context.Context) (utils.ResponseWidgets, error)
 	SalesReport(utils.SalesReport) ([]utils.ResponseSalesReport, error)
+	AddCoupon(ctx context.Context, couponBody utils.BodyAddCoupon) error
 
 	// FindByID(ctx context.Context, id uint) (domain.Users, error)
 	// Save(ctx context.Context, user domain.Users) (domain.Users, error)

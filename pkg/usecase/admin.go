@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"time"
 
 	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 	interfaces "github.com/rganes5/maanushi_earth_e-commerce/pkg/repository/interface"
@@ -46,4 +47,23 @@ func (c *adminUseCase) Dashboard(ctx context.Context) (utils.ResponseWidgets, er
 
 func (c *adminUseCase) SalesReport(reqData utils.SalesReport) ([]utils.ResponseSalesReport, error) {
 	return c.adminRepo.SalesReport(reqData)
+}
+
+func (c *adminUseCase) AddCoupon(ctx context.Context, couponBody utils.BodyAddCoupon) error {
+	date, err1 := time.Parse("2006-01-02", couponBody.ExpirationDate)
+	if err1 != nil {
+		return err1
+	}
+	coupon := domain.Coupon{
+		CouponCode:         couponBody.Code,
+		CouponType:         couponBody.Type,
+		Discount:           couponBody.Discount,
+		UsageLimit:         couponBody.UsageLimit,
+		ExpirationDate:     date,
+		MinimumOrderAmount: couponBody.MinOrderAmount,
+		ProductID:          couponBody.ProductID,
+		CategoryID:         couponBody.CategoryID,
+	}
+	err2 := c.adminRepo.AddCoupon(ctx, coupon)
+	return err2
 }

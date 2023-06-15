@@ -410,3 +410,32 @@ func (cr *AdminHandler) SalesReport(c *gin.Context) {
 		csvWriter.Flush()
 	}
 }
+
+// ADD FOR ADDING COUPON
+// @Summary API FOR ADDING COUPON
+// @ID ADMIN-ADD-COUPON
+// @Description ADDING COUPON FROM ADMINS END
+// @Tags COUPON
+// @Accept json
+// @Produce json
+// @Param couponBody body utils.BodyAddCoupon true "Enter the coupon details"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /admin/coupon/add [post]
+func (cr *AdminHandler) AddCoupon(c *gin.Context) {
+	var couponBody utils.BodyAddCoupon
+	if err := c.BindJSON(&couponBody); err != nil {
+		response := utils.ErrorResponse(400, "Error: Failed to bind json", err.Error(), couponBody)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	if err := cr.adminUseCase.AddCoupon(c.Request.Context(), couponBody); err != nil {
+		response := utils.ErrorResponse(500, "Error: Failed to add coupon", err.Error(), couponBody)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Success: Successfully added the coupon", couponBody)
+	c.JSON(http.StatusOK, response)
+}
