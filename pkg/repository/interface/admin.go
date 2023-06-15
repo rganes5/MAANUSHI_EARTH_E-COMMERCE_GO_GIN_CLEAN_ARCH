@@ -16,6 +16,10 @@ type AdminRepository interface {
 	Dashboard(ctx context.Context) (utils.ResponseWidgets, error)
 	SalesReport(utils.SalesReport) ([]utils.ResponseSalesReport, error)
 	AddCoupon(ctx context.Context, coupon domain.Coupon) error
+	GetAllCoupons(ctx context.Context, pagination utils.Pagination) ([]domain.Coupon, error)
+	UpdateCoupon(ctx context.Context, coupon domain.Coupon, couponId string) error
+	DeleteCoupon(ctx context.Context, couponId string) error
+
 	// FindByID(ctx context.Context, id uint) (domain.Users, error)
 	// Save(ctx context.Context, user domain.Users) (domain.Users, error)
 	// Delete(ctx context.Context, user domain.Users) error

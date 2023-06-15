@@ -397,6 +397,114 @@ paths:
       summary: API FOR ADDING COUPON
       tags:
       - COUPON
+  /admin/coupon/delete:
+    delete:
+      consumes:
+      - application/json
+      description: DELETING COUPON FROM ADMINS END
+      parameters:
+      - description: Enter the coupon id to delete
+        in: query
+        name: coupon_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR DELETING COUPON
+      tags:
+      - COUPON
+  /admin/coupon/list:
+    get:
+      consumes:
+      - application/json
+      description: LISTING ALL COUPOUNS
+      parameters:
+      - description: Enter the page number to display
+        in: query
+        name: page
+        type: integer
+      - description: Number of items to retrieve per page
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR LISTING COUPONS
+      tags:
+      - COUPON
+  /admin/coupon/update:
+    patch:
+      consumes:
+      - application/json
+      description: UPDATING COUPON FROM ADMINS END
+      parameters:
+      - description: Enter the coupon id to update
+        in: query
+        name: coupon_id
+        required: true
+        type: string
+      - description: Enter the coupon details
+        in: body
+        name: couponBody
+        required: true
+        schema:
+          $ref: '#/definitions/utils.BodyAddCoupon'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/utils.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/utils.Response'
+      summary: API FOR UPDATING COUPON
+      tags:
+      - COUPON
   /admin/dashboard:
     get:
       consumes:

@@ -119,3 +119,25 @@ func (c *adminDatabase) AddCoupon(ctx context.Context, coupon domain.Coupon) err
 	}
 	return nil
 }
+
+func (c *adminDatabase) GetAllCoupons(ctx context.Context, pagination utils.Pagination) ([]domain.Coupon, error) {
+	var coupons []domain.Coupon
+	if err := c.DB.Limit(int(pagination.Limit)).Offset(int(pagination.Offset)).Find(&coupons).Error; err != nil {
+		return coupons, err
+	}
+	return coupons, nil
+}
+
+func (c *adminDatabase) UpdateCoupon(ctx context.Context, coupon domain.Coupon, couponId string) error {
+	if err := c.DB.Where("id=?", couponId).Updates(&coupon).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *adminDatabase) DeleteCoupon(ctx context.Context, couponId string) error {
+	if err := c.DB.Where("id=?", couponId).Delete(&domain.Coupon{}).Error; err != nil {
+		return err
+	}
+	return nil
+}

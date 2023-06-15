@@ -67,3 +67,32 @@ func (c *adminUseCase) AddCoupon(ctx context.Context, couponBody utils.BodyAddCo
 	err2 := c.adminRepo.AddCoupon(ctx, coupon)
 	return err2
 }
+
+func (c *adminUseCase) GetAllCoupons(ctx context.Context, pagination utils.Pagination) ([]domain.Coupon, error) {
+	coupons, err := c.adminRepo.GetAllCoupons(ctx, pagination)
+	return coupons, err
+}
+
+func (c *adminUseCase) UpdateCoupon(ctx context.Context, couponBody utils.BodyAddCoupon, couponId string) error {
+	date, err1 := time.Parse("2006-01-02", couponBody.ExpirationDate)
+	if err1 != nil {
+		return err1
+	}
+	coupon := domain.Coupon{
+		CouponCode:         couponBody.Code,
+		CouponType:         couponBody.Type,
+		Discount:           couponBody.Discount,
+		UsageLimit:         couponBody.UsageLimit,
+		ExpirationDate:     date,
+		MinimumOrderAmount: couponBody.MinOrderAmount,
+		ProductID:          couponBody.ProductID,
+		CategoryID:         couponBody.CategoryID,
+	}
+	err2 := c.adminRepo.UpdateCoupon(ctx, coupon, couponId)
+	return err2
+}
+
+func (c *adminUseCase) DeleteCoupon(ctx context.Context, couponId string) error {
+	err := c.adminRepo.DeleteCoupon(ctx, couponId)
+	return err
+}

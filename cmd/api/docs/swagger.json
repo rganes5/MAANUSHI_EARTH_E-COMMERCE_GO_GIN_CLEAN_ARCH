@@ -280,6 +280,170 @@
                 }
             }
         },
+        "/admin/coupon/delete": {
+            "delete": {
+                "description": "DELETING COUPON FROM ADMINS END",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "COUPON"
+                ],
+                "summary": "API FOR DELETING COUPON",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Enter the coupon id to delete",
+                        "name": "coupon_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/coupon/list": {
+            "get": {
+                "description": "LISTING ALL COUPOUNS",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "COUPON"
+                ],
+                "summary": "API FOR LISTING COUPONS",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Enter the page number to display",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Number of items to retrieve per page",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/coupon/update": {
+            "patch": {
+                "description": "UPDATING COUPON FROM ADMINS END",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "COUPON"
+                ],
+                "summary": "API FOR UPDATING COUPON",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Enter the coupon id to update",
+                        "name": "coupon_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Enter the coupon details",
+                        "name": "couponBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/utils.BodyAddCoupon"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/utils.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/dashboard": {
             "get": {
                 "description": "ADMIN DASHBOARD AND LISTING WIDGETS FOR ADMIN",

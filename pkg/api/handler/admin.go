@@ -411,7 +411,7 @@ func (cr *AdminHandler) SalesReport(c *gin.Context) {
 	}
 }
 
-// ADD FOR ADDING COUPON
+// ADDING COUPON
 // @Summary API FOR ADDING COUPON
 // @ID ADMIN-ADD-COUPON
 // @Description ADDING COUPON FROM ADMINS END
@@ -437,5 +437,97 @@ func (cr *AdminHandler) AddCoupon(c *gin.Context) {
 		return
 	}
 	response := utils.SuccessResponse(200, "Success: Successfully added the coupon", couponBody)
+	c.JSON(http.StatusOK, response)
+}
+
+// LIST COUPONS
+// @Summary API FOR LISTING COUPONS
+// @Description LISTING ALL COUPOUNS
+// @Tags COUPON
+// @Accept json
+// @Produce json
+// @Param page query int false "Enter the page number to display"
+// @Param limit query int false "Number of items to retrieve per page"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /admin/coupon/list [get]
+func (cr *AdminHandler) GetAllCoupons(c *gin.Context) {
+	page, err := strconv.Atoi(c.Query("page"))
+	if err != nil {
+		page = 1 // Default page number is 1 if not provided
+	}
+
+	limit, err := strconv.Atoi(c.Query("limit"))
+	if err != nil || limit <= 0 {
+		limit = 3 // Default limit is 3 items if not provided or if an invalid value is entered
+	}
+	offset := (page - 1) * limit
+	pagination := utils.Pagination{
+		Offset: uint(offset),
+		Limit:  uint(limit),
+	}
+	coupons, err := cr.adminUseCase.GetAllCoupons(c.Request.Context(), pagination)
+	if err != nil {
+		response := utils.ErrorResponse(500, "Error: Failed to list coupons", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Success: ", coupons)
+	c.JSON(http.StatusOK, response)
+}
+
+// EDITING COUPON
+// @Summary API FOR UPDATING COUPON
+// @Description UPDATING COUPON FROM ADMINS END
+// @Tags COUPON
+// @Accept json
+// @Produce json
+// @Param coupon_id query string	true "Enter the coupon id to update"
+// @Param couponBody body utils.BodyAddCoupon true "Enter the coupon details"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /admin/coupon/update [patch]
+func (cr *AdminHandler) UpdateCoupon(c *gin.Context) {
+	couponId := c.Query("coupon_id")
+	var couponBody utils.BodyAddCoupon
+	if err := c.BindJSON(&couponBody); err != nil {
+		response := utils.ErrorResponse(400, "Error: Failed to bind json", err.Error(), couponBody)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	if err := cr.adminUseCase.UpdateCoupon(c.Request.Context(), couponBody, couponId); err != nil {
+		response := utils.ErrorResponse(500, "Error: Failed to update coupon", err.Error(), couponBody)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Success: Successfully updated the coupon", couponBody)
+	c.JSON(http.StatusOK, response)
+}
+
+// DELETING COUPON
+// @Summary API FOR DELETING COUPON
+// @Description DELETING COUPON FROM ADMINS END
+// @Tags COUPON
+// @Accept json
+// @Produce json
+// @Param coupon_id query string	true "Enter the coupon id to delete"
+// @Success 200 {object} utils.Response
+// @Failure 401 {object} utils.Response
+// @Failure 400 {object} utils.Response
+// @Failure 500 {object} utils.Response
+// @Router /admin/coupon/delete [delete]
+func (cr *AdminHandler) DeleteCoupon(c *gin.Context) {
+	couponId := c.Query("coupon_id")
+	fmt.Println("this is the id", couponId)
+	if err := cr.adminUseCase.DeleteCoupon(c.Request.Context(), couponId); err != nil {
+		response := utils.ErrorResponse(500, "Error: Failed to delete coupon", err.Error(), nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+	response := utils.SuccessResponse(200, "Success: Successfully deleted the coupon with id", couponId)
 	c.JSON(http.StatusOK, response)
 }
