@@ -222,6 +222,7 @@ func (c *orderDatabase) FindOrderItemsbyId(ctx context.Context, orderDetailsId u
 
 // Order cancellation
 func (c *orderDatabase) CancelOrder(ctx context.Context, userId uint, orderItems domain.OrderDetails) error {
+	var coupon domain.Coupon
 	TempProductDetails := struct {
 		DiscountedPrice uint
 		QtyInStock      uint
@@ -246,6 +247,11 @@ func (c *orderDatabase) CancelOrder(ctx context.Context, userId uint, orderItems
 		return err
 	}
 	//to find the price of selected item from product table
+	err := tx.Raw("SELECT p.discount_price FROM products p JOIN product_details pd ON p.id = pd.product_id WHERE pd.id = ?", TempProductDetails.ProductID).Scan(&TempProductDetails.DiscountedPrice).Error
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
 	// if err := tx.Model(&domain.Products{}).
 	// 	Where("id=?", TempProductDetails.ProductID).Select("discount_price").
 	// 	// Joins("JOIN product_details ON products.product_id = product_details.product_id").Where("product_details.id = ?", orderItems.ProductDetailID).
@@ -254,6 +260,7 @@ func (c *orderDatabase) CancelOrder(ctx context.Context, userId uint, orderItems
 	// 	tx.Rollback()
 	// 	return err
 	// }
+
 	//we can retrive the payment id so that in case if it was not orderered by cash on delivery, we can refund the amount to wallet
 	if err := tx.Model(&domain.Order{}).Where("id=?", orderItems.OrderID).Select("payment_id").Scan(&TempProductDetails.PaymentMode).Error; err != nil {
 		tx.Rollback()
@@ -263,6 +270,29 @@ func (c *orderDatabase) CancelOrder(ctx context.Context, userId uint, orderItems
 	if err := tx.Model(&domain.Order{}).Where("id=?", orderItems.OrderID).Select("grand_total").Scan(&grandTotal).Error; err != nil {
 		tx.Rollback()
 		return err
+	}
+
+	prodtotal := orderItems.Quantity * TempProductDetails.DiscountedPrice
+	// prodtotal := orderItems.TotalPrice
+
+	total := grandTotal - int(prodtotal)
+	//to find the coupon
+	result := tx.Model(&domain.Coupon{}).Joins("join orders on coupons.id=orders.coupon_id").Where("orders.id=?", orderItems.OrderID).Find(&coupon)
+	if result.Error != nil {
+		tx.Rollback()
+		return result.Error
+	}
+	if result.RowsAffected != 0 {
+		if total < int(*coupon.MinimumOrderAmount) || *coupon.ProductID == TempProductDetails.ProductID {
+			if coupon.CouponType == 1 {
+				coupondiscount := (coupon.Discount * TempProductDetails.DiscountedPrice) / 100
+				total += int(coupondiscount)
+				prodtotal -= coupondiscount
+			} else if coupon.CouponType == 2 {
+				total += int(coupon.Discount)
+				prodtotal -= coupon.Discount
+			}
+		}
 	}
 
 	//Updations
@@ -428,6 +458,116 @@ func (c *orderDatabase) UpdateStatus(ctx context.Context, orderItem domain.Order
 
 func (c *orderDatabase) ReturnOrder(ctx context.Context, orderItem domain.OrderDetails) error {
 	if err := c.DB.Model(&domain.OrderDetails{}).Where("id=?", orderItem.ID).UpdateColumns(&orderItem).Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *orderDatabase) FindCoupon(ctx context.Context, code string) (domain.Coupon, error) {
+	var coupon domain.Coupon
+	result := c.DB.Model(&domain.Coupon{}).Where("coupon_code = ?", code).Find(&coupon)
+	if result.Error != nil {
+		return coupon, result.Error
+	}
+	if result.RowsAffected == 0 {
+		return coupon, errors.New("coupon doesn't exist")
+	}
+	return coupon, nil
+}
+
+func (c *orderDatabase) ValidateCoupon(ctx context.Context, coupon domain.Coupon, cartItems []domain.CartItem, cart *domain.Cart) error {
+	fmt.Println("Entered into the validate coupon repo")
+	tx := c.DB.Begin()
+	var useCount uint
+	var found bool
+	prodetail := struct {
+		ProductId uint
+		Price     uint
+	}{
+		ProductId: 0,
+		Price:     0,
+	}
+	fmt.Println("1")
+	if coupon.MinimumOrderAmount != nil && *coupon.MinimumOrderAmount > uint(cart.GrandTotal) {
+		return errors.New("requires a minimum amount for the coupon to apply")
+	}
+	fmt.Println("2")
+	if time.Now().After(coupon.ExpirationDate) {
+		return errors.New("the coupon had expired")
+	}
+	fmt.Println("3")
+	if err := tx.Model(&domain.CouponUsage{}).Where("coupon_id=? and user_id=?", coupon.ID, cart.UserID).Select("usage").Scan(&useCount); err.Error != nil {
+		tx.Rollback()
+		return err.Error
+	} else if err.RowsAffected == 0 {
+		couponusage := domain.CouponUsage{
+			UserID:   cart.UserID,
+			CouponID: coupon.ID,
+			Usage:    0,
+		}
+		if err1 := tx.Create(&couponusage).Error; err1 != nil {
+			tx.Rollback()
+			return err1
+		}
+	}
+	fmt.Println("4")
+	if useCount >= coupon.UsageLimit {
+		return errors.New("coupon usage limit exceeds")
+	}
+	fmt.Println("5")
+	if coupon.ProductID != nil {
+		for _, v := range cartItems {
+			if useCount >= coupon.UsageLimit {
+				break
+			}
+			if err := tx.Model(&domain.ProductDetails{}).Where("product_id=?", v.ProductId).Select("ID").Scan(&prodetail.ProductId).Error; err != nil {
+				tx.Rollback()
+				return err
+			}
+			err := tx.Raw("SELECT p.discount_price FROM products p JOIN product_details pd ON p.id = pd.product_id WHERE pd.id = ?", v.ProductId).Scan(&prodetail.Price).Error
+			if err != nil {
+				tx.Rollback()
+				return err
+			}
+
+			fmt.Println("the product id in the coupon is ", *coupon.ProductID)
+			fmt.Println("the product id in the found product in cart is is ", int(prodetail.ProductId))
+
+			if *coupon.ProductID == int(prodetail.ProductId) {
+				found = true
+				if coupon.CouponType == 2 {
+					discount := (prodetail.Price * coupon.Discount) / 100
+					cart.GrandTotal = cart.GrandTotal - int(discount)
+				} else if coupon.CouponType == 1 {
+					cart.GrandTotal = cart.GrandTotal - int(coupon.Discount)
+				}
+				useCount++
+			}
+		}
+		if !found {
+			return errors.New("this coupon can't be aplied for these products")
+		}
+	} else {
+		for useCount < coupon.UsageLimit {
+			if coupon.CouponType == 2 {
+				discount := (cart.GrandTotal * int(coupon.Discount)) / 100
+				cart.GrandTotal = cart.GrandTotal - int(discount)
+			} else if coupon.CouponType == 1 {
+				cart.GrandTotal = cart.GrandTotal - int(coupon.Discount)
+			}
+			useCount++
+		}
+	}
+	if err := tx.Model(&domain.CouponUsage{}).Where("coupon_id=?", coupon.ID).UpdateColumn("usage", useCount).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Model(&domain.Cart{}).Where("user_id=?", cart.UserID).Updates(cart).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 	return nil

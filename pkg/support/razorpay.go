@@ -37,11 +37,10 @@ func GenerateNewRazorPayOrder(razorPayAmount int, razorPayReceipt string) (razor
 	return razorPayOrderId, nil
 }
 
-func VerifyRazorPayment(razorpay_payment_id, razorpay_order_id, razorpay_signature string) error {
+func VerifyRazorPayment(razorpay_order_id, razorpay_payment_id, razorpay_signature string) error {
 	// get razor pay key and secret
 	razorPayKey := config.GetCofig().RAZORPAYKEY
 	razorPaySecret := config.GetCofig().RAZORPAYSECRET
-
 	//verify signature
 	data := razorpay_order_id + "|" + razorpay_payment_id
 	h := hmac.New(sha256.New, []byte(razorPaySecret))
@@ -49,27 +48,20 @@ func VerifyRazorPayment(razorpay_payment_id, razorpay_order_id, razorpay_signatu
 	if err != nil {
 		return errors.New("failed to verify signature")
 	}
-
 	sha := hex.EncodeToString(h.Sum(nil))
 	if subtle.ConstantTimeCompare([]byte(sha), []byte(razorpay_signature)) != 1 {
 		return errors.New("razorpay signature does not match")
 	}
-
 	//Verify Payment Signature
 	client := razorpay.NewClient(razorPayKey, razorPaySecret)
-
 	// fetch payment and verify
 	payment, err := client.Payment.Fetch(razorpay_payment_id, nil, nil)
-
 	if err != nil {
 		return err
 	}
-
 	// check payment status
 	if payment["status"] != "captured" {
 		return fmt.Errorf("failed to verify payment \n razorpay payment with payment_id %v", razorpay_payment_id)
 	}
-
 	return nil
-
 }

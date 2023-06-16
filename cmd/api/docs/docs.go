@@ -254,7 +254,6 @@ const docTemplate = `{
                         "description": "Enter the coupon details",
                         "name": "couponBody",
                         "in": "body",
-                        "required": true,
                         "schema": {
                             "$ref": "#/definitions/utils.BodyAddCoupon"
                         }
@@ -418,7 +417,6 @@ const docTemplate = `{
                         "description": "Enter the coupon details",
                         "name": "couponBody",
                         "in": "body",
-                        "required": true,
                         "schema": {
                             "$ref": "#/definitions/utils.BodyAddCoupon"
                         }
@@ -1780,6 +1778,12 @@ const docTemplate = `{
                         "name": "address_id",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Enter coupon code if available",
+                        "name": "code",
+                        "in": "query"
                     }
                 ],
                 "responses": {

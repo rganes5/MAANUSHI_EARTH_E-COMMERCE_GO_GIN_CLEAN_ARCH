@@ -41,7 +41,7 @@ var queryParams = new URLSearchParams(url.search);
 // Accessing specific query parameters
 var param1 = queryParams.get('address_id');
 var param2 = queryParams.get('payment_id');
-// var param3 = queryParams.get('code');
+var param3 = queryParams.get('code');
 
     var userid = document.getElementById("userid").innerHTML;
     var orderid = document.getElementById("orderid").innerHTML;
@@ -56,6 +56,9 @@ var param2 = queryParams.get('payment_id');
         "order_id": orderid, // This is a sample Order ID. Pass the `id` obtained in the response of Step 1
         "handler": function(response) {
             verifyPayment(response, userid, orderid);
+        // alert(response.razorpay_payment_id);
+        // alert(response.razorpay_order_id);
+        // alert(response.razorpay_signature)
         },
         // "prefill": {
         //     "email": "{{.Email}}",
@@ -87,7 +90,7 @@ var param2 = queryParams.get('payment_id');
         $.ajax({
 
             //passes details as url params
-            url: `success`,
+            url: `/user/checkout/success`,
             method: 'GET',
             data:{
                 user_id:userid,
@@ -96,7 +99,7 @@ var param2 = queryParams.get('payment_id');
                 signature:res.razorpay_signature,
                 address_id:param1,
                 payment_id:param2,
-                // code:param3,
+                code:param3,
             },
             success: (response) => {
                 console.log(response)

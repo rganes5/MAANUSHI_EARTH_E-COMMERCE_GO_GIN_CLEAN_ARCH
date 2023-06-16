@@ -33,12 +33,14 @@ func NewOrderHandler(service services.OrderUseCase) *OrderHandler {
 // @Produce json
 // @Param payment_id query string true "Enter the payment id"
 // @Param address_id query string true "Enter the address id"
+// @Param code query string false "Enter coupon code if available"
 // @Success 200 {object} utils.Response
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
 // @Failure 500 {object} utils.Response
 // @Router /user/checkout/placeorder [get]
 func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
+	code := c.DefaultQuery("code", "")
 	paymentId, _ := strconv.Atoi(c.Query("payment_id"))
 	addressId, _ := strconv.Atoi(c.Query("address_id"))
 	userId, ok := c.Get("user-id")
@@ -47,10 +49,24 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
-	fmt.Println("the address id and user id, payment id are from handler are", uint(addressId), uint(paymentId), userId.(uint))
-	//Checks the payment modes
+
+	fmt.Println("The coupon code is", code)
+
+	// var couponid *uint
+	// var err error
+
+	couponid, err := cr.orderUseCase.ValidateCoupon(c.Request.Context(), userId.(uint), code)
+	if err != nil {
+		response := utils.ErrorResponse(500, "Error: Failed to read the coupon code", err.Error(), nil)
+		c.JSON(http.StatusUnauthorized, response)
+		return
+	}
+
+	fmt.Println("The address ID, user ID, and payment ID are", uint(addressId), uint(paymentId), userId.(uint))
+
+	// Check the payment modes
 	if paymentId == 1 || paymentId == 3 {
-		if err := cr.orderUseCase.PlaceNewOrder(c.Request.Context(), uint(addressId), uint(paymentId), userId.(uint)); err != nil {
+		if err := cr.orderUseCase.PlaceNewOrder(c.Request.Context(), uint(addressId), uint(paymentId), userId.(uint), couponid); err != nil {
 			response := utils.ErrorResponse(500, "Error: Failed to place order", err.Error(), nil)
 			c.JSON(http.StatusInternalServerError, response)
 			return
@@ -60,7 +76,7 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 		c.JSON(http.StatusOK, response)
 
 	} else if paymentId == 2 {
-		body, err := cr.orderUseCase.RazorPayOrder(c.Request.Context(), userId.(uint))
+		body, err := cr.orderUseCase.RazorPayOrder(c.Request.Context(), userId.(uint), couponid)
 		fmt.Println("body from the razorpay new order is", body)
 		if err != nil {
 			response := utils.ErrorResponse(500, "Error: Failed to load a razorpay payment", err.Error(), nil)
@@ -79,7 +95,6 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-
 }
 
 /*
@@ -90,45 +105,69 @@ func (cr *OrderHandler) PlaceNewOrder(c *gin.Context) {
 // @Tags ORDER
 // @Accept json
 // @Produce json
+// @Param razorpay_order_id query string true "Enter the razorpay_order_id"
+// @Param razorpay_payment_id query string true "Enter the razorpay_payment_id"
+// @Param razorpay_signature query string true "Enter the razorpay_signature"
 // @Param payment_id query string true "Enter the payment id"
 // @Param address_id query string true "Enter the address id"
-// @Param user_id query string true "Enter the user id"
-// @Param razorpay_payment_id query string true "Enter the razorpay_payment_id"
-// @Param razorpay_order_id query string true "Enter the razorpay_order_id"
-// @Param razorpay_signature query string true "Enter the razorpay_signature"
+// @Param code query string false "Enter coupon code if available"
 // @Success 200 {object} utils.Response
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
 // @Failure 500 {object} utils.Response
-// @Router /user/checkout/success [get]
+// @Router /user/checkout/success [post]
 */
 func (cr *OrderHandler) RazorPaySuccess(c *gin.Context) {
-	razorpay_order_id := c.Query("order_id")
 	userId, err3 := strconv.Atoi(c.Query("user_id"))
-	addressId, err2 := strconv.Atoi(c.Query("address_id"))
-	paymentId, err1 := strconv.Atoi(c.Query("payment_id"))
+	razorpay_order_id := c.Query("order_id")
 	razorpay_payment_id := c.Query("payment_ref")
 	razorpay_signature := c.Query("signature")
+	addressId, err2 := strconv.Atoi(c.Query("address_id"))
+	paymentId, err1 := strconv.Atoi(c.Query("payment_id"))
+	code := c.Query("code")
+	fmt.Println("The coupon from the verificatin is ", code)
 	response := gin.H{
 		"data":    false,
 		"message": "Payment failed",
 	}
+	// userId, ok := c.Get("user-id")
+	// if !ok {
+	// 	response := utils.ErrorResponse(401, "Error: Failed to get the id from the token string", "", nil)
+	// 	c.JSON(http.StatusUnauthorized, response)
+	// 	return
+	// }
 	err := errors.Join(err1, err2, err3)
 	if err != nil {
 		response := utils.ErrorResponse(400, "Error: Failed to get the id's", err.Error(), nil)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	if err := support.VerifyRazorPayment(razorpay_payment_id, razorpay_order_id, razorpay_signature); err != nil {
+	fmt.Println("Passed errors")
+
+	fmt.Println("Here are the data from razorpaysuccess handler", razorpay_order_id, razorpay_payment_id, razorpay_signature)
+	if err := support.VerifyRazorPayment(razorpay_order_id, razorpay_payment_id, razorpay_signature); err != nil {
 		response := utils.ErrorResponse(500, "Error: Failed to verify the payment", err.Error(), nil)
-		c.JSON(http.StatusBadRequest, response)
+		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
-	if err := cr.orderUseCase.PlaceNewOrder(c.Request.Context(), uint(addressId), uint(paymentId), uint(userId)); err != nil {
+	fmt.Println("Passed verification")
+
+	couponid, er := cr.orderUseCase.FindCoupon(c.Request.Context(), code)
+	fmt.Println("error from the find coupon is ", er)
+	if er != nil {
+		response := utils.ErrorResponse(500, "Error: Failed to find coupon", er.Error(), nil)
+		c.JSON(http.StatusInternalServerError, response)
+		return
+	}
+	fmt.Println("Passed coupon check")
+
+	if err := cr.orderUseCase.PlaceNewOrder(c.Request.Context(), uint(addressId), uint(paymentId), uint(userId), couponid); err != nil {
 		response := utils.ErrorResponse(500, "Error: Failed to place order", err.Error(), nil)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
+	// response := utils.SuccessResponse(200, "Success:Payment verified and order placed successfully.", nil)
+	// c.JSON(http.StatusOK, response)
 	response["data"] = true
 	response["message"] = "Payment verified and order placed successfully."
 	c.JSON(http.StatusOK, response)

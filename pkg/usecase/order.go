@@ -27,7 +27,7 @@ func NewOrderUseCase(repo interfaces.OrderRepository, CartRepo interfaces.CartRe
 }
 
 // Users end
-func (c *OrderUseCase) PlaceNewOrder(ctx context.Context, addressId uint, paymentId uint, userId uint) error {
+func (c *OrderUseCase) PlaceNewOrder(ctx context.Context, addressId uint, paymentId uint, userId uint, couponid *uint) error {
 	var psId uint
 	cart, err := c.CartRepo.FindCartById(ctx, userId)
 	//fmt.Println("user id passed from to find cart by id from place new order function from use case is", userId)
@@ -57,6 +57,7 @@ func (c *OrderUseCase) PlaceNewOrder(ctx context.Context, addressId uint, paymen
 		PaymentID:       paymentId,
 		PaymentStatusID: psId,
 		GrandTotal:      uint(cart.GrandTotal),
+		CouponID:        couponid,
 	}
 	//fmt.Println("New order is", Neworder)
 	if err := c.OrderRepo.SubmitOrder(ctx, Neworder, cartItems); err != nil {
@@ -65,7 +66,7 @@ func (c *OrderUseCase) PlaceNewOrder(ctx context.Context, addressId uint, paymen
 	return nil
 }
 
-func (c *OrderUseCase) RazorPayOrder(ctx context.Context, userId uint) (utils.RazorpayOrder, error) {
+func (c *OrderUseCase) RazorPayOrder(ctx context.Context, userId uint, couponid *uint) (utils.RazorpayOrder, error) {
 	var razorPayOrder utils.RazorpayOrder
 	cart, err := c.CartRepo.FindCartById(ctx, userId)
 	//fmt.Println("user id passed from to find cart by id from place new order function from use case is", userId)
@@ -75,6 +76,7 @@ func (c *OrderUseCase) RazorPayOrder(ctx context.Context, userId uint) (utils.Ra
 	}
 	// Generate new razorpay order
 	// Razorpay amount is calculated on paisa for india so convert the actual price into paisa
+	fmt.Println("razorpayment amount is", cart.GrandTotal)
 	razorPayAmount := cart.GrandTotal * 100
 	fmt.Println("The razorpay amount from the usecase after convertion is ", razorPayAmount)
 	razorPayReceipt := "test receipt"
@@ -215,4 +217,38 @@ func (c *OrderUseCase) ReturnOrder(ctx context.Context, orderDetailsId uint, sta
 		return err
 	}
 	return nil
+}
+
+func (c *OrderUseCase) ValidateCoupon(ctx context.Context, userId uint, code string) (*uint, error) {
+	cart, err := c.CartRepo.FindCartById(ctx, userId)
+	if err != nil {
+		return nil, err
+	}
+	if code != "" {
+		coupon, err2 := c.OrderRepo.FindCoupon(ctx, code)
+		if err2 != nil {
+			return nil, fmt.Errorf("failed to find coupon: %w", err2)
+		}
+		cartItems, err1 := c.OrderRepo.FindCartItems(ctx, userId)
+		if err1 != nil {
+			return nil, fmt.Errorf("failed to find cart items: %w", err1)
+		}
+		if err = c.OrderRepo.ValidateCoupon(ctx, coupon, cartItems, &cart); err != nil {
+			return nil, fmt.Errorf("failed to validate coupon: %w", err)
+		}
+		return &coupon.ID, nil
+	}
+	return nil, nil
+}
+
+func (c *OrderUseCase) FindCoupon(ctx context.Context, code string) (*uint, error) {
+	if code != "null" {
+		fmt.Println("enters into find coupon in the usecase")
+		coupon, err := c.OrderRepo.FindCoupon(ctx, code)
+		if err != nil {
+			return nil, err
+		}
+		return &coupon.ID, err
+	}
+	return nil, nil
 }

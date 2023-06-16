@@ -246,7 +246,6 @@
                         "description": "Enter the coupon details",
                         "name": "couponBody",
                         "in": "body",
-                        "required": true,
                         "schema": {
                             "$ref": "#/definitions/utils.BodyAddCoupon"
                         }
@@ -410,7 +409,6 @@
                         "description": "Enter the coupon details",
                         "name": "couponBody",
                         "in": "body",
-                        "required": true,
                         "schema": {
                             "$ref": "#/definitions/utils.BodyAddCoupon"
                         }
@@ -1772,6 +1770,12 @@
                         "name": "address_id",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Enter coupon code if available",
+                        "name": "code",
+                        "in": "query"
                     }
                 ],
                 "responses": {

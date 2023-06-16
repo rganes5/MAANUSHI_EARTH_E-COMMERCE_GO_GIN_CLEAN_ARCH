@@ -418,7 +418,7 @@ func (cr *AdminHandler) SalesReport(c *gin.Context) {
 // @Tags COUPON
 // @Accept json
 // @Produce json
-// @Param couponBody body utils.BodyAddCoupon true "Enter the coupon details"
+// @Param couponBody body utils.BodyAddCoupon false "Enter the coupon details"
 // @Success 200 {object} utils.Response
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response
@@ -485,7 +485,7 @@ func (cr *AdminHandler) GetAllCoupons(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param coupon_id query string	true "Enter the coupon id to update"
-// @Param couponBody body utils.BodyAddCoupon true "Enter the coupon details"
+// @Param couponBody body utils.BodyAddCoupon false "Enter the coupon details"
 // @Success 200 {object} utils.Response
 // @Failure 401 {object} utils.Response
 // @Failure 400 {object} utils.Response

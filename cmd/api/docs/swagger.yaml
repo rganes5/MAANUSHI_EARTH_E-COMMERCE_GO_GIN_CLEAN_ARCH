@@ -372,7 +372,6 @@ paths:
       - description: Enter the coupon details
         in: body
         name: couponBody
-        required: true
         schema:
           $ref: '#/definitions/utils.BodyAddCoupon'
       produces:
@@ -480,7 +479,6 @@ paths:
       - description: Enter the coupon details
         in: body
         name: couponBody
-        required: true
         schema:
           $ref: '#/definitions/utils.BodyAddCoupon'
       produces:
@@ -1384,6 +1382,10 @@ paths:
         in: query
         name: address_id
         required: true
+        type: string
+      - description: Enter coupon code if available
+        in: query
+        name: code
         type: string
       produces:
       - application/json

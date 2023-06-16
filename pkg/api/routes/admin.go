@@ -66,7 +66,6 @@ func AdminRoutes(api *gin.RouterGroup, adminHandler *handler.AdminHandler, produ
 			coupon.GET("/list", adminHandler.GetAllCoupons)
 			coupon.PATCH("/update", adminHandler.UpdateCoupon)
 			coupon.DELETE("/delete", adminHandler.DeleteCoupon)
-
 		}
 
 	}

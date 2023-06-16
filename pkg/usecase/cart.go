@@ -56,6 +56,9 @@ func (c *CartUseCase) AddToCart(ctx context.Context, productId string, id uint) 
 		}
 		//Updating the existing cart details with quantity and price in database.
 		if existingItem.ID != 0 {
+			if productDetails.InStock <= existingItem.Quantity {
+				return errors.New("the item is out of stock")
+			}
 			existingItem.Quantity++
 			existingItem.TotalPrice = existingItem.Quantity * product.DiscountPrice
 			err := c.CartRepo.UpdateCartItem(ctx, existingItem)
@@ -64,6 +67,9 @@ func (c *CartUseCase) AddToCart(ctx context.Context, productId string, id uint) 
 				return err
 			}
 		} else {
+			if productDetails.InStock <= existingItem.Quantity {
+				return errors.New("the item is out of stock")
+			}
 			//If the item being added is a new one, then we can populate a new struct with new item.
 			newItem := domain.CartItem{
 				CartID:     cart.ID,

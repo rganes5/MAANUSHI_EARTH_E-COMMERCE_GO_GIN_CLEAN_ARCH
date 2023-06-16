@@ -11,6 +11,7 @@ type Order struct {
 	PaymentID       uint      `json:"paymentid" gorm:"not null"`
 	PaymentStatusID uint      `json:"paymentstatusid" gorm:"not null"`
 	GrandTotal      uint      `json:"grandtotal" gorm:"not null"`
+	CouponID        *uint     `json:"couponid"`
 }
 
 type OrderDetails struct {
