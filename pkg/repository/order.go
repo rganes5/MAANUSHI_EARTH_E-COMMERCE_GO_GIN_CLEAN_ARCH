@@ -21,7 +21,7 @@ func NewOrderRepository(DB *gorm.DB) interfaces.OrderRepository {
 	return &orderDatabase{DB}
 }
 
-// finding eacg cart items rows for each user and storing in a slice
+// finding each cart items rows for each user and storing in a slice
 func (c *orderDatabase) FindCartItems(ctx context.Context, cartID uint) ([]domain.CartItem, error) {
 	fmt.Println("Entered into find cart items function from repository with cartid", cartID)
 	var cartItems []domain.CartItem
