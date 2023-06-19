@@ -26,11 +26,13 @@ DB_HOST = replace with hostname
 DB_NAME = replace with db name
 DB_USER = replace with db username
 DB_PORT = replace with db port
-DB_PASSWORD = repalce with db password
+DB_PASSWORD = replace with db password
 
 ACCOUNT_SID = replace with your twilio account sid
-AUTHTOKEN = replaec with twilio auth token
+AUTHTOKEN = replace with twilio auth token
 SERVICES_ID = replace with twilio services id
+RAZORPAY_KEY= replace it with razorpay key
+RAZORPAY_SECRET= replace it with razorpay secret
 Compile and run
 
 make run
