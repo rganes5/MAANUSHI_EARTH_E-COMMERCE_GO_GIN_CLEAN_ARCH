@@ -134,13 +134,14 @@ func (c *orderDatabase) SubmitOrder(ctx context.Context, order domain.Order, car
 			tx.Rollback()
 			return errors.New("insufficient balance in wallet, choose a different payment option")
 		}
-
+		str := fmt.Sprintf("purchase for the order id %v", order.ID)
 		current := time.Now()
 		wallet := domain.Wallet{
 			UserID:       order.UserID,
 			CreditedDate: nil,
 			DebitedDate:  &current,
 			Amount:       -1 * int(order.GrandTotal),
+			Notes:        str,
 		}
 		if err := tx.Create(&wallet).Error; err != nil {
 			tx.Rollback()
@@ -272,9 +273,8 @@ func (c *orderDatabase) CancelOrder(ctx context.Context, userId uint, orderItems
 		return err
 	}
 
-	prodtotal := orderItems.Quantity * TempProductDetails.DiscountedPrice
-	// prodtotal := orderItems.TotalPrice
-
+	// prodtotal := orderItems.Quantity * TempProductDetails.DiscountedPrice
+	prodtotal := orderItems.TotalPrice
 	total := grandTotal - int(prodtotal)
 	//to find the coupon
 	result := tx.Model(&domain.Coupon{}).Joins("join orders on coupons.id=orders.coupon_id").Where("orders.id=?", orderItems.OrderID).Find(&coupon)
@@ -284,11 +284,11 @@ func (c *orderDatabase) CancelOrder(ctx context.Context, userId uint, orderItems
 	}
 	if result.RowsAffected != 0 {
 		if total < int(*coupon.MinimumOrderAmount) || *coupon.ProductID == TempProductDetails.ProductID {
-			if coupon.CouponType == 1 {
+			if coupon.CouponType == 2 {
 				coupondiscount := (coupon.Discount * TempProductDetails.DiscountedPrice) / 100
 				total += int(coupondiscount)
 				prodtotal -= coupondiscount
-			} else if coupon.CouponType == 2 {
+			} else if coupon.CouponType == 1 {
 				total += int(coupon.Discount)
 				prodtotal -= coupon.Discount
 			}
@@ -307,18 +307,21 @@ func (c *orderDatabase) CancelOrder(ctx context.Context, userId uint, orderItems
 		return err
 	}
 	//Calculate the total price of cancelled item and reduce the price from the grand total of the order.
-	totalPrice := grandTotal - int(orderItems.TotalPrice)
-	if err := tx.Model(&domain.Order{}).Where("id=?", orderItems.OrderID).UpdateColumn("grand_total", totalPrice).Error; err != nil {
+	// totalPrice := grandTotal - int(orderItems.TotalPrice)
+	if err := tx.Model(&domain.Order{}).Where("id=?", orderItems.OrderID).UpdateColumn("grand_total", total).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
 	if TempProductDetails.PaymentMode != 1 {
 		current := time.Now()
+		str := fmt.Sprintf("refund for the order id %v", orderItems.OrderID)
 		wallet := domain.Wallet{
 			UserID:       userId,
 			CreditedDate: &current,
 			DebitedDate:  nil,
-			Amount:       int(orderItems.TotalPrice),
+			// Amount:       int(orderItems.TotalPrice),
+			Amount: int(prodtotal),
+			Notes:  str,
 		}
 		if err := tx.Create(&wallet).Error; err != nil {
 			tx.Rollback()
@@ -388,6 +391,7 @@ func (c *orderDatabase) UpdateStatus(ctx context.Context, orderItem domain.Order
 		ProductID:       0,
 	}
 	var grandTotal int
+	var coupon domain.Coupon
 	var userId uint
 	tx := c.DB.Begin()
 	//Updations
@@ -422,6 +426,26 @@ func (c *orderDatabase) UpdateStatus(ctx context.Context, orderItem domain.Order
 			return err
 		}
 
+		prodtotal := orderItem.TotalPrice
+		total := grandTotal - int(prodtotal)
+		//to find the coupon
+		result := tx.Model(&domain.Coupon{}).Joins("join orders on coupons.id=orders.coupon_id").Where("orders.id=?", orderItem.OrderID).Find(&coupon)
+		if result.Error != nil {
+			tx.Rollback()
+			return result.Error
+		}
+		if result.RowsAffected != 0 {
+			if total < int(*coupon.MinimumOrderAmount) || *coupon.ProductID == TempProductDetails.ProductID {
+				if coupon.CouponType == 2 {
+					coupondiscount := (coupon.Discount * TempProductDetails.DiscountedPrice) / 100
+					total += int(coupondiscount)
+					prodtotal -= coupondiscount
+				} else if coupon.CouponType == 1 {
+					total += int(coupon.Discount)
+					prodtotal -= coupon.Discount
+				}
+			}
+		}
 		//Updations
 		//we can upate the stock on actual product since the item is now cancelled
 		if err := tx.Model(&domain.ProductDetails{}).Where("id=?", orderItem.ProductDetailID).UpdateColumn("in_stock", (TempProductDetails.QtyInStock + orderItem.Quantity)).Error; err != nil {
@@ -429,18 +453,21 @@ func (c *orderDatabase) UpdateStatus(ctx context.Context, orderItem domain.Order
 			return err
 		}
 		//Calculate the total price of cancelled item and reduce the price from the grand total of the order.
-		totalPrice := grandTotal - int(orderItem.TotalPrice)
-		if err := tx.Model(&domain.Order{}).Where("id=?", orderItem.OrderID).UpdateColumn("grand_total", totalPrice).Error; err != nil {
+		// totalPrice := grandTotal - int(orderItem.TotalPrice)
+		if err := tx.Model(&domain.Order{}).Where("id=?", orderItem.OrderID).UpdateColumn("grand_total", total).Error; err != nil {
 			tx.Rollback()
 			return err
 		}
+		str := fmt.Sprintf("refund for the order id %v", orderItem.OrderID)
 		if TempProductDetails.PaymentMode != 1 {
 			current := time.Now()
 			wallet := domain.Wallet{
 				UserID:       userId,
 				CreditedDate: &current,
 				DebitedDate:  nil,
-				Amount:       int(orderItem.TotalPrice),
+				// Amount:       int(orderItem.TotalPrice),
+				Amount: int(prodtotal),
+				Notes:  str,
 			}
 			if err := tx.Create(&wallet).Error; err != nil {
 				tx.Rollback()
