@@ -229,4 +229,5 @@ type Wallet struct {
 	CreditedDate *time.Time `json:"crediteddate"`
 	DebitedDate  *time.Time `json:"debiteddate"`
 	Amount       int        `json:"amount"`
+	Notes        string     `json:"note"`
 }

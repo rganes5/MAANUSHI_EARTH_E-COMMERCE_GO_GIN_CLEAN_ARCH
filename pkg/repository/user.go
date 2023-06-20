@@ -39,6 +39,7 @@ func (c *userDatabase) FindByEmail(ctx context.Context, Email string) (domain.Us
 	return user, nil
 }
 
+// Find the user via email or phone number
 func (c *userDatabase) FindByEmailOrNumber(ctx context.Context, body utils.OtpLogin) (domain.Users, error) {
 	var user domain.Users
 	_ = c.DB.Where("email=? or phone_num=?", body.Email, body.PhoneNum).Find(&user)
