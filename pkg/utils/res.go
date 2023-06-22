@@ -72,12 +72,16 @@ type ResponseProduct struct {
 	CategoryID    uint   `json:"category_id"`
 }
 
+// Struct to display the products details from users and admin end
+
 type ResponseProductDetails struct {
 	ID             uint   `json:"id"`
 	ProductID      uint   `json:"productid"`
 	ProductDetails string `json:"productdetails"`
 	InStock        uint   `json:"qty_in_stock"`
 }
+
+// Struct to display the products and products details from users and admin end
 
 type ResponseProductAndDetails struct {
 	ProductID      uint   `json:"productid"`
@@ -98,6 +102,7 @@ type ResponseProductAndDetails struct {
 // 	DiscountPrice uint   `json:"discountprice"`
 // }
 
+// Struct to display the addresses from users end
 type ResponseAddress struct {
 	ID          uint   `json:"id"`
 	Name        string `json:"name"`
@@ -112,6 +117,7 @@ type ResponseAddress struct {
 	Primary     bool   `json:"primary"`
 }
 
+// Struct to display the cart from users end
 type ResponseCart struct {
 	ID            uint   `json:"productid"`
 	ProductName   string `json:"productname"`

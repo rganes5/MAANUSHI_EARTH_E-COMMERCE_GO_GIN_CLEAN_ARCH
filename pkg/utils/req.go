@@ -2,11 +2,13 @@ package utils
 
 import "time"
 
+// input pagination
 type Pagination struct {
 	Offset uint `json:"offset"`
 	Limit  uint `json:"limit"`
 }
 
+// input sign up user sign up details
 type UsersSignUp struct {
 	FirstName string `json:"firstname" binding:"required"`
 	LastName  string `json:"lastname" binding:"required"`
@@ -14,6 +16,8 @@ type UsersSignUp struct {
 	PhoneNum  string `json:"phonenum" binding:"required"`
 	Password  string `json:"password" binding:"required"`
 }
+
+// input admin sign up details
 
 type AdminSignUp struct {
 	FirstName string `json:"firstname" binding:"required"`
@@ -23,31 +27,38 @@ type AdminSignUp struct {
 	Password  string `json:"password" binding:"required"`
 }
 
+// input verification of otp in case of forgot password
 type OtpVerify struct {
 	Otp         string `json:"otp" binding:"required"`
 	OtpID       string `json:"otpid" binding:"required"`
 	NewPassword string `json:"newpassword"`
 }
 
+// input verification of otp
 type OtpSignUpVerify struct {
 	Otp   string `json:"otp" binding:"required"`
 	OtpID string `json:"otpid" binding:"required"`
 }
+
+// input login credentials
 
 type LoginBody struct {
 	Email    string `binding:"required"`
 	Password string `binding:"required"`
 }
 
+// input verification of otp at time of email or phone verification
 type OtpLogin struct {
 	Email    string `json:"email"`
 	PhoneNum string `json:"phonenum"`
 }
 
+// input category
 type AddCategory struct {
 	CategoryName string `json:"categoryname"`
 }
 
+// input products
 type Products struct {
 	ProductName   string `json:"productname"`
 	Image         string `json:"image"`
@@ -58,16 +69,20 @@ type Products struct {
 	// Category    Category `gorm:"foreignKey:CategoryID"`
 }
 
+// input products details
 type ProductDetails struct {
 	ProductID      uint   `json:"product_id"`
 	ProductDetails string `json:"productdetails"`
 	InStock        uint   `json:"qty_in_stock"`
 }
 
+// input update category
+
 type UpdateCategory struct {
 	CategoryName string `json:"categoryname" binding:"required" gorm:"uniqueIndex;not null" `
 }
 
+// input address
 type Address struct {
 	Name        string `json:"name" gorm:"not null" binding:"required"`
 	PhoneNumber string `json:"phone_number"`
@@ -81,6 +96,8 @@ type Address struct {
 	Primary     bool   `json:"primary" gorm:"default:false"`
 	// UserID      uint   `json:"userid"`
 }
+
+// input update category
 
 type UpdateAddress struct {
 	Name        string `json:"name"`
@@ -96,18 +113,21 @@ type UpdateAddress struct {
 	// UserID      uint   `json:"userid"`
 }
 
+// input update profile details
 type UpdateProfile struct {
 	FirstName string `json:"firstname"`
 	LastName  string `json:"lastname"`
 	Email     string `json:"email"`
 }
 
+// input cart
 type ReqCart struct {
 	ID         uint `json:"id"`
 	UserID     uint `json:"userid"`
 	GrandTotal int  `json:"grandtotal"`
 }
 
+// input cart items
 type ReqCartItem struct {
 	ID         uint `json:"id"`
 	CartID     uint `json:"cartid"`
@@ -116,6 +136,7 @@ type ReqCartItem struct {
 	TotalPrice uint `json:"totalprice"`
 }
 
+// input salesreport
 type SalesReport struct {
 	Month     time.Month `json:"startdate"`
 	Year      int        `json:"year"`
@@ -124,6 +145,7 @@ type SalesReport struct {
 	Pagination
 }
 
+// input coupon
 type BodyAddCoupon struct {
 	Code           string `json:"code" binding:"required"`
 	Type           uint   `json:"type" binding:"required"`
