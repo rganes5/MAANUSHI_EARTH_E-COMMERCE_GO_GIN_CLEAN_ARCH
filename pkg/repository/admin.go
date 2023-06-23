@@ -57,6 +57,8 @@ func (c *adminDatabase) AccessHandler(ctx context.Context, id string, access boo
 	return nil
 }
 
+// Admin dashboard
+
 func (c *adminDatabase) Dashboard(ctx context.Context) (utils.ResponseWidgets, error) {
 	var responseWidgets utils.ResponseWidgets
 	if err := c.DB.Model(&domain.Users{}).Select("count(users)").Where("block='f'").Scan(&responseWidgets.ActiveUsers).Error; err != nil {
@@ -78,6 +80,7 @@ func (c *adminDatabase) Dashboard(ctx context.Context) (utils.ResponseWidgets, e
 	return responseWidgets, nil
 }
 
+// Sales report
 func (c *adminDatabase) SalesReport(reqData utils.SalesReport) ([]utils.ResponseSalesReport, error) {
 	var salesreport []utils.ResponseSalesReport
 	if reqData.Frequency == "MONTHLY" {
@@ -113,6 +116,7 @@ func (c *adminDatabase) SalesReport(reqData utils.SalesReport) ([]utils.Response
 	return salesreport, nil
 }
 
+// adding a new coupon
 func (c *adminDatabase) AddCoupon(ctx context.Context, coupon domain.Coupon) error {
 	if err := c.DB.Create(&coupon).Error; err != nil {
 		return err
@@ -120,6 +124,7 @@ func (c *adminDatabase) AddCoupon(ctx context.Context, coupon domain.Coupon) err
 	return nil
 }
 
+// view all coupons available
 func (c *adminDatabase) GetAllCoupons(ctx context.Context, pagination utils.Pagination) ([]domain.Coupon, error) {
 	var coupons []domain.Coupon
 	if err := c.DB.Limit(int(pagination.Limit)).Offset(int(pagination.Offset)).Find(&coupons).Error; err != nil {
@@ -128,6 +133,7 @@ func (c *adminDatabase) GetAllCoupons(ctx context.Context, pagination utils.Pagi
 	return coupons, nil
 }
 
+// updating coupons
 func (c *adminDatabase) UpdateCoupon(ctx context.Context, coupon domain.Coupon, couponId string) error {
 	if err := c.DB.Where("id=?", couponId).Updates(&coupon).Error; err != nil {
 		return err
@@ -135,6 +141,7 @@ func (c *adminDatabase) UpdateCoupon(ctx context.Context, coupon domain.Coupon, 
 	return nil
 }
 
+// deleting coupons
 func (c *adminDatabase) DeleteCoupon(ctx context.Context, couponId string) error {
 	if err := c.DB.Where("id=?", couponId).Delete(&domain.Coupon{}).Error; err != nil {
 		return err
