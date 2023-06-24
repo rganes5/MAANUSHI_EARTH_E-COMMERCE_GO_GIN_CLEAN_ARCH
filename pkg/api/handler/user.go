@@ -53,7 +53,7 @@ func NewUserHandler(usecase services.UserUseCase, otpusecase services.OtpUseCase
 // name: MIT
 // url: https://opensource.org/licenses/MIT
 
-// @host localhost:3000
+// host localhost:3000
 
 // @Basepath /
 // @Accept json
