@@ -136,7 +136,7 @@ func (cr *AdminHandler) AdminLogin(c *gin.Context) {
 		response := utils.ErrorResponse(401, "Error: Error generating the jwt token", err.Error(), Login_admin)
 		c.JSON(http.StatusInternalServerError, response)
 	}
-	c.SetCookie("admin-token", tokenstring, int(time.Now().Add(60*time.Minute).Unix()), "/", "localhost", false, true)
+	c.SetCookie("admin-token", tokenstring, int(time.Now().Add(60*time.Minute).Unix()), "/", "maanushiearth.shop", true, false)
 	response1 := utils.SuccessResponse(200, "Success: Login Successful")
 	c.JSON(http.StatusOK, response1)
 }

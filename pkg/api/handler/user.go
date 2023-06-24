@@ -53,7 +53,7 @@ func NewUserHandler(usecase services.UserUseCase, otpusecase services.OtpUseCase
 // name: MIT
 // url: https://opensource.org/licenses/MIT
 
-// host localhost:3000
+// @host maanushiearth.shop
 
 // @Basepath /
 // @Accept json
@@ -223,7 +223,7 @@ func (cr *UserHandler) LoginHandler(c *gin.Context) {
 	}
 
 	//Sets a cookie named "user-token" with the value tokenString. The cookie has an expiration time of 60 minutes from the current time.
-	c.SetCookie("user-token", tokenString, int(time.Now().Add(60*time.Minute).Unix()), "/", "localhost", false, true)
+	c.SetCookie("user-token", tokenString, int(time.Now().Add(60*time.Minute).Unix()), "/", "maanushiearth.shop", true, false)
 	c.Set("user-email", user.Email)
 	response1 := utils.SuccessResponse(200, "Success: Login Successful")
 	c.JSON(http.StatusOK, response1)
