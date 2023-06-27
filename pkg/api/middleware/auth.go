@@ -51,7 +51,7 @@ func AuthorizationMiddleware(role string) gin.HandlerFunc {
 		// Check if the token is about to expire or has already expired
 		if time.Now().After(claims.ExpiresAt.Time) {
 			// Token has expired, remove the cookie
-			c.SetCookie(role+"-token", "", -1, "/", "", false, true)
+			c.SetCookie(role+"-token", "", -1, "/", "maanushiearth.shop", true, false)
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"error": "Token expired, please login again",
 			})
@@ -67,7 +67,7 @@ func AuthorizationMiddleware(role string) gin.HandlerFunc {
 			})
 			return
 		}
-		c.SetCookie(role+"-token", tokenString, int(10*time.Minute.Seconds()), "/", "", false, true)
+		c.SetCookie(role+"-token", tokenString, int(10*time.Minute.Seconds()), "/", "maanushiearth.shop", true, false)
 		c.Set(role+"-email", claims.Email)
 		c.Set(role+"-id", claims.ID)
 		c.Next()
