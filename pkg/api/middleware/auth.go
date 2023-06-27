@@ -9,7 +9,6 @@ import (
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/auth"
 )
 
-// The middleware verifies the presence and validity of a token stored in a cookie and sets the user's email in the Gin context if the authorization is successful.
 //
 //	func AuthorizationMiddleware(role string) gin.HandlerFunc {
 //		return func(c *gin.Context) {
@@ -32,6 +31,8 @@ import (
 //			c.Next()
 //		}
 //	}
+
+// The middleware verifies the presence and validity of a token stored in a cookie and sets the user's email in the Gin context if the authorization is successful.
 func AuthorizationMiddleware(role string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tokenString, err := c.Cookie(role + "-token")
@@ -58,7 +59,7 @@ func AuthorizationMiddleware(role string) gin.HandlerFunc {
 			return
 		}
 		// Refresh the token expiry time on each API call
-		expiryTime := time.Now().Add(10 * time.Minute)
+		expiryTime := time.Now().Add(60 * time.Minute)
 		claims.ExpiresAt = jwt.NewNumericDate(expiryTime)
 		tokenString, err = auth.GenerateJWT(claims.Email, claims.ID)
 		if err != nil {
@@ -67,7 +68,7 @@ func AuthorizationMiddleware(role string) gin.HandlerFunc {
 			})
 			return
 		}
-		c.SetCookie(role+"-token", tokenString, int(10*time.Minute.Seconds()), "/", "maanushiearth.shop", true, false)
+		c.SetCookie(role+"-token", tokenString, int(60*time.Minute.Seconds()), "/", "maanushiearth.shop", true, false)
 		c.Set(role+"-email", claims.Email)
 		c.Set(role+"-id", claims.ID)
 		c.Next()

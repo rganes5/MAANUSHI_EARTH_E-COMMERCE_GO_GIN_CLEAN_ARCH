@@ -17,7 +17,7 @@ type Claims struct {
 func GenerateJWT(email string, ID uint) (string, error) {
 
 	// expireTime := time.Now().Add(60 * time.Minute)
-	expiryTime := time.Now().Add(10 * time.Minute)
+	expiryTime := time.Now().Add(60 * time.Minute)
 
 	// create token with expire time and claims id as user id
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, &Claims{
