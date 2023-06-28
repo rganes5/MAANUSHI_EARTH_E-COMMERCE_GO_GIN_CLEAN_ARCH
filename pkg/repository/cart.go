@@ -20,6 +20,7 @@ func NewCartRepository(DB *gorm.DB) interfaces.CartRepository {
 	return &cartDatabase{DB}
 }
 
+// To find the cart by user id
 func (c *cartDatabase) FindCartById(ctx context.Context, id uint) (domain.Cart, error) {
 	var cart domain.Cart
 	if err := c.DB.Where("user_id=?", id).Find(&cart).Error; err != nil {
