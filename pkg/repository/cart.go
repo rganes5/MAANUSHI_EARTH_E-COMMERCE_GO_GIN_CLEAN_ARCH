@@ -29,6 +29,7 @@ func (c *cartDatabase) FindCartById(ctx context.Context, id uint) (domain.Cart, 
 	return cart, nil
 }
 
+// To find the products by product id
 func (c *cartDatabase) FindProductById(ctx context.Context, productId string) (domain.Products, error) {
 	var product domain.Products
 	// Convert the string productId to a uint
