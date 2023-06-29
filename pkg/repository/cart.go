@@ -74,6 +74,7 @@ func (c *cartDatabase) FindDuplicateProduct(ctx context.Context, productId strin
 	return duplicateItem, nil
 }
 
+// To list cart of users
 func (c *cartDatabase) ListCart(ctx context.Context, id uint, pagination utils.Pagination) ([]utils.ResponseCart, error) {
 	var cartDetails []utils.ResponseCart
 	offset := pagination.Offset
