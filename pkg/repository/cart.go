@@ -43,6 +43,7 @@ func (c *cartDatabase) FindProductById(ctx context.Context, productId string) (d
 	return product, nil
 }
 
+// To find the product details by id
 func (c *cartDatabase) FindProductDetailsById(ctx context.Context, productId string) (domain.ProductDetails, error) {
 	var productDetails domain.ProductDetails
 	// Convert the string productId to a uint
@@ -57,6 +58,7 @@ func (c *cartDatabase) FindProductDetailsById(ctx context.Context, productId str
 	return productDetails, nil
 }
 
+// To find the duplicate product so that we can update the quantity
 func (c *cartDatabase) FindDuplicateProduct(ctx context.Context, productId string, cartID uint) (domain.CartItem, error) {
 	var duplicateItem domain.CartItem
 	// Convert the string productId to a uint
