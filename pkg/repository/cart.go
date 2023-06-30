@@ -152,6 +152,7 @@ func (c *cartDatabase) AddNewItem(ctx context.Context, newItem domain.CartItem) 
 	return nil
 }
 
+// To remove items from cart
 func (c *cartDatabase) DeleteFromCart(ctx context.Context, existingItem domain.CartItem) error {
 	tx := c.DB.Begin()
 	if err := tx.Model(&domain.CartItem{}).Where("id=?", existingItem.ID).Delete(&existingItem).Error; err != nil {
