@@ -103,8 +103,8 @@ func (c *cartDatabase) ListCart(ctx context.Context, id uint, pagination utils.P
 	return cartDetails, nil
 }
 
-//result := c.DB.Where("product_detail_id=$1 and cart_id=$2", id, cartid).Find(&exsistitem)
-
+// result := c.DB.Where("product_detail_id=$1 and cart_id=$2", id, cartid).Find(&exsistitem)
+// To update the cart items
 func (c *cartDatabase) UpdateCartItem(ctx context.Context, existingItem domain.CartItem) error {
 	var grantTotal int
 	tx := c.DB.Begin()
@@ -128,6 +128,7 @@ func (c *cartDatabase) UpdateCartItem(ctx context.Context, existingItem domain.C
 	return nil
 }
 
+// If there is no duplicate item in cart, then it should add a new item
 func (c *cartDatabase) AddNewItem(ctx context.Context, newItem domain.CartItem) error {
 	var grantTotal int
 	tx := c.DB.Begin()
