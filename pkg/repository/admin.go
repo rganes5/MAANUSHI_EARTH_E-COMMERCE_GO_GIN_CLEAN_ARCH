@@ -21,7 +21,9 @@ func NewAdminRepository(DB *gorm.DB) interfaces.AdminRepository {
 // Finds whether a email is already in the database or not
 func (c *adminDatabase) FindByEmail(ctx context.Context, Email string) (domain.Admin, error) {
 	var admin domain.Admin
-	_ = c.DB.Where("Email=?", Email).Find(&admin)
+	query := `SELECT * FROM admins WHERE email=$1`
+	c.DB.Raw(query, Email).Scan(&admin)
+	//_ = c.DB.Where("Email=?", Email).Find(&admin)
 	if admin.ID == 0 {
 		return domain.Admin{}, errors.New("invalid Email")
 	}

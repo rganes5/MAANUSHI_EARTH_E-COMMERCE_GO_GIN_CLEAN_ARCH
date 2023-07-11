@@ -27,7 +27,7 @@ func NewAdminHandler(usecase services.AdminUseCase) *AdminHandler {
 	}
 }
 
-// ADMIN SIGN-UP WITH SENDING OTP
+// ADMIN SIGN-UP WITHOUT SENDING OTP
 // @Summary API FOR NEW USER SIGN UP
 // @ID SIGNUP-ADMIN
 // @Description CREATE A NEW ADMIN WITH REQUIRED DETAILS
