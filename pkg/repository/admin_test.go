@@ -15,7 +15,6 @@ import (
 func TestFindByEmail(t *testing.T) {
 	// db, mock, err := sqlmock.New()
 	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
-
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
@@ -40,7 +39,7 @@ func TestFindByEmail(t *testing.T) {
 				query := `SELECT * FROM admins WHERE email=$1`
 				mock.ExpectQuery(query).WithArgs("nonexisting@gmail.com").WillReturnError(errors.New("invalid email"))
 			},
-			expectedErr: errors.New("invalid email"),
+			expectedErr: errors.New("invalid Email"),
 		},
 		{
 			name:  "valid email",
