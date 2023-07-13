@@ -15,16 +15,18 @@ import (
 // The function takes a testing.T parameter t, which is used for test assertions and reporting.
 func TestFindByEmail(t *testing.T) {
 	// db, mock, err := sqlmock.New()
+	//Creates a new SQL mock database connection and assigns it to the db variable. It also creates a mock object (mock) that can be used to set expectations on SQL queries.
 	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
+	//Initializes a mock GORM database session (gormDB) using the mock database connection (db) created earlier.
 	gormDB, err := gorm.Open(postgres.New(postgres.Config{Conn: db}), &gorm.Config{})
 	if err != nil {
 		t.Fatalf("an error '%s' was not expected when initializing a mock db session", err)
 	}
 	AdminRepository := NewAdminRepository(gormDB)
-
+	//Slice of test cases
 	tests := []struct {
 		name           string
 		input          string
@@ -67,7 +69,7 @@ func TestFindByEmail(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.buildStub(mock)
 			actualOutput, actualErr := AdminRepository.FindByEmail(context.TODO(), tt.input)
-
+			//The returned output and error are compared with the expected output and error using assertions from the testify/assert package.
 			if tt.expectedErr == nil {
 				assert.NoError(t, actualErr)
 			} else {
