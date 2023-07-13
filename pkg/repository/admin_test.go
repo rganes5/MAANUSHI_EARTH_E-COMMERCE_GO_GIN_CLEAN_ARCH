@@ -12,6 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
+// The function takes a testing.T parameter t, which is used for test assertions and reporting.
 func TestFindByEmail(t *testing.T) {
 	// db, mock, err := sqlmock.New()
 	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
