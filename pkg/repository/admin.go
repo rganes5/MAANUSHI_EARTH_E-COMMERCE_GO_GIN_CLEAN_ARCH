@@ -32,8 +32,13 @@ func (c *adminDatabase) FindByEmail(ctx context.Context, Email string) (domain.A
 
 // UserSign-up
 func (c *adminDatabase) SignUpAdmin(ctx context.Context, admin domain.Admin) error {
-	err := c.DB.Create(&admin).Error
-	return err
+	query := `INSERT INTO admins(first_name,last_name,email,phone_num,password)VALUES($1,$2,$3,$4,$5)`
+	if err := c.DB.Raw(query, admin.FirstName, admin.LastName, admin.Email, admin.PhoneNum, admin.Password).Error; err != nil {
+		return err
+	}
+	return nil
+	// err := c.DB.Create(&admin).Error
+	// return err
 }
 
 // List all users

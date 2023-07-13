@@ -37,7 +37,7 @@ func TestFindByEmail(t *testing.T) {
 			expectedOutput: domain.Admin{},
 			buildStub: func(mock sqlmock.Sqlmock) {
 				query := `SELECT * FROM admins WHERE email=$1`
-				mock.ExpectQuery(query).WithArgs("nonexisting@gmail.com").WillReturnError(errors.New("invalid email"))
+				mock.ExpectQuery(query).WithArgs("nonexisting@gmail.com").WillReturnError(errors.New("invalid Email"))
 			},
 			expectedErr: errors.New("invalid Email"),
 		},
