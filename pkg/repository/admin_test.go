@@ -32,7 +32,8 @@ func TestFindByEmail(t *testing.T) {
 		input          string
 		expectedOutput domain.Admin
 		buildStub      func(mock sqlmock.Sqlmock)
-		expectedErr    error
+		//The buildStub field in the test case struct is a function that is responsible for setting up the expected behavior of the mock database connection.
+		expectedErr error
 	}{
 		{
 			name:           "non-existing email",
@@ -77,6 +78,80 @@ func TestFindByEmail(t *testing.T) {
 			}
 
 			assert.Equal(t, tt.expectedOutput, actualOutput)
+
+			err = mock.ExpectationsWereMet()
+			if err != nil {
+				t.Errorf("unfulfilled expectations: %s", err)
+			}
+		})
+	}
+}
+
+func TestSignUpAdmin(t *testing.T) {
+	db, mock, err := sqlmock.New(sqlmock.QueryMatcherOption(sqlmock.QueryMatcherEqual))
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	gormDB, err := gorm.Open(postgres.New(postgres.Config{Conn: db}), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when initializing a mock db session", err)
+	}
+
+	AdminRepository := NewAdminRepository(gormDB)
+
+	tests := []struct {
+		name        string
+		input       domain.Admin
+		buildStub   func(mock sqlmock.Sqlmock, admin domain.Admin)
+		expectedErr error
+	}{
+		{
+			name: "SignUp admin success",
+			input: domain.Admin{
+				FirstName: "Ganesh",
+				LastName:  "R",
+				Email:     "ganeshrko007@gmail.com",
+				PhoneNum:  "9746226152",
+				Password:  "Admin@123",
+			},
+			buildStub: func(mock sqlmock.Sqlmock, admin domain.Admin) {
+				mock.ExpectExec(`INSERT INTO admins`).
+					WithArgs(admin.FirstName, admin.LastName, admin.Email, admin.PhoneNum, admin.Password).
+					WillReturnResult(sqlmock.NewResult(0, 1))
+			},
+			expectedErr: nil,
+		},
+		{
+			name: "Failed to signup admin due to constraint violation",
+			input: domain.Admin{
+				FirstName: "Ganesh",
+				LastName:  "R",
+				Email:     "ganeshrko007@gmail.com",
+				PhoneNum:  "9746226152",
+				Password:  "Admin@123",
+			},
+			buildStub: func(mock sqlmock.Sqlmock, admin domain.Admin) {
+				mock.ExpectExec(`INSERT INTO admins`).
+					WithArgs(admin.FirstName, admin.LastName, admin.Email, admin.PhoneNum, admin.Password).
+					WillReturnError(errors.New("unique constraint violation"))
+			},
+			expectedErr: errors.New("unique constraint violation"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.buildStub(mock, tt.input)
+
+			actualErr := AdminRepository.SignUpAdmin(context.TODO(), tt.input)
+
+			if tt.expectedErr == nil {
+				assert.NoError(t, actualErr)
+			} else {
+				assert.Equal(t, tt.expectedErr, actualErr)
+			}
 
 			err = mock.ExpectationsWereMet()
 			if err != nil {

@@ -30,7 +30,7 @@ func (c *adminDatabase) FindByEmail(ctx context.Context, Email string) (domain.A
 	return admin, nil
 }
 
-// UserSign-up
+// Adminsign-up
 func (c *adminDatabase) SignUpAdmin(ctx context.Context, admin domain.Admin) error {
 	query := `INSERT INTO admins(first_name,last_name,email,phone_num,password)VALUES($1,$2,$3,$4,$5)`
 	if err := c.DB.Raw(query, admin.FirstName, admin.LastName, admin.Email, admin.PhoneNum, admin.Password).Error; err != nil {
