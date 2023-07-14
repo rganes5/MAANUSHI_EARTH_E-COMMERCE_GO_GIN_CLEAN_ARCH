@@ -9,9 +9,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/copier"
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/auth"
-	"github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
 	"github.com/rganes5/maanushi_earth_e-commerce/pkg/support"
 	services "github.com/rganes5/maanushi_earth_e-commerce/pkg/usecase/interface"
 	utils "github.com/rganes5/maanushi_earth_e-commerce/pkg/utils"
@@ -49,40 +47,40 @@ func (cr *AdminHandler) AdminSignUp(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
-	var signUp_admin domain.Admin
-	copier.Copy(&signUp_admin, &body)
+	// var signUp_admin domain.Admin
+	// copier.Copy(&signUp_admin, &body)
 
 	//Check the email format
-	if err := support.Email_validator(signUp_admin.Email); err != nil {
-		response := utils.ErrorResponse(400, "Error: Enter a valid email. Email format is incorrect", err.Error(), signUp_admin)
+	if err := support.Email_validator(body.Email); err != nil {
+		response := utils.ErrorResponse(400, "Error: Enter a valid email. Email format is incorrect", err.Error(), body)
 		c.JSON(http.StatusBadRequest, response)
 		return
 
 	}
 
 	//Check the phone number format
-	if err := support.MobileNum_validator(signUp_admin.PhoneNum); err != nil {
-		response := utils.ErrorResponse(400, "Error: Enter a valid Phone Number. Phone Number format is incorrect", err.Error(), signUp_admin)
+	if err := support.MobileNum_validator(body.PhoneNum); err != nil {
+		response := utils.ErrorResponse(400, "Error: Enter a valid Phone Number. Phone Number format is incorrect", err.Error(), body)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	//Check whether such email already exits
-	if _, err := cr.adminUseCase.FindByEmail(c.Request.Context(), signUp_admin.Email); err == nil {
-		response := utils.ErrorResponse(401, "Error: Admin with the email already exits!", err.Error(), signUp_admin)
+	if _, err := cr.adminUseCase.FindByEmail(c.Request.Context(), body.Email); err == nil {
+		response := utils.ErrorResponse(401, "Error: Admin with the email already exits!", err.Error(), body)
 		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
 
 	//Hash the password and sign up
-	signUp_admin.Password, _ = support.HashPassword(signUp_admin.Password)
-	if err := cr.adminUseCase.SignUpAdmin(c.Request.Context(), signUp_admin); err != nil {
-		response := utils.ErrorResponse(401, "Error: Failed to Add Admin, please try again", err.Error(), signUp_admin)
+	body.Password, _ = support.HashPassword(body.Password)
+	if _, err := cr.adminUseCase.SignUpAdmin(c.Request.Context(), body); err != nil {
+		response := utils.ErrorResponse(401, "Error: Failed to Add Admin, please try again", err.Error(), body)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
 
-	response := utils.SuccessResponse(200, "success: Admin sign-up Successful", signUp_admin)
+	response := utils.SuccessResponse(200, "success: Admin sign-up Successful", body)
 	c.JSON(http.StatusOK, response)
 }
 

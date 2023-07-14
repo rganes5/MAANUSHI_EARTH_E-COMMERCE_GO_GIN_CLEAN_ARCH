@@ -31,12 +31,11 @@ func (c *adminDatabase) FindByEmail(ctx context.Context, Email string) (domain.A
 }
 
 // Adminsign-up
-func (c *adminDatabase) SignUpAdmin(ctx context.Context, admin domain.Admin) error {
-	query := `INSERT INTO admins(first_name,last_name,email,phone_num,password)VALUES($1,$2,$3,$4,$5)`
-	if err := c.DB.Raw(query, admin.FirstName, admin.LastName, admin.Email, admin.PhoneNum, admin.Password).Error; err != nil {
-		return err
-	}
-	return nil
+func (c *adminDatabase) SignUpAdmin(ctx context.Context, body utils.AdminSignUp) (domain.Admin, error) {
+	var newAdminOutput domain.Admin
+	query := `INSERT INTO admins(first_name,last_name,email,phone_num,password,created_at,updated_at)VALUES($1,$2,$3,$4,$5,NOW(),NOW()) RETURNING *;`
+	err := c.DB.Raw(query, body.FirstName, body.LastName, body.Email, body.PhoneNum, body.Password).Scan(&newAdminOutput).Error
+	return newAdminOutput, err
 	// err := c.DB.Create(&admin).Error
 	// return err
 }

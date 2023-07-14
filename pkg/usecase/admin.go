@@ -25,9 +25,9 @@ func (c *adminUseCase) FindByEmail(ctx context.Context, Email string) (domain.Ad
 	return admin, err
 }
 
-func (c *adminUseCase) SignUpAdmin(ctx context.Context, admin domain.Admin) error {
-	err := c.adminRepo.SignUpAdmin(ctx, admin)
-	return err
+func (c *adminUseCase) SignUpAdmin(ctx context.Context, body utils.AdminSignUp) (domain.Admin, error) {
+	newAdminOutput, err := c.adminRepo.SignUpAdmin(ctx, body)
+	return newAdminOutput, err
 }
 
 func (c *adminUseCase) ListUsers(ctx context.Context, pagination utils.Pagination) ([]utils.ResponseUsers, error) {
