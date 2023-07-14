@@ -52,7 +52,7 @@ func (cr *AdminHandler) AdminSignUp(c *gin.Context) {
 
 	//Check the email format
 	if err := support.Email_validator(body.Email); err != nil {
-		response := utils.ErrorResponse(400, "Error: Enter a valid email. Email format is incorrect", err.Error(), body)
+		response := utils.ErrorResponse(400, "Error: Enter a valid email. Email format is incorrect", err.Error(), body.Email)
 		c.JSON(http.StatusBadRequest, response)
 		return
 
@@ -60,14 +60,14 @@ func (cr *AdminHandler) AdminSignUp(c *gin.Context) {
 
 	//Check the phone number format
 	if err := support.MobileNum_validator(body.PhoneNum); err != nil {
-		response := utils.ErrorResponse(400, "Error: Enter a valid Phone Number. Phone Number format is incorrect", err.Error(), body)
+		response := utils.ErrorResponse(400, "Error: Enter a valid Phone Number. Phone Number format is incorrect", err.Error(), body.PhoneNum)
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
 	//Check whether such email already exits
 	if _, err := cr.adminUseCase.FindByEmail(c.Request.Context(), body.Email); err == nil {
-		response := utils.ErrorResponse(401, "Error: Admin with the email already exits!", err.Error(), body)
+		response := utils.ErrorResponse(401, "Error: Admin with the email already exits!", err.Error(), body.Email)
 		c.JSON(http.StatusUnauthorized, response)
 		return
 	}
@@ -75,7 +75,7 @@ func (cr *AdminHandler) AdminSignUp(c *gin.Context) {
 	//Hash the password and sign up
 	body.Password, _ = support.HashPassword(body.Password)
 	if _, err := cr.adminUseCase.SignUpAdmin(c.Request.Context(), body); err != nil {
-		response := utils.ErrorResponse(401, "Error: Failed to Add Admin, please try again", err.Error(), body)
+		response := utils.ErrorResponse(500, "Error: Failed to Add Admin, please try again", err.Error(), body)
 		c.JSON(http.StatusInternalServerError, response)
 		return
 	}
