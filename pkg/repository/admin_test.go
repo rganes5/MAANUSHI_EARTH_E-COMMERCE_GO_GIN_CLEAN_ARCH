@@ -80,7 +80,6 @@ func TestFindByEmail(t *testing.T) {
 			} else {
 				assert.Equal(t, tt.expectedErr, actualErr)
 			}
-
 			assert.Equal(t, tt.expectedOutput, actualOutput)
 
 			err = mock.ExpectationsWereMet()

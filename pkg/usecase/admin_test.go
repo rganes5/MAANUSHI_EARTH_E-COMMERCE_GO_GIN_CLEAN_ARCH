@@ -20,7 +20,7 @@ func TestFindByEmail(t *testing.T) {
 		input          string
 		expectedOutput domain.Admin
 		buildStub      func(adminRepo mockRepo.MockAdminRepository)
-		expectedErr    error
+		expectedError  error
 	}{
 		{
 			name:  "valid user",
@@ -43,7 +43,7 @@ func TestFindByEmail(t *testing.T) {
 					Password:  "Admin@123",
 				}, nil)
 			},
-			expectedErr: nil,
+			expectedError: nil,
 		},
 		{
 			name:           "non-existing user",
@@ -52,16 +52,30 @@ func TestFindByEmail(t *testing.T) {
 			buildStub: func(adminRepo mockRepo.MockAdminRepository) {
 				adminRepo.EXPECT().FindByEmail(gomock.Any(), "nonexisting@gmail.com").Times(1).Return(domain.Admin{}, errors.New("non-existing user"))
 			},
-			expectedErr: errors.New("non-existing user"),
+			expectedError: errors.New("non-existing user"),
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			tt.buildStub(*adminRepo)
-			actualOutput, actualErr := adminUseCase.FindByEmail(context.TODO(), tt.input)
+			actualOutput, actualError := adminUseCase.FindByEmail(context.TODO(), tt.input)
 			assert.Equal(t, tt.expectedOutput, actualOutput)
-			assert.Equal(t, tt.expectedErr, actualErr)
+			assert.Equal(t, tt.expectedError, actualError)
 		})
 	}
 }
+
+// func TestSignUpAdmin(t *testing.T) {
+// 	ctrl := gomock.NewController(t)
+// 	adminRepo := mockRepo.NewMockAdminRepository(ctrl)
+// 	adminUseCase := NewAdminUseCase(adminRepo)
+// 	fmt.Println(adminUseCase)
+// 	tests := []struct {
+// 		testName       string
+// 		inputField     utils.AdminSignUp
+// 		expectedOutput domain.Admin
+// 		buildStub      func(adminRepo mockRepo.MockAdminRepository)
+// 		expectedErr    error
+// 	}{}
+// }
