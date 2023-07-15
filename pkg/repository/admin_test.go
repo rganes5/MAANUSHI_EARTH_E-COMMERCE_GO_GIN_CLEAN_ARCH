@@ -141,6 +141,7 @@ func TestSignUpAdmin(t *testing.T) {
 			},
 
 			buildStub: func(mock sqlmock.Sqlmock) {
+				//simulate the result rows that the query is expected to return.
 				rows := sqlmock.NewRows([]string{"first_name", "last_name", "email", "phone_num", "password"}).
 					AddRow("Ganesh", "R", "ganesh@gmail.com", "9746226152", "Admin@123")
 				//actually above is correct without using quotemeta, regexp.QuoteMeta returns a string that escapes all regular expression metacharacters inside the argument text; the returned string is a regular expression matching the literal text. so https://pkg.go.dev/regexp#QuoteMeta, in the ofcicial documentation we can check
