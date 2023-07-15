@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	domain "github.com/rganes5/maanushi_earth_e-commerce/pkg/domain"
@@ -26,6 +27,10 @@ func (c *adminUseCase) FindByEmail(ctx context.Context, Email string) (domain.Ad
 }
 
 func (c *adminUseCase) SignUpAdmin(ctx context.Context, body utils.AdminSignUp) (domain.Admin, error) {
+	//Check whether such email already exits
+	if _, err := c.adminRepo.FindByEmail(ctx, body.Email); err == nil {
+		return domain.Admin{}, errors.New("user already exists with the email")
+	}
 	newAdminOutput, err := c.adminRepo.SignUpAdmin(ctx, body)
 	return newAdminOutput, err
 }

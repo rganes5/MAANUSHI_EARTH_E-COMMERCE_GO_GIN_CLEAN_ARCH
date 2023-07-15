@@ -65,12 +65,12 @@ func (cr *AdminHandler) AdminSignUp(c *gin.Context) {
 		return
 	}
 
-	//Check whether such email already exits
-	if _, err := cr.adminUseCase.FindByEmail(c.Request.Context(), body.Email); err == nil {
-		response := utils.ErrorResponse(401, "Error: Admin with the email already exits!", err.Error(), body.Email)
-		c.JSON(http.StatusUnauthorized, response)
-		return
-	}
+	// //Check whether such email already exits
+	// if _, err := cr.adminUseCase.FindByEmail(c.Request.Context(), body.Email); err == nil {
+	// 	response := utils.ErrorResponse(401, "Error: Admin with the email already exits!", err.Error(), body.Email)
+	// 	c.JSON(http.StatusUnauthorized, response)
+	// 	return
+	// }
 
 	//Hash the password and sign up
 	body.Password, _ = support.HashPassword(body.Password)
