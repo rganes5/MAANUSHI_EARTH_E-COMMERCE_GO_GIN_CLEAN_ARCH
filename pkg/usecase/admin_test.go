@@ -90,15 +90,10 @@ func TestSignUpAdmin(t *testing.T) {
 				PhoneNum:  "0000000000",
 				Password:  "ExistingUser@123",
 			},
-			expectedOutput: domain.Admin{
-				FirstName: "Existing",
-				LastName:  "User",
-				Email:     "ExistingUser@gmail.com",
-				PhoneNum:  "0000000000",
-				Password:  "ExistingUser@123",
-			},
+			expectedOutput: domain.Admin{},
 			buildStub: func(adminRepo mockRepo.MockAdminRepository) {
 				adminRepo.EXPECT().FindByEmail(gomock.Any(), "ExistingUser@gmail.com").Times(1).Return(domain.Admin{
+					ID:        1,
 					FirstName: "Existing",
 					LastName:  "User",
 					Email:     "ExistingUser@gmail.com",
@@ -127,13 +122,13 @@ func TestSignUpAdmin(t *testing.T) {
 				UpdatedAt: time.Time{},
 			},
 			buildStub: func(adminRepo mockRepo.MockAdminRepository) {
-				adminRepo.EXPECT().FindByEmail(gomock.Any(), "ganeshrko007@gmail.com").Return(domain.Admin{}, errors.New("non-existing user"))
+				adminRepo.EXPECT().FindByEmail(gomock.Any(), "ganeshrko007@gmail.com").Times(1).Return(domain.Admin{}, errors.New("non-existing user"))
 				adminRepo.EXPECT().SignUpAdmin(gomock.Any(), gomock.Any()).Times(1).Return(domain.Admin{
-					FirstName: "Existing",
-					LastName:  "User",
-					Email:     "ExistingUser@gmail.com",
-					PhoneNum:  "0000000000",
-					Password:  "ExistingUser@123",
+					FirstName: "Ganesh",
+					LastName:  "R",
+					Email:     "ganeshrko007@gmail.com",
+					PhoneNum:  "9746226152",
+					Password:  "Admin@123",
 					CreatedAt: time.Time{},
 					UpdatedAt: time.Time{},
 				}, nil)
