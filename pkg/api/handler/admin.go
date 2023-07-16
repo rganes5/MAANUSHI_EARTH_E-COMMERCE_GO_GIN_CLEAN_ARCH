@@ -43,45 +43,40 @@ func (cr *AdminHandler) AdminSignUp(c *gin.Context) {
 
 	//Binding
 	if err := c.BindJSON(&body); err != nil {
-		response := utils.ErrorResponse(400, "Error: Failed to read json body", err.Error(), body)
-		c.JSON(http.StatusBadRequest, response)
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
+			"error": errors.New("failed to bind the required fields"),
+		})
 		return
 	}
-	// var signUp_admin domain.Admin
-	// copier.Copy(&signUp_admin, &body)
 
 	//Check the email format
 	if err := support.Email_validator(body.Email); err != nil {
-		response := utils.ErrorResponse(400, "Error: Enter a valid email. Email format is incorrect", err.Error(), body.Email)
-		c.JSON(http.StatusBadRequest, response)
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": err.Error(),
+		})
 		return
-
 	}
 
 	//Check the phone number format
 	if err := support.MobileNum_validator(body.PhoneNum); err != nil {
-		response := utils.ErrorResponse(400, "Error: Enter a valid Phone Number. Phone Number format is incorrect", err.Error(), body.PhoneNum)
-		c.JSON(http.StatusBadRequest, response)
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
-
-	// //Check whether such email already exits
-	// if _, err := cr.adminUseCase.FindByEmail(c.Request.Context(), body.Email); err == nil {
-	// 	response := utils.ErrorResponse(401, "Error: Admin with the email already exits!", err.Error(), body.Email)
-	// 	c.JSON(http.StatusUnauthorized, response)
-	// 	return
-	// }
 
 	//Hash the password and sign up
 	body.Password, _ = support.HashPassword(body.Password)
 	if _, err := cr.adminUseCase.SignUpAdmin(c.Request.Context(), body); err != nil {
-		response := utils.ErrorResponse(500, "Error: Failed to Add Admin, please try again", err.Error(), body)
-		c.JSON(http.StatusInternalServerError, response)
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
 		return
 	}
 
-	response := utils.SuccessResponse(200, "success: Admin sign-up Successful", body)
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusOK, gin.H{
+		"Success": body,
+	})
 }
 
 // ADMIN LOGIN

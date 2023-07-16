@@ -13,6 +13,7 @@ type Response struct {
 	Message    string      `json:"message"`
 	Errors     interface{} `json:"errors,omitempty"`
 	Data       interface{} `json:"data,omitempty"`
+	Code       int         `json:"code"` // Add this line
 }
 
 func SuccessResponse(statusCode int, message string, data ...interface{}) Response {
