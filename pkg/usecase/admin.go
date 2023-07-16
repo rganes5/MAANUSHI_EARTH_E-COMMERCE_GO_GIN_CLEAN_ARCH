@@ -21,11 +21,6 @@ func NewAdminUseCase(repo interfaces.AdminRepository) services.AdminUseCase {
 	}
 }
 
-func (c *adminUseCase) FindByEmail(ctx context.Context, Email string) (domain.Admin, error) {
-	admin, err := c.adminRepo.FindByEmail(ctx, Email)
-	return admin, err
-}
-
 func (c *adminUseCase) SignUpAdmin(ctx context.Context, body utils.AdminSignUp) (domain.Admin, error) {
 	//Check whether such email already exits
 	if _, err := c.adminRepo.FindByEmail(ctx, body.Email); err == nil {
@@ -33,6 +28,11 @@ func (c *adminUseCase) SignUpAdmin(ctx context.Context, body utils.AdminSignUp) 
 	}
 	newAdminOutput, err := c.adminRepo.SignUpAdmin(ctx, body)
 	return newAdminOutput, err
+}
+
+func (c *adminUseCase) FindByEmail(ctx context.Context, Email string) (domain.Admin, error) {
+	admin, err := c.adminRepo.FindByEmail(ctx, Email)
+	return admin, err
 }
 
 func (c *adminUseCase) ListUsers(ctx context.Context, pagination utils.Pagination) ([]utils.ResponseUsers, error) {
