@@ -17,6 +17,7 @@ import (
 	utils "github.com/rganes5/maanushi_earth_e-commerce/pkg/utils"
 )
 
+// Signup test
 func TestAdminSignUp(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	adminUseCase := mockUseCase.NewMockAdminUseCase(ctrl)
