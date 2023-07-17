@@ -19,7 +19,9 @@ import (
 
 // Signup test
 func TestAdminSignUp(t *testing.T) {
+	//NewController returns a new Controller.
 	ctrl := gomock.NewController(t)
+	//NewMockAdminUseCase creates a new mock instance.
 	adminUseCase := mockUseCase.NewMockAdminUseCase(ctrl)
 	adminHandler := NewAdminHandler(adminUseCase)
 
@@ -98,7 +100,9 @@ func TestAdminSignUp(t *testing.T) {
 			tt.mockExpectations()
 
 			// Create a new HTTP request with the request body
+			//Marshal returns the JSON encoding of v.
 			reqBody, _ := json.Marshal(tt.requestBody)
+			//NewRequest wraps NewRequestWithContext using context.Background.
 			req, _ := http.NewRequest(http.MethodPost, "/admin/signup", bytes.NewBuffer(reqBody))
 			req.Header.Set("Content-Type", "application/json")
 
