@@ -75,7 +75,7 @@ func TestSignUpAdmin(t *testing.T) {
 					FirstName: "Ganesh",
 					LastName:  "R",
 					Email:     "ganeshrko007@gmail.com",
-					PhoneNum:  "9746226152",
+					PhoneNum:  "111",
 					Password:  "Admin@123",
 					CreatedAt: time.Time{},
 					UpdatedAt: time.Time{},
