@@ -25,8 +25,9 @@ func TestSignUpAdmin(t *testing.T) {
 		testName       string
 		inputField     utils.AdminSignUp
 		expectedOutput domain.Admin
-		buildStub      func(adminRepo mockRepo.MockAdminRepository)
-		expectedErr    error
+		//the buildStub field is a function that is used to set up expectations and behavior
+		buildStub   func(adminRepo mockRepo.MockAdminRepository)
+		expectedErr error
 	}{
 		{
 			testName: "user already exists with the email",
