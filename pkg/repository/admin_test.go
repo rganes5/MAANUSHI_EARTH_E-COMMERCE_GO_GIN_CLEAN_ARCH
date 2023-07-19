@@ -17,7 +17,6 @@ import (
 )
 
 // The function takes a testing.T parameter t, which is used for test assertions and reporting.
-
 func TestSignUpAdmin(t *testing.T) {
 
 	//New() method from sqlmock package create sqlmock database connection and a mock to manage expectations.

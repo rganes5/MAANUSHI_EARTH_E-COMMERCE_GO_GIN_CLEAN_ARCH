@@ -19,6 +19,7 @@ import (
 
 // Signup test
 func TestAdminSignUp(t *testing.T) {
+
 	//NewController returns a new Controller.
 	ctrl := gomock.NewController(t)
 	//NewMockAdminUseCase creates a new mock instance.
