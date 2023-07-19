@@ -1,7 +1,7 @@
 # MAANUSHI_EARTH_E-COMMERCE_GO_GIN_CLEAN_ARCH
 Maanushi for Earth is an initiative to support rural women from Kumily to generate livelihood through sustainable and eco-friendly businesses. As part of reaching out to more women through our initiative, this platform offers a space for sustainable and women-owned businesses to list their products as well.
 
-This project is an ecommerce application built using Go programming language and the Gin framework. It follows the clean code architecture, which promotes separation of concerns and maintainability.
+This project is an ecommerce application built using Go programming language and the Gin framework. It follows the clean code architecture, which promotes separation of concerns and maintainability. Included CI/CD pipeline which automates the build, testing, and deployment processes.
 
 ## Project Overview
 The ecommerce-gin-clean-arch project is designed to provide a performant and feature-rich ecommerce solution. It includes functionalities such as user authentication, product management, shopping cart, order processing, and payment integration.
@@ -18,6 +18,10 @@ The project utilizes the following packages:
 8. [Razorpay](https://github.com/razorpay/razorpay-go): A Go client library for the Razorpay API, facilitating payment processing and management.
 
 Please refer to the respective package documentation for more information on how to use and integrate these packages into your Go application.
+
+## Quality Assurance
+1. [Unit Testing]: The project incorporates unit testing to ensure the correctness of individual units of code and enhance code maintainability.
+2. [Continuous Integration/Continuous Deployment (CI/CD) Pipeline]: A robust CI/CD pipeline is set up to automate the build, testing, and deployment processes. This ensures a smooth and reliable deployment workflow.
 
 # Setup Instructions
 To use and test the MAANUSHI_EARTH_E-COMMERCE_GO_GIN_CLEAN_ARCH project, please follow these steps:
