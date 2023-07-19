@@ -20,8 +20,8 @@ The project utilizes the following packages:
 Please refer to the respective package documentation for more information on how to use and integrate these packages into your Go application.
 
 ## Quality Assurance
-1. [Unit Testing]: The project incorporates unit testing to ensure the correctness of individual units of code and enhance code maintainability.
-2. [Continuous Integration/Continuous Deployment (CI/CD) Pipeline]: A robust CI/CD pipeline is set up to automate the build, testing, and deployment processes. This ensures a smooth and reliable deployment workflow.
+1. [Unit Testing](https://go.dev/doc/tutorial/add-a-test): The project incorporates unit testing to ensure the correctness of individual units of code and enhance code maintainability.
+2. [Continuous Integration/Continuous Deployment (CI/CD) Pipeline](https://dev.to/gopher/build-ci-cd-pipelines-in-go-with-github-actions-and-dockers-1ko7): A robust CI/CD pipeline is set up to automate the build, testing, and deployment processes. This ensures a smooth and reliable deployment workflow.
 
 # Setup Instructions
 To use and test the MAANUSHI_EARTH_E-COMMERCE_GO_GIN_CLEAN_ARCH project, please follow these steps:
