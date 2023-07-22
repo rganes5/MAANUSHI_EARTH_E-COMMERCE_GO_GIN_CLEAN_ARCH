@@ -223,7 +223,7 @@ func (cr *UserHandler) LoginHandler(c *gin.Context) {
 	}
 
 	//Sets a cookie named "user-token" with the value tokenString. The cookie has an expiration time of 60 minutes from the current time.
-	c.SetCookie("user-token", tokenString, int(time.Now().Add(60*time.Minute).Unix()), "/", "maanushiearth.shop", true, false)
+	c.SetCookie("user-token", tokenString, int(time.Now().Add(60*time.Minute).Unix()), "/", "localhost", true, false)
 	c.Set("user-email", user.Email)
 	response1 := utils.SuccessResponse(200, "Success: Login Successful")
 	c.JSON(http.StatusOK, response1)
