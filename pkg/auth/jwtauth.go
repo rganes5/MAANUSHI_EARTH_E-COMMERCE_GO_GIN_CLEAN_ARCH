@@ -67,7 +67,3 @@ func ValidateToken(tokenString string) (Claims, error) {
 	}
 	return claims, nil
 }
-
-//There are some changes to be made,
-//Tokenn has to be set so that if user reloads or refreshes within the expiry , then it should be exteneded and if not then it
-//should ask the user to relogin.
