@@ -1,32 +1,35 @@
-version: "3.8"
+version: '3'
 
 services:
-  postgres:
-    image: postgres:latest
+  db:
+    image: postgres:alpine
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    networks:
+      - mynet
     ports:
-      - "5432:5432"
+      - 5000:5432
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
 
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      DB_HOST: ${DB_HOST}
-      DB_USER: ${DB_USER}
-      DB_NAME: ${DB_NAME}
-      DB_PORT: ${DB_PORT}
-      DB_PASSWORD: ${DB_PASSWORD}
-      JWT_CODE: ${JWT_CODE}
-      AUTH_TOKEN: ${AUTH_TOKEN}
-      ACCOUNT_SID: ${ACCOUNT_SID}
-      SERVICE_SID: ${SERVICE_SID}
-      RAZORPAY_KEY: ${RAZORPAY_KEY}
-      RAZORPAY_SECRET: ${RAZORPAY_SECRET}
+  web:
+    build: .
+    env_file:
+      - .env
+    networks:
+      - mynet
     ports:
-      - "3000:3000"
+      - 3000:3000
+    volumes:
+      - .:/usr/src/app
     depends_on:
-      - postgres
+      - db
+
+volumes:
+  postgres-db:
+
+networks:
+  mynet:
+    driver: bridge

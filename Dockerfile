@@ -2,14 +2,14 @@
 FROM golang:latest AS build
 
 # Set the working directory inside the container
-WORKDIR /go/src/github.com/rganes5/maanushi_earth_e-commerce
+WORKDIR /usr/src/app
 
 # Copy the Go modules files and download dependencies
 COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy the rest of the source code
-COPY . .
+COPY . ./
 
 # Build the Go application
 RUN CGO_ENABLED=0 GOOS=linux go build -o /app .
@@ -21,7 +21,10 @@ FROM alpine:latest
 WORKDIR /app
 
 # Copy the built Go binary from the previous stage
-COPY --from=build /app ./
+COPY --from=build /go/src/github.com/rganes5/maanushi_earth_e-commerce/cmd/api/app ./
+
+# Copy the .env file into the container
+COPY .env ./
 
 # Expose the application's port
 EXPOSE 3000
