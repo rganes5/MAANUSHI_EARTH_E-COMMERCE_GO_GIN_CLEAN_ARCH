@@ -53,8 +53,6 @@ func NewUserHandler(usecase services.UserUseCase, otpusecase services.OtpUseCase
 // name: MIT
 // url: https://opensource.org/licenses/MIT
 
-// @host maanushiearth.shop
-
 // @Basepath /
 // @Accept json
 // @Produce json

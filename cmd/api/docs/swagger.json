@@ -6,7 +6,6 @@
         "contact": {},
         "version": "2.0"
     },
-    "host": "maanushiearth.shop",
     "paths": {
         "/admin/category/add": {
             "post": {
@@ -3127,6 +3126,10 @@
         "utils.Response": {
             "type": "object",
             "properties": {
+                "code": {
+                    "description": "Add this line",
+                    "type": "integer"
+                },
                 "data": {},
                 "errors": {},
                 "message": {

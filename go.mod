@@ -1,6 +1,6 @@
 module github.com/rganes5/maanushi_earth_e-commerce
 
-go 1.17
+go 1.20
 
 require (
 	github.com/gin-gonic/gin v1.9.0

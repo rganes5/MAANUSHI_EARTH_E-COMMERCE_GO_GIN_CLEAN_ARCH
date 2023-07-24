@@ -3135,6 +3135,10 @@ const docTemplate = `{
         "utils.Response": {
             "type": "object",
             "properties": {
+                "code": {
+                    "description": "Add this line",
+                    "type": "integer"
+                },
                 "data": {},
                 "errors": {},
                 "message": {
@@ -3238,7 +3242,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "2.0",
-	Host:             "maanushiearth.shop",
+	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "MAANUSHI_EARTH_E-COMMERCE REST API",

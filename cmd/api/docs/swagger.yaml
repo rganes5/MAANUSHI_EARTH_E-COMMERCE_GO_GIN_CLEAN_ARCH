@@ -144,6 +144,9 @@ definitions:
     type: object
   utils.Response:
     properties:
+      code:
+        description: Add this line
+        type: integer
       data: {}
       errors: {}
       message:
@@ -209,7 +212,6 @@ definitions:
     - password
     - phonenum
     type: object
-host: maanushiearth.shop
 info:
   contact: {}
   description: MAANUSHI_EARTH_E-COMMERCE REST API built using Go, PSQL, REST API following

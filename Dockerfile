@@ -1,5 +1,5 @@
 # Stage 1: Build the Go application
-FROM golang:latest AS build
+FROM golang:1.20-alpine AS build
 
 # Set the working directory inside the container
 WORKDIR /usr/src/app
@@ -22,6 +22,10 @@ WORKDIR /app
 
 # Copy the built Go binary from the previous stage
 COPY --from=build /usr/src/app/main .
+
+# Copy the static directory with HTML templates
+COPY --from=build /usr/src/app/static ./static
+
 
 # Expose the application's port
 EXPOSE 3000
