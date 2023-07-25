@@ -26,6 +26,9 @@ COPY --from=build /usr/src/app/main .
 # Copy the static directory with HTML templates
 COPY --from=build /usr/src/app/static ./static
 
+# Copy the env
+COPY .env .
+
 
 # Expose the application's port
 EXPOSE 3000
