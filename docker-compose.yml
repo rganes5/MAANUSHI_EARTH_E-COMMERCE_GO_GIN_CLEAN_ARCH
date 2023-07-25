@@ -15,7 +15,7 @@ services:
       - postgres-db:/var/lib/postgresql/data
 
   web:
-    image: maanushi_earth_e-commerce api:0.0.1.RELEASE
+    image: maanushi_earth_e-commerce_api:0.0.1.RELEASE
     build: .
     env_file:
       - .env
