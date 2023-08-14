@@ -8,7 +8,7 @@ import (
 	di "github.com/rganes5/maanushi_earth_e-commerce/pkg/di"
 )
 
-// Main function
+// Main
 func main() {
 	config, configErr := config.LoadConfig()
 	if configErr != nil {
